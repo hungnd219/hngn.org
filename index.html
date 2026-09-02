@@ -3,338 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MEMORANDUM — CLASSIFIED</title>
+<title>Memorandum</title>
 <style>
-  :root {
-    --paper: #f4f0e6;
-    --ink: #1a1a1a;
-    --redact: #111;
-    --stamp: #8b0000;
-    --rule: #bbb;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  html { -webkit-text-size-adjust: none; }
   body {
-    background: #d4cfc4;
+    width: 540px;
+    margin: 2rem auto;
+    padding: 0;
     font-family: "Times New Roman", "Georgia", "Liberation Serif", serif;
-    color: var(--ink);
-    display: flex;
-    justify-content: center;
-    padding: 2rem 1rem;
-    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #000;
+    background: #fff;
   }
-
-  .document {
-    max-width: 720px;
-    width: 100%;
-    background: var(--paper);
-    padding: 3rem 2.5rem;
-    box-shadow: 0 2px 20px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
-    position: relative;
-  }
-
-  /* TOP SECRET stripe */
-  .document::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 6px;
-    background: repeating-linear-gradient(
-      90deg,
-      var(--stamp) 0px,
-      var(--stamp) 12px,
-      transparent 12px,
-      transparent 24px
-    );
-  }
-
-  /* Classification header */
-  .classification {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 2px solid var(--rule);
-  }
-
-  .classification .stamp {
-    display: inline-block;
-    border: 3px double var(--stamp);
-    color: var(--stamp);
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 1.1rem;
-    font-weight: bold;
-    letter-spacing: 0.15em;
-    padding: 0.35rem 1.2rem;
-    transform: rotate(-2deg);
-    text-transform: uppercase;
-  }
-
-  /* Memo header */
-  .memo-header {
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 0.85rem;
-    line-height: 1.8;
-    margin-bottom: 2.5rem;
-    color: #333;
-  }
-
-  .memo-header .field {
-    display: flex;
-    border-bottom: 1px dotted #ccc;
-    padding: 0.2rem 0;
-  }
-
-  .memo-header .label {
-    width: 130px;
-    flex-shrink: 0;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  .memo-header .value {
-    font-family: "Times New Roman", "Georgia", serif;
-  }
-
-  /* Redacted text */
   .redacted {
-    background: var(--redact);
-    color: var(--redact);
-    border-radius: 2px;
-    padding: 0 0.3em;
-    user-select: none;
-    display: inline-block;
-  }
-
-  .redacted::selection {
-    background: var(--redact);
-    color: var(--redact);
-  }
-
-  /* Subject line */
-  .subject {
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 2rem;
-    padding: 0.5rem 0;
-    border-top: 1px solid var(--rule);
-    border-bottom: 1px solid var(--rule);
+    background: #000;
+    color: #000;
     word-break: break-all;
   }
-
-  .subject .re {
-    color: var(--stamp);
-    font-weight: bold;
+  .control-line {
+    font-size: 11px;
+    margin: 0 0 0.5rem 0;
+    overflow: hidden;
   }
-
-  /* Body text */
-  .body-text {
-    font-size: 1rem;
-    line-height: 1.9;
-    margin-bottom: 2rem;
+  .control-line .right {
+    float: right;
+    text-align: right;
   }
-
-  .body-text p {
-    text-indent: 2em;
-    margin-bottom: 1rem;
-    text-align: justify;
+  .header-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0.7rem;
+    table-layout: fixed;
   }
-
-  .body-text p:first-child {
-    text-indent: 0;
+  .header-table td {
+    vertical-align: top;
+    padding: 0;
+    line-height: 1.6;
   }
-
-  /* Unredacted — the visible info */
-  .unredacted {
-    background: #fffbcc;
-    padding: 0.1em 0.2em;
-    font-weight: bold;
-    border-bottom: 1px solid #c9b800;
-  }
-
-  /* Classification footer */
-  .classification-footer {
-    margin-top: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid var(--rule);
-    text-align: center;
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 0.75rem;
-    color: #666;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
-  .classification-footer p {
-    margin-bottom: 0.3rem;
-  }
-
-  .classification-footer .declassify {
-    color: var(--stamp);
-    font-weight: bold;
-  }
-
-  /* Page number */
-  .page-number {
-    text-align: center;
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 0.7rem;
-    color: #999;
-    margin-top: 2rem;
-  }
-
-  /* Watermark */
-  .watermark {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-30deg);
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 5rem;
-    color: rgba(0,0,0,0.03);
-    pointer-events: none;
+  .header-table .label {
+    width: 65px;
     white-space: nowrap;
-    letter-spacing: 0.5em;
-    z-index: 0;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #000;
+    margin: 0.7rem 0;
+  }
+  p {
+    text-align: left;
+    margin: 0 0 0.7rem 0;
+  }
+  .footer {
+    font-size: 11px;
+    margin-top: 1.5rem;
+    color: #000;
+  }
+  .footer p {
+    margin: 0 0 0.2rem 0;
   }
 
-  /* Redacted stamp watermark */
-  .redact-stamp {
-    position: absolute;
-    top: 35%;
-    left: 20%;
-    transform: rotate(-25deg);
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 3.5rem;
-    color: rgba(139,0,0,0.06);
-    font-weight: bold;
-    letter-spacing: 0.3em;
-    pointer-events: none;
-  }
-
-  .redact-stamp-2 {
-    position: absolute;
-    top: 45%;
-    right: 15%;
-    transform: rotate(15deg);
-    font-family: "Courier New", "Liberation Mono", monospace;
-    font-size: 2.8rem;
-    color: rgba(139,0,0,0.05);
-    font-weight: bold;
-    letter-spacing: 0.2em;
-    pointer-events: none;
-  }
-
-  @media (max-width: 600px) {
-    .document {
-      padding: 1.5rem 1rem;
-    }
-    .memo-header .field {
-      flex-direction: column;
-    }
-    .memo-header .label {
+  @media (max-width: 580px) {
+    body {
       width: auto;
+      margin: 1rem;
     }
   }
 </style>
 </head>
 <body>
 
-<div class="watermark">CLASSIFIED</div>
+<p class="control-line">
+  <span>REF: CRP-9902/X-7</span>
+  <span class="right">Rec&rsquo;d: <span class="redacted">██████████████</span></span>
+</p>
 
-<div class="document">
+<p class="control-line">
+  Action: HZ-4<span class="redacted">██</span>&ensp;&#8226;&ensp;Info: PDX-K, <span class="redacted">████████</span>&ensp;&#8226;&ensp;ROUTINE
+</p>
 
-  <div class="classification">
-    <span class="stamp">█ TOP SECRET // NOFORN █</span>
-  </div>
+<p><strong>MEMORANDUM</strong></p>
 
-  <div class="memo-header">
-    <div class="field">
-      <span class="label">TO:</span>
-      <span class="value"><span class="redacted">████████████████████████████████████</span></span>
-    </div>
-    <div class="field">
-      <span class="label">FROM:</span>
-      <span class="value"><span class="redacted">██████████████████████████████████████</span></span>
-    </div>
-    <div class="field">
-      <span class="label">DATE:</span>
-      <span class="value"><span class="redacted">█████████████████</span></span>
-    </div>
-    <div class="field">
-      <span class="label">CLASSIFICATION:</span>
-      <span class="value" style="color:var(--stamp);font-weight:bold;">TOP SECRET // NOFORN // ORCON</span>
-    </div>
-    <div class="field">
-      <span class="label">SUBJ REF:</span>
-      <span class="value"><span class="redacted">████████████████████████████████████████</span></span>
-    </div>
-  </div>
+<table class="header-table">
+  <tr><td class="label">To:</td><td><span class="redacted">████████████████████████████</span></td></tr>
+  <tr><td class="label">From:</td><td><span class="redacted">████████████████████████████</span></td></tr>
+  <tr><td class="label">Date:</td><td><span class="redacted">█████████████</span>, 2026</td></tr>
+  <tr><td class="label">Subject:</td><td><span class="redacted">████████████</span> Hung Nguyen <span class="redacted">█████████████████████████████████</span></td></tr>
+</table>
 
-  <div class="subject">
-    <span class="re">RE:</span> <span class="redacted">█████████████████████████████████████████████████████████████████████</span>
-  </div>
+<hr>
 
-  <div class="body-text">
-    <p>
-      <span class="redacted">█████████████████████████████████████████████████████████████</span>
-      Pursuant to the above-referenced directive, the following individual has been identified as
-      the <span class="redacted">███████████████</span> of record:
-    </p>
+<p>
+<span class="redacted">█████████████████████████████████████████████████████████████████████████████████████</span> Hanoi, Vietnam <span class="redacted">████████████████████████████████████████████████████████████████████████████████████</span>
+</p>
 
-    <p style="text-align:center; text-indent:0; font-size:1.3rem; padding:1rem 0;">
-      <span class="unredacted">DUY HUNG NGUYEN</span>
-    </p>
+<p>
+<span class="redacted">████████████████████</span> Hanover, New Hampshire <span class="redacted">████████████████████████████████████████████████████████████</span>
+</p>
 
-    <p>
-      Subject is known to operate across multiple jurisdictions, with confirmed presence in:
-    </p>
+<p>
+<span class="redacted">█████████████████████████████████████████████████████████████████████████████████████████████</span> Singapore <span class="redacted">████████████████████████████████████████████████████████████████████████████</span> hung@hngn.org <span class="redacted">████████████████████████████████████████████████████████████████████████████████████</span>
+</p>
 
-    <p style="text-align:center; text-indent:0; font-size:1rem; padding:0.3rem 0;">
-      <span class="unredacted">SINGAPORE</span> &bull; <span class="unredacted">HO CHI MINH CITY</span>
-    </p>
+<p>
+<span class="redacted">████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span> Ho Chi Minh City, Vietnam <span class="redacted">████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span>
+</p>
 
-    <p>
-      <span class="redacted">████████████████████████████████████████████████████████████████████████████</span>
-      All further biographical details, including <span class="redacted">███████████████</span>,
-      <span class="redacted">█████████████████</span>, and <span class="redacted">█████████████</span>,
-      remain classified under <span class="redacted">███████████████████</span> §§ <span class="redacted">███</span>–<span class="redacted">███</span>.
-    </p>
+<hr>
 
-    <p>
-      <span class="redacted">█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span>
-      Authorized point of contact for cleared parties:
-    </p>
-
-    <p style="text-align:center; text-indent:0; font-family:'Courier New',monospace; font-size:0.95rem; padding:0.5rem 0;">
-      <span class="unredacted">hung@hngn.org</span>
-    </p>
-
-    <p>
-      <span class="redacted">██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span>
-      Any unauthorized disclosure of the contents herein is punishable under
-      <span class="redacted">█████████████████████████████████████████████████████</span>.
-    </p>
-
-    <p>
-      <span class="redacted">██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span>
-    </p>
-  </div>
-
-  <div class="classification-footer">
-    <p class="declassify">DECLASSIFY ON: <span class="redacted" style="background:transparent;color:#666;">██████████</span></p>
-    <p>CLASSIFIED BY: <span class="redacted" style="background:transparent;color:#666;">████████████████</span></p>
-    <p>REASON: <span class="redacted" style="background:transparent;color:#666;">████████████████████████████</span></p>
-  </div>
-
-  <div class="page-number">PAGE 1 OF <span class="redacted" style="background:transparent;color:#999;">██</span></div>
-
-  <div class="redact-stamp">■ REDACTED ■</div>
-  <div class="redact-stamp-2">■ CLASSIFIED ■</div>
-
+<div class="footer">
+  <p>CRP-9902/X-7&ensp;&#8226;&ensp;Auth. <span class="redacted">████████</span>&ensp;&#8226;&ensp;Dossier <span class="redacted">████████████</span></p>
+  <p>Review cycle <span class="redacted">████████</span>&ensp;&#8226;&ensp;Next action <span class="redacted">███████████████████████</span></p>
 </div>
 
 </body>
