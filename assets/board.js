@@ -9,12 +9,12 @@
     bootCap: 18,          // max flaps per tile on first load
     cap: 9,               // max flaps per tile afterwards
     name: {
-      full: [6000, 10000],   // time showing the full name
-      blinkGap: [900, 2600], // gap between random blinks
-      blink: [300, 1400],    // how long a blinked tile stays dark
-      decay: [150, 450],     // gap between tiles dropping out
-      hold: [3000, 5000],    // time showing HNGN
-      restore: [100, 300],   // gap between tiles coming back
+      full: [2500, 4500],    // time showing the full name
+      blinkGap: [600, 1500], // gap between random blinks
+      blink: [250, 900],     // how long a blinked tile stays dark
+      decay: [80, 200],      // gap between tiles dropping out
+      hold: [2000, 3200],    // time showing HNGN
+      restore: [60, 160],    // gap between tiles coming back
     },
     times: {
       every: [3000, 8000],   // each departure time re-rolls in this window
@@ -23,11 +23,12 @@
     },
     tickerMs: 7000,
     tz: 'Asia/Ho_Chi_Minh',
+    city: 'HO CHI MINH CITY',
   };
 
   const FULL = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-@:/&'!?+";
   const DIGITS = ' 0123456789';
-  const W = { time: 4, place: 16, code: 3, gate: 1, status: 9 };
+  const W = { time: 4, place: 13, code: 3, gate: 1, status: 9 };
 
   const root = document.getElementById('board');
   const src = document.getElementById('source');
@@ -276,7 +277,6 @@
     screens[s.dataset.screen] = {
       id: s.dataset.screen,
       title: s.dataset.title || '',
-      sub: s.dataset.sub || '',
       icon: s.dataset.icon || '',
       cols: (s.dataset.cols || '').split('|'),
       rows: parseItems(s.querySelector('ol')),
@@ -285,7 +285,6 @@
   const navSrc = src.querySelector('nav[data-title]');
   const nav = {
     title: navSrc ? navSrc.dataset.title : 'Departures',
-    sub: navSrc ? navSrc.dataset.sub || '' : '',
     cols: (navSrc ? navSrc.dataset.cols || '' : '').split('|'),
     rows: parseItems(navSrc && navSrc.querySelector('ol')),
   };
@@ -296,10 +295,11 @@
   const EMPTY = { item: null, time: '', place: '', code: '', gate: '', lamp: 'off', first: true };
 
   // ---------- model ----------
-  const F = { name: new Field(NAME.length), clock: new Field(4), ticker: null };
+  const F = { name: new Field(NAME.length), clock: new Field(4), city: new Field(CFG.city.length), ticker: null };
   const left = Array.from({ length: leftCount }, () => ({
     time: new Field(W.time), place: new Field(W.place), code: new Field(W.code), data: EMPTY,
   }));
+  while (nav.rows.length < leftCount) nav.rows.push({ ...EMPTY });
   const right = nav.rows.map((d) => ({
     time: new Field(W.time), place: new Field(W.place), gate: new Field(W.gate, 'right'), status: new Field(W.status), data: d,
   }));
@@ -385,7 +385,7 @@
   }
 
   // ---------- building the board ----------
-  let leftTitle, leftCols, leftBack, leftIcon, leftH2, leftSub;
+  let leftTitle, leftCols, leftBack, leftIcon, leftH2;
 
   function colLabels(container, defs) {
     container.textContent = '';
@@ -394,9 +394,7 @@
 
   function leftColDefs(s) {
     const c = s.cols;
-    const defs = [['l-time', c[0]], ['l-place', c[1]]];
-    if (state.mode !== 'compact') defs.push(['l-code', c[2]]);
-    defs.push(['l-lamp', '']);
+    const defs = [['l-time', c[0]], ['l-place', c[1]], ['l-code', c[2]], ['l-lamp', '']];
     return defs;
   }
   function rightColDefs() {
@@ -407,20 +405,18 @@
     return defs;
   }
 
-  function panelTitle(side, title, sub, icon) {
+  function panelTitle(side, title, icon) {
     const wrap = h('div', 'ptitle');
     const ic = svg(ICONS[icon] || '');
     const h2 = h('h2', null, { id: 'pt-' + side }, title);
-    const sb = h('span', 'sub', { lang: 'vi' }, sub);
-    wrap.append(ic, h2, sb);
-    return { wrap, ic, h2, sb };
+    wrap.append(ic, h2);
+    return { wrap, ic, h2 };
   }
 
   function setLeftHead(s, animate) {
     const apply = () => {
       leftIcon.innerHTML = ICONS[s.icon] || '';
       leftH2.textContent = s.title;
-      leftSub.textContent = s.sub;
       leftBack.hidden = s.id === 'home' || IS404;
       colLabels(leftCols, leftColDefs(s));
       leftTitle.classList.remove('fade'); leftCols.classList.remove('fade');
@@ -509,7 +505,7 @@
     const pc = h('span', 'cell c-place'); r.place.mount(pc); r.el.append(pc);
     r.lampEl = null;
     if (side === 'left') {
-      if (!compact) { const cc = h('span', 'cell c-code'); r.code.mount(cc); r.el.append(cc); } else r.code.unmount();
+      const cc = h('span', 'cell c-code'); r.code.mount(cc); r.el.append(cc);
       r.lampEl = h('span', 'lamp ' + (r.data.lamp || ''), { 'aria-hidden': 'true' }); r.el.append(r.lampEl);
     } else if (!compact) {
       const gc = h('span', 'cell c-gate'); r.gate.mount(gc); r.el.append(gc);
@@ -546,19 +542,13 @@
       if (state.screen !== 'home') go('home');
       else state.forceHNGN = true;
     });
-    const clockCell = h('span', 'cell c-time');
-    F.clock.mount(clockCell, 2);
-    const clock = h('div', 'clock', { 'aria-hidden': 'true' }, [
-      h('span', 'clock-lbl', null, [h('b', null, null, 'HCMC'), h('small', null, null, 'Local time')]),
-      clockCell,
-    ]);
-    root.append(h('header', 'head', null, [h('h1', 'h1', null, nameA), clock]));
+    root.append(h('header', 'head', null, [h('h1', 'h1', null, nameA)]));
 
     // left panel
     const panels = h('div', 'panels');
     const lp = h('section', 'panel panel-left', { 'aria-labelledby': 'pt-left' });
-    const lt = panelTitle('left', s.title, s.sub, s.icon);
-    leftTitle = lt.wrap; leftIcon = lt.ic; leftH2 = lt.h2; leftSub = lt.sb;
+    const lt = panelTitle('left', s.title, s.icon);
+    leftTitle = lt.wrap; leftIcon = lt.ic; leftH2 = lt.h2;
     leftBack = h('button', 'back', { type: 'button' }, '← ' + (screens.home ? screens.home.title : 'Back'));
     leftBack.addEventListener('click', () => go('home'));
     leftTitle.append(leftBack);
@@ -570,7 +560,7 @@
 
     // right panel
     const rp = h('nav', 'panel panel-right', { 'aria-labelledby': 'pt-right' });
-    const rt = panelTitle('right', nav.title, nav.sub, 'dep');
+    const rt = panelTitle('right', nav.title, 'dep');
     const rcols = h('div', 'cols', { 'aria-hidden': 'true' });
     colLabels(rcols, rightColDefs());
     const rrows = h('ol', 'rows');
@@ -581,14 +571,25 @@
     panels.append(lp, rp);
     root.append(panels);
 
-    // ticker + sound
+    // bottom bar: ticker + sound, then the local clock
+    const foot = h('div', 'foot');
     const tk = h('div', 'ticker');
     const tiles = h('span', 'tk-tiles', { 'aria-hidden': 'true' });
     const snd = h('button', 'snd', { type: 'button', 'aria-pressed': String(Sound.on), 'aria-label': 'Flap sound', title: 'Flap sound' });
     snd.append(svg('<path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off-only" d="M17 9.5l5 5M22 9.5l-5 5"/>'));
     snd.addEventListener('click', () => { Sound.set(!Sound.on); snd.setAttribute('aria-pressed', String(Sound.on)); });
     tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, 'INFO'), tiles, snd);
-    root.append(tk);
+    const cityCell = h('span', 'cell c-city', { 'aria-hidden': 'true' });
+    F.city.mount(cityCell);
+    const timeCell = h('span', 'cell c-time', { 'aria-hidden': 'true' });
+    F.clock.mount(timeCell, 2);
+    const clock = h('div', 'clock', null, [
+      h('span', 'clock-lbl', { 'aria-hidden': 'true' }, 'Local time'),
+      cityCell, timeCell,
+      h('span', 'sr', null, 'Local time in Ho Chi Minh City'),
+    ]);
+    foot.append(tk, clock);
+    root.append(foot);
     state.tickerEl = tiles;
   }
 
@@ -604,7 +605,7 @@
   }
 
   // ---------- layout ----------
-  const UNITS = { wide: 64.8, stack: 36.4, compact: 24.6 };
+  const UNITS = { wide: 59, stack: 33.5, compact: 25 };
   function layout() {
     const vw = document.documentElement.clientWidth;
     const gutter = vw < 640 ? 12 : 24;
@@ -614,8 +615,6 @@
     if (tw < 18.5) {
       mode = vw < 640 ? 'compact' : 'stack';
       tw = avail / UNITS[mode];
-      // stacked boards are tall: shrink to fit the screen height where that stays readable
-      if (mode === 'stack') tw = Math.min(tw, Math.max(18, (innerHeight - 2 * gutter) / 32.5));
     }
     tw = Math.max(10, Math.floor(Math.min(tw, 30)));
     const setVars = () => {
@@ -631,9 +630,13 @@
     setVars();
     if (changed) build();
     if (state.tickerEl) state.tickerEl.textContent = '';
-    // shrink if the board still overflows
+    // refine from the real size: everything scales with --tw
     const w = Math.max(root.offsetWidth, root.scrollWidth);
-    if (w > avail) { tw = Math.max(10, Math.floor(tw * avail / w)); setVars(); }
+    let exact = tw * avail / w;
+    // stacked boards are tall: shrink to fit the screen height where that stays readable
+    if (mode === 'stack') exact = Math.min(exact, Math.max(18, tw * (innerHeight - 2 * gutter) / root.offsetHeight));
+    const next = Math.max(10, Math.floor(Math.min(exact, 30)));
+    if (next !== tw) { tw = next; setVars(); }
     fitTicker();
   }
 
@@ -660,7 +663,7 @@
       if (r.hit) { setHit(r); setLabel(r, 'left'); r.el.classList.remove('hover'); }
     });
     right.forEach((r, i) => {
-      if (!boot) { r.place.pulse(14, 120 + i * 80); r.time.pulse(30, 120 + i * 80); }
+      if (!boot && r.data.item) { r.place.pulse(14, 120 + i * 80); r.time.pulse(30, 120 + i * 80); }
       refreshStatus(r, { delay: boot ? 0 : 200 + i * 80 });
       if (r.hit) setLabel(r, 'right');
     });
@@ -744,10 +747,12 @@
     layout();
 
     F.name.write(NAME, { stagger: 70, delay: 150, cap: CFG.bootCap });
-    F.clock.write(clockNow(), { stagger: 60, delay: 400, cap: CFG.bootCap });
+    F.city.write(CFG.city, { stagger: 40, delay: 2000, cap: CFG.bootCap });
+    F.clock.write(clockNow(), { stagger: 60, delay: 2400, cap: CFG.bootCap });
     show(initial, { boot: true });
     right.forEach((r, i) => {
       const d = r.data;
+      if (!d.item) return;
       const delay = 1300 + i * 170;
       writeTime(r.time, nonsenseTime(''), { delay, cap: CFG.bootCap });
       r.place.write(d.place, { stagger: 24, delay, cap: CFG.bootCap });
@@ -759,7 +764,7 @@
 
     setTimeout(() => {
       nameLoop();
-      right.forEach((r) => timeLoop(r));
+      right.forEach((r) => r.data.item && timeLoop(r));
       tickerLoop();
     }, reduced() ? 0 : 3600);
 
