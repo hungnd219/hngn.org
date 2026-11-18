@@ -3,119 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Memorandum</title>
-<style>
-  html { -webkit-text-size-adjust: none; }
-  body {
-    width: 540px;
-    margin: 2rem auto;
-    padding: 0;
-    font-family: "Times New Roman", "Georgia", "Liberation Serif", serif;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #000;
-    background: #fff;
-  }
-  .redacted {
-    background: #000;
-    color: #000;
-    word-break: break-all;
-  }
-  .control-line {
-    font-size: 11px;
-    margin: 0 0 0.5rem 0;
-    overflow: hidden;
-  }
-  .control-line .right {
-    float: right;
-    text-align: right;
-  }
-  .header-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 0.7rem;
-    table-layout: fixed;
-  }
-  .header-table td {
-    vertical-align: top;
-    padding: 0;
-    line-height: 1.6;
-  }
-  .header-table .label {
-    width: 65px;
-    white-space: nowrap;
-  }
-  hr {
-    border: none;
-    border-top: 1px solid #000;
-    margin: 0.7rem 0;
-  }
-  p {
-    text-align: left;
-    margin: 0 0 0.7rem 0;
-  }
-  .footer {
-    font-size: 11px;
-    margin-top: 1.5rem;
-    color: #000;
-  }
-  .footer p {
-    margin: 0 0 0.2rem 0;
-  }
-
-  @media (max-width: 580px) {
-    body {
-      width: auto;
-      margin: 1rem;
-    }
-  }
-</style>
+<title>Hung Nguyen</title>
+<meta name="description" content="Hung Nguyen. From Hanoi, via Hanover NH and Singapore, now in Ho Chi Minh City.">
+<meta name="theme-color" content="#1f1a15">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='1' width='24' height='30' rx='3' fill='%232f2b26'/%3E%3Crect x='4' y='15.5' width='24' height='1.2' fill='%23000'/%3E%3Ctext x='16' y='24.5' font-family='Arial Narrow,Arial,sans-serif' font-weight='700' font-size='23' text-anchor='middle' fill='%23f0b03c'%3EH%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/board.css">
+<script>document.documentElement.classList.add('js')</script>
+<script src="assets/board.js" defer onerror="document.documentElement.classList.remove('js')"></script>
 </head>
 <body>
 
-<p class="control-line">
-  <span>REF: CRP-9902/X-7</span>
-  <span class="right">Rec&rsquo;d: <span class="redacted">██████████████</span></span>
-</p>
+<main id="board" class="board"></main>
 
-<p class="control-line">
-  Action: HZ-4<span class="redacted">██</span>&ensp;&#8226;&ensp;Info: PDX-K, <span class="redacted">████████</span>&ensp;&#8226;&ensp;ROUTINE
-</p>
+<div id="source" class="source">
+  <h1 data-name="HUNG NGUYEN" data-variants="0,2,3,10|0,5,6,10">Hung Nguyen</h1>
 
-<br>
+  <section id="arrivals" data-screen="home" data-title="Arrivals" data-sub="Chuyến đến" data-icon="arr" data-cols="Time|From|Code">
+    <h2>Arrivals</h2>
+    <ol>
+      <li data-time="1996" data-place="HANOI" data-code="HAN">1996: Hanoi, Vietnam</li>
+      <li data-time="2014" data-place="HANOVER NH" data-code="HNV">2014: Hanover, New Hampshire (Dartmouth College)</li>
+      <li data-time="2018" data-place="SINGAPORE" data-code="SIN">2018: Singapore</li>
+      <li data-time="2026" data-place="HO CHI MINH CITY" data-code="SGN" data-lamp="on">2026: Ho Chi Minh City, Vietnam (current location)</li>
+    </ol>
+  </section>
 
-<p><strong>MEMORANDUM</strong></p>
+  <section id="projects" data-screen="projects" data-title="Projects" data-sub="Dự án" data-cols="ETA|Project|">
+    <h2>Projects</h2>
+    <ol>
+      <li data-time="SOON" data-place="SHARK AND ORCA'S|8-BIT ADVENTURES" data-lamp="blink">Shark and Orca's 8-Bit Adventures, coming soon</li>
+    </ol>
+  </section>
 
-<table class="header-table">
-  <tr><td class="label">To:</td><td><span class="redacted">████████████████████████████</span></td></tr>
-  <tr><td class="label">From:</td><td><span class="redacted">██████████████████</span></td></tr>
-  <tr><td class="label">Date:</td><td><span class="redacted">██████</span>, 2026</td></tr>
-  <tr><td class="label">Subject:</td><td><span class="redacted">██████</span> Hung Nguyen <span class="redacted">████████</span></td></tr>
-</table>
+  <section id="contact" data-screen="contact" data-title="Contact" data-sub="Liên hệ" data-cols="|Email|">
+    <h2>Contact</h2>
+    <ol>
+      <li data-place="HUNG@HNGN.ORG" data-lamp="on"><a href="mailto:hung@hngn.org">Email hung@hngn.org</a></li>
+      <li></li>
+      <li data-place="COPY ADDRESS" data-copy="hung@hngn.org" data-done="COPIED">Copy email address</li>
+    </ol>
+  </section>
 
-<hr>
+  <nav id="departures" data-title="Departures" data-sub="Chuyến đi" data-cols="Time|Destination|Gate|Status">
+    <h2>Departures</h2>
+    <ol>
+      <li data-place="WORK" data-gate="1" data-status="BOARDING"><a href="https://www.linkedin.com/in/hdn18/" target="_blank" rel="noopener">Work (LinkedIn)</a></li>
+      <li data-place="PHOTOGRAPHY" data-gate="2" data-status="DELAYED">Photography, coming later</li>
+      <li data-place="PROJECTS" data-gate="3" data-status="BOARDING"><a href="/#projects">Projects</a></li>
+      <li data-place="CONTACT" data-gate="4" data-status="BOARDING"><a href="/#contact">Contact</a></li>
+    </ol>
+  </nav>
 
-<p>
-<span class="redacted">█████████████████████████████████████████████████████████████████████████████████████</span> Hanoi, Vietnam <span class="redacted">████████████████████████████████████████████████████████████████████████████████████</span>
-</p>
-
-<p>
-<span class="redacted">██████████</span> Hanover, New Hampshire <span class="redacted">████████████████████████████████████████████████████████████</span>
-</p>
-
-<p>
-<span class="redacted">██████████████████████████</span> Singapore <span class="redacted">█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span>
-</p>
-
-<p>
-<span class="redacted">████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span> Ho Chi Minh City, Vietnam <span class="redacted">█████████████████████████████████████████████████████████</span> hung@hngn.org <span class="redacted">████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████</span>
-</p>
-
-<hr>
-
-<div class="footer">
-  <p>CRP-9902/X-7&ensp;&#8226;&ensp;Auth. <span class="redacted">████████</span>&ensp;&#8226;&ensp;Dossier <span class="redacted">████████████</span></p>
-  <p>Review cycle <span class="redacted">████████</span>&ensp;&#8226;&ensp;Next action <span class="redacted">███████████</span></p>
+  <p data-ticker>Welcome to hngn.org|Xin chao - welcome|Mind the gap|Thank you for flying HNGN|All times are local-ish</p>
 </div>
 
 </body>
