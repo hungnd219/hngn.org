@@ -401,7 +401,7 @@
   // ---------- statuses ----------
   const TONES = {
     BOARDING: 'green', ARRIVED: 'green',
-    'GO TO GATE': 'amber', SCHEDULED: 'amber', OPEN: 'amber', COPY: 'amber', PLAY: 'amber',
+    'GO TO GATE': 'amber', SCHEDULED: 'amber', OPEN: 'amber', COPY: 'amber', 'COPY EMAIL': 'amber', PLAY: 'amber',
     'XIN CHAO': 'amber', HELLO: 'amber', 'GUTEN TAG': 'amber',
     DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust', DEPARTED: 'rust', COPIED: 'rust',
   };
