@@ -76,6 +76,7 @@
     cam: '<path fill-rule="evenodd" d="M8.6 4.5 7.2 6.5H4a2 2 0 0 0-2 2V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8.5a2 2 0 0 0-2-2h-3.2l-1.4-2zM12 17.6a4.3 4.3 0 1 0 0-8.6 4.3 4.3 0 0 0 0 8.6zm0-2.1a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4z"/>',
     bag: '<path fill-rule="evenodd" d="M9 3.5h6a1.2 1.2 0 0 1 1.2 1.2v2.1H20a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.8a2 2 0 0 1 2-2h3.8V4.7A1.2 1.2 0 0 1 9 3.5zm.9 3.3h4.2V5.4H9.9zM2 12.6h20v1.3H2z"/>',
     box: '<path fill-rule="evenodd" d="M12 2.2 21 6.6v10.8L12 21.8 3 17.4V6.6zm0 2.2L6.1 7.3 12 10.1l5.9-2.8zM4.9 8.8v7.4l6.1 3v-7.5zm14.2 0L13 11.7v7.5l6.1-3z"/>',
+    note: '<path d="M8.2 5 20.5 2.2v3.3L10.2 7.8v10H8.2zM18.5 6h2v10.2h-2z"/><ellipse cx="6.6" cy="17.9" rx="3.3" ry="2.5" transform="rotate(-22 6.6 17.9)"/><ellipse cx="16.9" cy="16.3" rx="3.3" ry="2.5" transform="rotate(-22 16.9 16.3)"/>',
     mail: '<path fill-rule="evenodd" d="M3.2 5h17.6A1.2 1.2 0 0 1 22 6.2v11.6a1.2 1.2 0 0 1-1.2 1.2H3.2A1.2 1.2 0 0 1 2 17.8V6.2A1.2 1.2 0 0 1 3.2 5zm1.4 2L12 12.6 19.4 7z"/>',
     arr: `<g transform="rotate(28 12 12) translate(0 -1)">${PLANE}</g><rect x="2" y="21" width="20" height="1.6" rx=".8"/>`,
     dep: `<g transform="rotate(-28 12 12) translate(0 -1)">${PLANE}</g><rect x="2" y="21" width="20" height="1.6" rx=".8"/>`,
@@ -310,6 +311,7 @@
         status: (d.status || '').toUpperCase(),
         hoverStatus: (d.hover || '').toUpperCase(),
         fixed: 'static' in d, // printed row: no rotation, nothing to click
+        greet: (d.greet || '').toUpperCase(), // clicking shows this in the status column
         label: li.textContent.replace(/\s+/g, ' ').trim(),
         hover: false, flash: null,
       };
@@ -346,7 +348,7 @@
   }
   const fitsDrum = (s) => [...s].every((c) => FULL.includes(c));
   const SONGS = (Array.isArray(window.HNGN_PLAYLIST) ? window.HNGN_PLAYLIST : [])
-    .map(([t, a]) => ({ title: tileText(t), artist: tileText(a), label: `${t} by ${a}` }))
+    .map(([t, a, url]) => ({ title: tileText(t), artist: tileText(a), label: `${t} by ${a}`, url: url || null }))
     .filter((s) => s.title && fitsDrum(s.title) && fitsDrum(s.artist));
   // shorten to n tiles at a word boundary
   function clip(s, n) {
@@ -398,11 +400,12 @@
 
   // ---------- statuses ----------
   const TONES = {
-    BOARDING: 'green', ARRIVED: 'green', OPEN: 'green',
-    'GO TO GATE': 'amber', SCHEDULED: 'amber',
+    BOARDING: 'green', ARRIVED: 'green',
+    'GO TO GATE': 'amber', SCHEDULED: 'amber', OPEN: 'amber', COPY: 'amber',
+    'XIN CHAO': 'amber', HELLO: 'amber', 'GUTEN TAG': 'amber',
     DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust', DEPARTED: 'rust', COPIED: 'rust',
   };
-  const isLive = (item) => !!(item && (item.href || item.copy));
+  const isLive = (item) => !!(item && (item.href || item.copy || item.greet));
   function statusText(r, side) {
     const it = r.data.item;
     if (!it) return '';
@@ -480,7 +483,7 @@
     r.el.classList.toggle('live', isLive(it));
     if (!it) { hit.hidden = true; return; }
     if (it.fixed) return; // plain text for screen readers, not a link or button
-    if (it.copy) {
+    if (it.copy || (it.greet && !it.href)) {
       hit.setAttribute('role', 'button');
       hit.setAttribute('tabindex', '0');
     } else if (it.href) {
@@ -524,7 +527,7 @@
       else fallback();
       return;
     }
-    if (!it.href) { e.preventDefault(); flash(r, side, 'TBA', 1600); return; }
+    if (!it.href) { e.preventDefault(); flash(r, side, it.greet || 'TBA', it.greet ? 2500 : 1600); return; }
     const sid = screenFromHref(it.href);
     if (sid) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -605,7 +608,7 @@
     setTopHead(s, false);
     const bp = panel('bottom', nav.title, 'dep', bottom);
     colLabels(bp.cols, nav.cols);
-    root.append(tp.sec, bp.sec);
+    root.append(bp.sec, tp.sec);
     markSelected();
 
     // now playing + sound
@@ -615,7 +618,15 @@
     snd.append(svg('<path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off-only" d="M17 9.5l5 5M22 9.5l-5 5"/>'));
     snd.addEventListener('click', () => { Sound.set(!Sound.on); snd.setAttribute('aria-pressed', String(Sound.on)); });
     state.songSr = h('span', 'sr');
-    tk.append(h('div', 'tk-lbl', { 'aria-hidden': 'true' }, 'On today’s playlist...'), h('div', 'tk-body', null, [lines, snd]), state.songSr);
+    const tkTitle = h('div', 'ptitle', null, [svg(ICONS.note), h('h2', 'sr', null, 'Music')]);
+    state.songLink = h('a', 'hit', { target: '_blank', rel: 'noopener' }, state.songSr);
+    const link = h('span', 'tk-link', null, [lines, state.songLink]);
+    state.songLink.addEventListener('mouseenter', () => songHover(true));
+    state.songLink.addEventListener('mouseleave', () => songHover(false));
+    state.songLink.addEventListener('focus', () => songHover(true));
+    state.songLink.addEventListener('blur', () => songHover(false));
+    tk.append(tkTitle, h('div', 'tk-lbl', { 'aria-hidden': 'true' }, 'On today’s playlist...'), h('div', 'tk-body', null, [link, snd]));
+    state.linkWrap = link;
     if (!SONGS.length) tk.hidden = true;
     root.append(tk);
     state.lines = [...lines.children];
@@ -627,7 +638,16 @@
     return s ? [clip(s.title, n), clip(s.artist, n)] : ['', ''];
   }
   function songLabel() {
-    if (state.songSr) state.songSr.textContent = state.song ? `On today’s playlist: ${state.song.label}` : '';
+    if (state.songSr) state.songSr.textContent = state.song ? `On today’s playlist: ${state.song.label}. Opens in Apple Music` : '';
+    if (state.songLink) {
+      if (state.song && state.song.url) state.songLink.setAttribute('href', state.song.url);
+      else state.songLink.removeAttribute('href');
+    }
+  }
+  function songHover(on) {
+    if (!state.linkWrap || !state.song || !state.song.url) return;
+    state.linkWrap.classList.toggle('hover', on);
+    if (on) F.song.forEach((f, i) => f && f.pulse(14, i * 60));
   }
   function fitTicker() {
     if (!state.lines || !SONGS.length) return;

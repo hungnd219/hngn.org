@@ -287,7 +287,10 @@ body {
   color: var(--amber-dim);
   white-space: nowrap;
 }
+.ticker .ptitle { margin-left: 0; margin-right: 0; } /* the block is already inset to the first slot */
 .tk-body { display: flex; align-items: center; gap: var(--cg); }
+.tk-link { position: relative; display: flex; border-radius: calc(var(--tw) * .2); transition: background-color .2s, box-shadow .2s; }
+.tk-link.hover { background: rgba(240, 176, 60, .09); box-shadow: 0 0 0 calc(var(--tw) * .2) rgba(240, 176, 60, .09); }
 .tk-lines { flex: none; display: flex; flex-direction: column; gap: calc(var(--tw) * .12); }
 .tk-line { display: flex; }
 .snd {
