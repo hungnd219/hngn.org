@@ -173,7 +173,7 @@ body {
   width: calc(var(--tw) * .86);
   margin-right: calc(var(--tw) * .14);
   text-align: center;
-  font: 300 calc(var(--tw) * .9)/1 var(--font-tile);
+  font: 500 calc(var(--tw) * .9)/1 var(--font-tile);
   color: var(--glyph);
 }
 
@@ -204,7 +204,7 @@ body {
   height: calc(var(--s) * 1.42);
   margin-right: calc(var(--s) * .14);
   perspective: calc(var(--s) * 6);
-  font: 300 calc(var(--s) * .98)/1 var(--font-tile);
+  font: 500 calc(var(--s) * .98)/1 var(--font-tile);
   color: var(--glyph);
   border-radius: calc(var(--s) * .08);
   box-shadow: 0 calc(var(--s) * .04) calc(var(--s) * .08) rgba(0, 0, 0, .6);
@@ -244,6 +244,13 @@ body {
   background: rgba(0, 0, 0, .9);
   box-shadow: 0 1px 0 rgba(255, 255, 255, .05);
 }
+/* phones: the thinnest hinge the screen can draw, so middle strokes (E, F, H, A) stay visible */
+[data-mode="compact"] .tile::after { top: calc(50% - .25px); height: .5px; box-shadow: none; background: rgba(0, 0, 0, .8); }
+@media (min-resolution: 3dppx) {
+  [data-mode="compact"] .tile::after { top: calc(50% - .17px); height: .34px; }
+}
+/* the name's large tiles: hinge scales with the tile */
+.name .tile::after { height: calc(var(--s) * .04); top: calc(50% - var(--s) * .02); }
 /* side pins */
 .tile::before {
   content: "";
