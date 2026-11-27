@@ -22,7 +22,6 @@ html { -webkit-text-size-adjust: 100%; }
   --font-label: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --tw: 24px;
   --hw: 52px;
-  --cg: calc(var(--tw) * .6); /* gap between board columns */
 }
 
 body {
@@ -52,7 +51,7 @@ body {
 .source h1 { color: var(--amber); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 1rem; }
 .source h2 { color: var(--amber-dim); font-weight: 500; font-size: 1rem; letter-spacing: .16em; text-transform: uppercase; margin: 1.5rem 0 .4rem; }
 .source ol { margin: 0; padding: 0; list-style: none; }
-.source li:empty, .source li[data-copy] { display: none; }
+.source li:empty { display: none; }
 .source a { color: var(--glyph); }
 .source [data-ticker] { display: none; }
 .js .source { display: none; }
@@ -60,6 +59,9 @@ body {
 /* ---------- board ---------- */
 .board { display: none; }
 .js .board {
+  /* defined here, where --tw is set, so they scale with the board */
+  --cg: var(--tw); /* gap between blocks: one empty tile slot */
+  --px: calc(var(--tw) * .9); /* inset from a well's edge to its first tile slot */
   display: flex;
   flex-direction: column;
   gap: calc(var(--tw) * .9);
@@ -87,7 +89,7 @@ body {
 .name { display: flex; text-decoration: none; color: inherit; border-radius: 4px; outline: none; }
 .name:focus-visible { box-shadow: 0 0 0 2px var(--amber); }
 .name .tile { --s: var(--hw); }
-.js .board[data-mode="compact"] { padding: calc(var(--tw) * .55); --cg: calc(var(--tw) * .35); }
+.js .board[data-mode="compact"] { padding: calc(var(--tw) * .55); --px: calc(var(--tw) * .6); }
 
 /* panels */
 .panel {
@@ -141,12 +143,14 @@ body {
 .cols.fade { opacity: 0; }
 .cols span { flex: none; white-space: nowrap; }
 
-.l-time, .c-time { width: calc(var(--tw) * 4.4); }
+.l-time, .c-time { width: calc(var(--tw) * 5); }   /* 4 tiles + the colon's slot */
 .l-place, .c-place { width: calc(var(--tw) * 14); }
 .l-code, .c-code { width: calc(var(--tw) * 3); }
 .l-gate, .c-gate { width: calc(var(--tw) * 2); }
-.l-status, .c-status { width: calc(var(--tw) * 9); }
-.l-lamp, .lamp { width: calc(var(--tw) * .6); }
+.l-status, .c-status { width: calc(var(--tw) * 10); }
+.l-lamp, .c-lamp { width: var(--tw); }
+.c-lamp { justify-content: center; padding-right: calc(var(--tw) * .14); }
+.lamp { width: calc(var(--tw) * .6); }
 
 .rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: calc(var(--tw) * .12); }
 .row {
@@ -166,14 +170,12 @@ body {
 
 .colon {
   flex: none;
-  width: calc(var(--tw) * .4);
-  margin-left: calc(var(--tw) * -.07);
-  margin-right: calc(var(--tw) * .07);
+  width: calc(var(--tw) * .86);
+  margin-right: calc(var(--tw) * .14);
   text-align: center;
   font: 300 calc(var(--tw) * .9)/1 var(--font-tile);
   color: var(--glyph);
 }
-.colon.off { visibility: hidden; width: 0; margin: 0; }
 
 /* lamps */
 .lamp {
@@ -257,39 +259,42 @@ body {
 .tone-amber .tile { color: var(--amber); }
 .tone-rust .tile { color: var(--rust); }
 
-/* ---------- now playing ---------- */
+/* ---------- music of the day ---------- */
+/* same inset and slot grid as the rows above, so the song tiles line up with the board's columns */
 .ticker {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
-  gap: calc(var(--tw) * .3) calc(var(--tw) * .6);
-  padding: calc(var(--tw) * .4) calc(var(--tw) * .6);
+  gap: var(--cg);
+  padding: calc(var(--tw) * .4) var(--px);
   background: var(--well);
   border-radius: calc(var(--tw) * .3);
   box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6);
 }
 .ticker[hidden] { display: none; }
 .tk-lbl {
+  flex: none;
+  width: calc(var(--tw) * 5);
   display: flex;
   flex-direction: column;
-  gap: calc(var(--tw) * .12);
-  color: var(--amber);
-  font: 500 calc(var(--tw) * .46)/1 var(--font-label);
-  letter-spacing: .14em;
+  gap: calc(var(--tw) * .2);
+  font: 400 calc(var(--tw) * .44)/1 var(--font-label);
+  letter-spacing: .12em;
   text-transform: uppercase;
+  color: var(--amber-dim);
 }
-.tk-lines { display: flex; flex-direction: column; gap: calc(var(--tw) * .12); min-width: 0; }
-.tk-line { display: flex; min-width: 0; overflow: hidden; }
-.tk-line + .tk-line .tile { color: var(--amber); }
-[data-mode="compact"] .ticker { grid-template-columns: minmax(0, 1fr) auto; padding: calc(var(--tw) * .4) calc(var(--tw) * .3); }
-[data-mode="compact"] .tk-lbl { flex-direction: row; gap: .6em; }
-[data-mode="compact"] .tk-lines { grid-column: 1 / -1; grid-row: 2; }
+.tk-lines { flex: none; display: flex; flex-direction: column; gap: calc(var(--tw) * .12); }
+.tk-line { display: flex; }
+[data-mode="compact"] .ticker { flex-wrap: wrap; row-gap: calc(var(--tw) * .4); }
+[data-mode="compact"] .tk-lbl { order: 1; width: auto; flex: 1; }
+[data-mode="compact"] .snd { order: 2; }
+[data-mode="compact"] .tk-lines { order: 3; }
 .snd {
   flex: none;
   display: grid;
   place-items: center;
-  width: calc(var(--tw) * 1.3);
-  height: calc(var(--tw) * 1.3);
+  width: calc(var(--tw) * .86);
+  height: calc(var(--tw) * .86);
+  margin-right: calc(var(--tw) * .14);
   padding: 0;
   color: var(--amber-dim);
   background: transparent;

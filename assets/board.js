@@ -17,7 +17,7 @@
       restore: [60, 160],    // gap between tiles coming back
     },
     rotate: [3000, 8000],    // each row re-rolls its nonsense time / gate in this window
-    songMs: 60000,           // now-playing line changes this often
+    songMs: 120000,          // music-of-the-day line changes this often
   };
 
   // character drums: a tile flaps through these in order
@@ -25,8 +25,15 @@
   const DIGITS = ' 0123456789';
   const NUM = '0123456789';
   const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ?';
-  // tile counts per column, shared by both panels
-  const W = { time: 4, code: 3, place: 14, gate: 2, status: 9 };
+  // tile counts per column, shared by both panels. Every row sits on a grid of tile-wide
+  // slots: the colon takes one slot and each block is followed by one empty slot.
+  const W = { time: 4, code: 3, place: 14, gate: 2, status: 10 };
+  const SLOTS = {
+    full: (W.time + 1) + 1 + W.code + 1 + W.place + 1 + W.gate + 1 + W.status, // 38
+    compact: (W.time + 1) + 1 + W.code + 1 + W.place + 1 + 1,                   // 26, lamp in the last slot
+  };
+  // music line: full width uses the slots after the time block and before the sound button
+  const songTiles = (mode) => (mode === 'compact' ? SLOTS.compact : SLOTS.full - (W.time + 1) - 1 - 2);
 
   const root = document.getElementById('board');
   const src = document.getElementById('source');
@@ -66,6 +73,9 @@
   };
   const PLANE = '<path d="M21.5 11.2c.8 0 1.5.4 1.5.8s-.7.8-1.5.8H15l-4.6 7.4H8.3l2.4-7.4H6l-1.6 2.2H2.6l1-3-1-3h1.8L6 11.2h4.7L8.3 3.8h2.1l4.6 7.4z"/>';
   const ICONS = {
+    cam: '<path fill-rule="evenodd" d="M8.6 4.5 7.2 6.5H4a2 2 0 0 0-2 2V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8.5a2 2 0 0 0-2-2h-3.2l-1.4-2zM12 17.6a4.3 4.3 0 1 0 0-8.6 4.3 4.3 0 0 0 0 8.6zm0-2.1a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4z"/>',
+    bag: '<path fill-rule="evenodd" d="M9 3.5h6a1.2 1.2 0 0 1 1.2 1.2v2.1H20a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.8a2 2 0 0 1 2-2h3.8V4.7A1.2 1.2 0 0 1 9 3.5zm.9 3.3h4.2V5.4H9.9zM2 12.6h20v1.3H2z"/>',
+    mail: '<path fill-rule="evenodd" d="M3.2 5h17.6A1.2 1.2 0 0 1 22 6.2v11.6a1.2 1.2 0 0 1-1.2 1.2H3.2A1.2 1.2 0 0 1 2 17.8V6.2A1.2 1.2 0 0 1 3.2 5zm1.4 2L12 12.6 19.4 7z"/>',
     arr: `<g transform="rotate(28 12 12) translate(0 -1)">${PLANE}</g><rect x="2" y="21" width="20" height="1.6" rx=".8"/>`,
     dep: `<g transform="rotate(-28 12 12) translate(0 -1)">${PLANE}</g><rect x="2" y="21" width="20" height="1.6" rx=".8"/>`,
   };
@@ -220,7 +230,7 @@
       this.syncColon();
     }
     unmount() { this.tiles = []; this.colon = null; this.cell = null; }
-    syncColon() { if (this.colon) this.colon.classList.toggle('off', this.str.includes(' ')); }
+    syncColon() { /* the colon is printed on the board and always shown */ }
     write(text, { stagger = 0, delay = 0, order = null, ...opts } = {}) {
       const next = this.fmt(text);
       (order || [...next.keys()]).forEach((i, k) => {
@@ -297,6 +307,7 @@
         copy: d.copy || null,
         done: (d.done || 'COPIED').toUpperCase(),
         status: (d.status || '').toUpperCase(),
+        hoverStatus: (d.hover || '').toUpperCase(),
         label: li.textContent.replace(/\s+/g, ' ').trim(),
         hover: false, flash: null,
       };
@@ -338,11 +349,10 @@
   function clip(s, n) {
     if (s.length <= n) return s;
     const cut = s.slice(0, n + 1).lastIndexOf(' ');
-    return (cut > n * 0.5 ? s.slice(0, cut) : s.slice(0, n)).trim();
+    return (cut > n * 0.5 ? s.slice(0, cut) : s.slice(0, n)).replace(/[\s&,+\/-]+$/, '').trim();
   }
 
-  const leftCount = Math.max(4, nav.rows.length, ...Object.values(screens).map((s) => s.rows.length));
-  while (nav.rows.length < leftCount) nav.rows.push({ ...EMPTY });
+  const leftCount = Math.max(1, ...Object.values(screens).map((s) => s.rows.length));
 
   // ---------- model ----------
   const newRow = (data) => ({
@@ -386,7 +396,7 @@
   // ---------- statuses ----------
   const TONES = {
     BOARDING: 'green', 'ON TIME': 'green', OPEN: 'green', COPIED: 'green',
-    'LAST CALL': 'amber', SOON: 'amber',
+    'GO TO GATE': 'amber', SOON: 'amber',
     DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust',
   };
   const isLive = (item) => !!(item && (item.href || item.copy));
@@ -397,8 +407,8 @@
     if (side === 'bottom') {
       const sid = screenFromHref(it.href);
       if (sid && sid === state.screen) return 'ARRIVED';
-      if (it.hover && isLive(it)) return 'LAST CALL';
-    }
+      if (it.hover && isLive(it)) return 'GO TO GATE';
+    } else if (it.hover && it.hoverStatus) return it.hoverStatus;
     return it.status;
   }
   function applyTone(r, txt) {
@@ -465,12 +475,12 @@
     hit.hidden = false;
     r.el.classList.toggle('live', isLive(it));
     if (!it) { hit.hidden = true; return; }
-    if (it.href) {
-      hit.setAttribute('href', it.href);
-      if (it.target) { hit.setAttribute('target', it.target); hit.setAttribute('rel', 'noopener'); }
-    } else if (it.copy) {
+    if (it.copy) {
       hit.setAttribute('role', 'button');
       hit.setAttribute('tabindex', '0');
+    } else if (it.href) {
+      hit.setAttribute('href', it.href);
+      if (it.target) { hit.setAttribute('target', it.target); hit.setAttribute('rel', 'noopener'); }
     } else {
       hit.setAttribute('role', 'link');
       hit.setAttribute('aria-disabled', 'true');
@@ -490,7 +500,7 @@
     if (!isLive(it)) return;
     r.el.classList.toggle('hover', on);
     if (on) r.place.pulse(16);
-    if (side === 'bottom') { it.hover = on; refreshStatus(r, side); }
+    if (side === 'bottom' || it.hoverStatus) { it.hover = on; refreshStatus(r, side); }
   }
 
   function activate(r, side, e) {
@@ -498,7 +508,7 @@
     if (!it) return;
     if (it.copy) {
       e.preventDefault();
-      const done = () => flash(r, side, it.done, 2200);
+      const done = () => { it.hover = false; flash(r, side, it.done, 2200); };
       const fallback = () => {
         const ta = h('textarea', null, { 'aria-hidden': 'true', style: 'position:fixed;opacity:0' });
         ta.value = it.copy; document.body.append(ta); ta.select();
@@ -530,7 +540,8 @@
     r.lampEl = null;
     if (compact) {
       r.gate.unmount(); r.status.unmount();
-      r.lampEl = h('span', 'lamp', { 'aria-hidden': 'true' }); r.el.append(r.lampEl);
+      r.lampEl = h('span', 'lamp', { 'aria-hidden': 'true' });
+      r.el.append(h('span', 'cell c-lamp', null, r.lampEl));
     } else {
       cell('c-gate', r.gate);
       cell('c-status', r.status);
@@ -597,7 +608,7 @@
     snd.append(svg('<path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off-only" d="M17 9.5l5 5M22 9.5l-5 5"/>'));
     snd.addEventListener('click', () => { Sound.set(!Sound.on); snd.setAttribute('aria-pressed', String(Sound.on)); });
     state.songSr = h('span', 'sr');
-    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, [h('span', null, null, 'Now'), h('span', null, null, 'playing')]), lines, snd, state.songSr);
+    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, [h('span', null, null, 'Music'), h('span', null, null, 'of the day')]), lines, snd, state.songSr);
     if (!SONGS.length) tk.hidden = true;
     root.append(tk);
     state.lines = [...lines.children];
@@ -609,12 +620,12 @@
     return s ? [clip(s.title, n), clip(s.artist, n)] : ['', ''];
   }
   function songLabel() {
-    if (state.songSr) state.songSr.textContent = state.song ? `Now playing: ${state.song.label}` : '';
+    if (state.songSr) state.songSr.textContent = state.song ? `Music of the day: ${state.song.label}` : '';
   }
   function fitTicker() {
     if (!state.lines || !SONGS.length) return;
     state.lines.forEach((l) => { l.textContent = ''; });
-    const n = Math.max(6, Math.floor(state.lines[0].clientWidth / state.tw));
+    const n = songTiles(state.mode);
     const text = songLines(n);
     state.lines.forEach((l, i) => {
       const f = new Field(n);
@@ -632,7 +643,7 @@
   }
 
   // ---------- layout ----------
-  const UNITS = { full: 38.6, compact: 25.5 };
+  const UNITS = { full: SLOTS.full + 3.8, compact: SLOTS.compact + 2.3 };
   function layout() {
     const vw = document.documentElement.clientWidth;
     const gutter = vw < 640 ? 12 : 24;
@@ -651,14 +662,13 @@
     state.mode = mode;
     setVars();
     if (changed) build();
-    if (state.lines) state.lines.forEach((l) => { l.textContent = ''; });
+    fitTicker(); // fixed tile count, so the board can be measured with it in place
     // refine from the real size (everything scales with --tw); on larger screens also fit the height
     const w = Math.max(root.offsetWidth, root.scrollWidth);
     let exact = tw * avail / w;
     if (mode === 'full') exact = Math.min(exact, Math.max(16, tw * (innerHeight - 2 * gutter) / root.offsetHeight));
     const next = Math.max(10, Math.floor(Math.min(exact, 30)));
     if (next !== tw) { tw = next; setVars(); }
-    fitTicker();
   }
 
   // ---------- screens ----------
