@@ -367,7 +367,7 @@
   const F = { name: new Field(NAME.length), song: [null, null] };
   const top = Array.from({ length: leftCount }, () => newRow(EMPTY));
   const bottom = nav.rows.map((d) => newRow(d));
-  const state = { screen: 'home', mode: null, tw: 0, forceHNGN: false, song: null, short: null };
+  const state = { screen: 'home', mode: null, tw: 0, forceHNGN: false, song: null, short: null, gal: null, booted: false };
 
   // ---------- routing ----------
   function screenFromHref(href) {
@@ -378,21 +378,42 @@
     const id = u.hash.slice(1);
     return screens[id] && id !== 'home' ? id : null;
   }
-  function go(id) {
-    if (id === state.screen) return;
+  // '' = home, 'contact' = a screen, 'places' = a gallery grid, 'places/3' = its third photo
+  function parseHash(hash) {
+    const m = String(hash).replace(/^#/, '').match(/^([a-z0-9-]+)(?:\/(\d+))?$/);
+    if (m && GALLERIES[m[1]]) {
+      const len = GALLERIES[m[1]].items.length;
+      const n = m[2] ? Math.min(Math.max(+m[2], 1), len) - 1 : null;
+      return { gid: m[1], n };
+    }
+    const id = m ? m[1] : '';
+    return { screen: screens[id] ? id : 'home' };
+  }
+  function apply(t) {
+    if (t.gid) openGallery(t.gid, t.n);
+    else if (state.gal) closeGallery(t.screen);
+    else show(t.screen);
+  }
+  function navTo(hash, { replace = false } = {}) {
     try {
-      history.pushState(null, '', id === 'home' ? location.pathname + location.search : '#' + id);
+      // remember the address we came from, so Back can return to it rather than stack another entry
+      const from = replace ? (history.state && history.state.from) : location.hash.slice(1);
+      history[replace ? 'replaceState' : 'pushState']({ hngn: true, from }, '', hash ? '#' + hash : location.pathname + location.search);
     } catch (e) {
-      location.hash = id === 'home' ? '' : id; // hashchange → route()
+      location.hash = hash; // hashchange → route()
       return;
     }
-    show(id);
+    apply(parseHash(hash));
+  }
+  function go(id) {
+    if (id === state.screen && !state.gal) return;
+    navTo(id === 'home' ? '' : id);
   }
   function route() {
-    const id = location.hash.slice(1);
-    show(screens[id] ? id : 'home');
+    apply(parseHash(location.hash));
   }
   function setTitle() {
+    if (state.gal) return; // the gallery sets its own title
     const s = screens[state.screen];
     if (state.screen === 'home' || !s) document.title = state.short && !IS404 ? state.short : TITLE;
     else document.title = `${s.title} · ${TITLE}`;
@@ -531,6 +552,13 @@
       return;
     }
     if (!it.href) { e.preventDefault(); flash(r, side, it.greet || 'TBA', it.greet ? 2500 : 1600); return; }
+    const gid = galFromHref(it.href);
+    if (gid) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      navTo(gid);
+      return;
+    }
     const sid = screenFromHref(it.href);
     if (sid) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -598,7 +626,7 @@
     nameA.addEventListener('click', (e) => {
       if (IS404) return;
       e.preventDefault();
-      if (state.screen !== 'home') go('home');
+      if (state.screen !== 'home' || state.gal) go('home');
       else state.forceHNGN = true;
     });
     root.append(h('header', 'head', null, [h('h1', 'h1', null, nameA)]));
@@ -635,6 +663,7 @@
     root.append(tk);
     state.lines = [...lines.children];
     songLabel();
+    buildGallery();
   }
 
   function songLines(n) {
@@ -690,12 +719,15 @@
         : Math.floor(Math.min(tw * 2.3, 64));
       root.style.setProperty('--tw', tw + 'px');
       root.style.setProperty('--hw', hw + 'px');
+      root.style.setProperty('--slots', SLOTS[mode]);
       state.tw = tw;
     };
     const changed = mode !== state.mode;
     state.mode = mode;
     setVars();
     if (changed) build();
+    const inGallery = root.classList.contains('gal');
+    root.classList.remove('gal'); // measure the board itself, not the gallery
     fitTicker(); // fixed tile count, so the board can be measured with it in place
     // refine from the real size (everything scales with --tw); on larger screens also fit the height
     const w = Math.max(root.offsetWidth, root.scrollWidth);
@@ -703,6 +735,7 @@
     if (mode === 'full') exact = Math.min(exact, Math.max(16, tw * (innerHeight - 2 * gutter) / root.offsetHeight));
     const next = Math.max(10, Math.floor(Math.min(exact, 30)));
     if (next !== tw) { tw = next; setVars(); }
+    if (inGallery) { root.classList.add('gal'); sizeStage(); }
   }
 
   // ---------- screens ----------
@@ -734,6 +767,161 @@
       if (r.hit) setLabel(r, 'bottom');
     });
     setTitle();
+  }
+
+
+  // ---------- photo galleries ----------
+  // Opening a gallery flips every board tile blank and swaps the panels for the gallery, inside the
+  // same frame and under the same name header. Grid first; a photo opens large with its caption as a
+  // row of tiles underneath. Addresses: #places (grid) and #places/3 (third photo).
+  const GALLERIES = (window.HNGN_PHOTOS && typeof window.HNGN_PHOTOS === 'object') ? window.HNGN_PHOTOS : {};
+  const G = {};
+  const photoSrc = (gid, p, thumb) => `photos/${gid}/${thumb ? 'thumbs/' : ''}${p.id}.jpg`;
+
+  function buildGallery() {
+    const sec = h('section', 'gallery', { 'aria-labelledby': 'gal-title' });
+    const title = h('div', 'ptitle');
+    G.h2 = h('h2', null, { id: 'gal-title' }, '');
+    G.count = h('span', 'gal-count', { 'aria-hidden': 'true' });
+    G.back = h('button', 'back', { type: 'button' }, '← Back');
+    G.back.addEventListener('click', galleryBack);
+    title.append(svg(ICONS.cam), G.h2, G.count, G.back);
+    G.grid = h('div', 'gal-grid', { role: 'list' });
+    G.single = h('div', 'gal-single');
+    G.img = h('img', 'photo', { alt: '', decoding: 'async' });
+    G.img.addEventListener('load', () => G.img.classList.remove('loading'));
+    const prev = h('button', 'gal-nav prev', { type: 'button', 'aria-label': 'Previous photo' });
+    const next = h('button', 'gal-nav next', { type: 'button', 'aria-label': 'Next photo' });
+    prev.append(svg('<path d="M15 5l-7 7 7 7"/>'));
+    next.append(svg('<path d="M9 5l7 7-7 7"/>'));
+    prev.addEventListener('click', () => step(-1));
+    next.addEventListener('click', () => step(1));
+    G.stage = h('div', 'stage', null, [G.img, prev, next]);
+    let x0 = null;
+    G.stage.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
+    G.stage.addEventListener('pointerup', (e) => {
+      if (x0 != null && Math.abs(e.clientX - x0) > 50) step(e.clientX < x0 ? 1 : -1);
+      x0 = null;
+    });
+    const cap = h('div', 'gal-cap', { 'aria-hidden': 'true' });
+    F.cap = new Field(SLOTS[state.mode], 'center');
+    F.cap.chars = F.cap.fmt(G.capText || '');
+    F.cap.mount(cap);
+    G.capSr = h('p', 'sr', { 'aria-live': 'polite' });
+    G.single.append(G.stage, cap, G.capSr);
+    sec.append(title, G.grid, G.single);
+    root.append(sec);
+    if (state.gal) renderGallery(false);
+  }
+
+  function renderGallery(animate) {
+    const { gid, n } = state.gal;
+    const g = GALLERIES[gid];
+    G.h2.textContent = g.title;
+    if (n == null) {
+      G.grid.hidden = false; G.single.hidden = true;
+      G.count.textContent = `${g.items.length} photos`;
+      if (G.gridFor !== gid || !G.grid.children.length) {
+        G.grid.textContent = '';
+        g.items.forEach((p, i) => {
+          const a = h('a', 'thumb', { role: 'listitem', href: `#${gid}/${i + 1}`, title: p.caption, style: `--i:${i}` },
+            h('img', null, { src: photoSrc(gid, p, true), alt: p.caption, loading: 'lazy', decoding: 'async' }));
+          a.addEventListener('click', (e) => {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            e.preventDefault();
+            navTo(`${gid}/${i + 1}`);
+          });
+          G.grid.append(a);
+        });
+        G.gridFor = gid;
+      }
+      G.grid.classList.toggle('flipin', animate && !reduced());
+      document.title = `${g.title} · ${TITLE}`;
+    } else {
+      G.grid.hidden = true; G.single.hidden = false;
+      const p = g.items[n];
+      G.count.textContent = `${n + 1} / ${g.items.length}`;
+      if (G.img.getAttribute('src') !== photoSrc(gid, p)) {
+        G.img.classList.add('loading');
+        G.img.src = photoSrc(gid, p);
+      }
+      G.img.alt = p.caption;
+      G.capText = tileText(p.caption);
+      F.cap.write(G.capText, { stagger: 22, cap: CFG.cap });
+      G.capSr.textContent = `${p.caption}. Photo ${n + 1} of ${g.items.length}`;
+      // fetch the neighbours so moving through the gallery is instant
+      [-1, 1].forEach((d) => { const q = g.items[(n + d + g.items.length) % g.items.length]; new Image().src = photoSrc(gid, q); });
+      document.title = `${p.caption} · ${g.title} · ${TITLE}`;
+      sizeStage();
+    }
+  }
+
+  // the photo area fills the board's width; 3:2 on larger screens, square on phones, never taller than the screen allows
+  function sizeStage() {
+    if (!state.gal || state.gal.n == null || !G.stage) return;
+    G.stage.style.height = '0px';
+    const gutter = document.documentElement.clientWidth < 640 ? 12 : 24;
+    const room = innerHeight - 2 * gutter - root.offsetHeight;
+    const w = SLOTS[state.mode] * state.tw;
+    const ideal = state.mode === 'compact' ? w : w * 2 / 3;
+    G.stage.style.height = Math.floor(Math.max(160, Math.min(ideal, room))) + 'px';
+  }
+
+  function step(d) {
+    if (!state.gal || state.gal.n == null) return;
+    const len = GALLERIES[state.gal.gid].items.length;
+    navTo(`${state.gal.gid}/${((state.gal.n + d + len) % len) + 1}`, { replace: true });
+  }
+
+  function galleryBack() {
+    if (!state.gal) return;
+    const parent = state.gal.n == null ? 'photography' : state.gal.gid;
+    if (history.state && history.state.hngn && history.state.from === parent) history.back(); // we came from there
+    else navTo(parent);
+  }
+
+  // all board tiles flip blank, then the panels give way to the gallery
+  function openGallery(gid, n) {
+    const entering = !state.gal;
+    state.gal = { gid, n };
+    if (screens.photography) state.screen = 'photography';
+    if (!entering) { renderGallery(false); return; }
+    const fields = [...top, ...bottom].flatMap((r) => [r.time, r.code, r.place, r.gate, r.status]).concat(F.song.filter(Boolean));
+    fields.forEach((f) => f.write('', { stagger: 8, delay: Math.random() * 150, direct: true }));
+    const swap = () => {
+      root.classList.add('gal');
+      renderGallery(true);
+      window.scrollTo(0, 0);
+    };
+    if (reduced() || !state.booted) swap(); else setTimeout(swap, 420);
+  }
+
+  function closeGallery(screenId) {
+    state.gal = null;
+    root.classList.remove('gal');
+    G.grid && G.grid.classList.remove('flipin');
+    const s = screens[screenId] || screens.home;
+    state.screen = s.id;
+    setTopHead(s, false);
+    top.forEach((r, i) => {
+      r.data = s.rows[i] || EMPTY;
+      if (r.data.item) { r.data.item.opened = false; r.data.item.hover = false; }
+      fillRow(r, 'top', { delay: 80 + i * 90 });
+      if (r.hit) { setHit(r); setLabel(r, 'top'); }
+    });
+    bottom.forEach((r, i) => fillRow(r, 'bottom', { delay: 250 + i * 90 }));
+    markSelected();
+    if (state.song) playSong(state.song, { delay: 500 });
+    setTitle();
+  }
+
+  function galFromHref(href) {
+    if (!href) return null;
+    try {
+      const u = new URL(href, location.href);
+      const id = u.hash.slice(1);
+      return u.origin === location.origin && GALLERIES[id] ? id : null;
+    } catch (e) { return null; }
   }
 
   // ---------- loops ----------
@@ -782,7 +970,7 @@
     for (;;) {
       await sleep(rand(CFG.rotate));
       const d = r.data;
-      if (reduced() || !d.item || r.time.busy || r.gate.busy) continue;
+      if (reduced() || state.gal || !d.item || r.time.busy || r.gate.busy) continue;
       const canTime = d.time === '*', canGate = d.gate == null;
       const doTime = canTime && (!canGate || Math.random() < 0.75);
       if (doTime) writeNonsense(r.time, nonsense('time', r.time.str));
@@ -794,7 +982,7 @@
     if (SONGS.length < 2) return;
     for (;;) {
       await sleep(CFG.songMs);
-      if (reduced()) continue;
+      if (reduced() || state.gal) continue;
       let next;
       do { next = pick(SONGS); } while (next === state.song);
       playSong(next);
@@ -803,15 +991,23 @@
 
   // ---------- boot ----------
   function boot() {
-    state.screen = screens[location.hash.slice(1)] ? location.hash.slice(1) : 'home';
+    const start = parseHash(location.hash);
+    state.screen = start.screen || 'photography';
     state.song = SONGS.length ? pick(SONGS) : null;
     state.songShown = false;
     layout();
 
     F.name.write(NAME, { stagger: 70, delay: 150, cap: CFG.bootCap });
-    show(state.screen, { boot: true });
-    bottom.forEach((r, i) => fillRow(r, 'bottom', { delay: 1500 + i * 170, cap: CFG.bootCap }));
-    if (state.song) playSong(state.song, { delay: 2600, cap: CFG.bootCap });
+    if (start.gid) {
+      state.songShown = true; // so the board is complete when the gallery closes
+      setTopHead(screens[state.screen] || screens.home, false);
+      openGallery(start.gid, start.n);
+    } else {
+      show(state.screen, { boot: true });
+      bottom.forEach((r, i) => fillRow(r, 'bottom', { delay: 1500 + i * 170, cap: CFG.bootCap }));
+      if (state.song) playSong(state.song, { delay: 2600, cap: CFG.bootCap });
+    }
+    state.booted = true;
 
     setTimeout(() => {
       nameLoop();
@@ -823,7 +1019,15 @@
     addEventListener('resize', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(layout); });
     addEventListener('popstate', route);
     addEventListener('hashchange', route);
-    addEventListener('keydown', (e) => { if (e.key === 'Escape' && state.screen !== 'home') go('home'); });
+    addEventListener('keydown', (e) => {
+      if (state.gal) {
+        if (e.key === 'Escape') galleryBack();
+        else if (e.key === 'ArrowLeft') step(-1);
+        else if (e.key === 'ArrowRight') step(1);
+        return;
+      }
+      if (e.key === 'Escape' && state.screen !== 'home') go('home');
+    });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
   }
 
