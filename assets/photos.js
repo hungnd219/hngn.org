@@ -226,6 +226,12 @@ window.HNGN_PHOTOS = {
     "h": 1296
    },
    {
+    "id": "2018-05-philadelphia",
+    "caption": "Philadelphia, May 2018",
+    "w": 2000,
+    "h": 1333
+   },
+   {
     "id": "2018-02-new-york",
     "caption": "New York, Feb 2018",
     "w": 1200,

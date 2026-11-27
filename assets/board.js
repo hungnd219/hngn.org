@@ -866,8 +866,10 @@
   async function shuffleGrid() {
     const slots = G.slots || [];
     const free = slots.map((s, i) => i).filter((i) => !slots[i].el.matches(':hover, :focus-visible'));
-    if (free.length < 3) return;
-    const k = Math.min(free.length, slots.length - 1, 3 + Math.floor(Math.random() * 4)); // 3 to 6
+    // about half the gallery each turn (never all of it)
+    const half = Math.round(slots.length / 2);
+    const k = Math.min(free.length, slots.length - 1, half + Math.floor(Math.random() * 3) - 1);
+    if (k < 2) return;
     const chosen = shuffle(free).slice(0, k);
     const pool = chosen.map((i) => slots[i].item);
     await Promise.all(chosen.map(async (si, j) => {

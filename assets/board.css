@@ -395,7 +395,7 @@ body {
 .stage { position: relative; display: flex; align-items: center; justify-content: center; background: #050404; border-radius: calc(var(--tw) * .12); overflow: hidden; touch-action: pan-y; user-select: none; }
 /* each photo sits in a warm white mat, like a mounted print */
 .stage .photo {
-  --mat: max(5px, calc(var(--tw) * .45));
+  --mat: max(10px, calc(var(--tw) * .9));
   display: block;
   box-sizing: border-box;
   max-width: calc(100% - var(--tw) * 1.4);
