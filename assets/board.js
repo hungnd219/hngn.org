@@ -414,7 +414,10 @@
       const sid = screenFromHref(it.href);
       if (sid && sid === state.screen) return 'DEPARTED';
       if (it.hover && isLive(it)) return 'GO TO GATE';
-    } else if (it.hover && it.hoverStatus) return it.hoverStatus;
+    } else {
+      if (it.opened) return 'ARRIVED'; // stays until you leave and come back to this screen
+      if (it.hover && it.hoverStatus) return it.hoverStatus;
+    }
     return it.status;
   }
   function applyTone(r, txt) {
@@ -516,7 +519,7 @@
     if (!it || it.fixed) return;
     if (it.copy) {
       e.preventDefault();
-      const done = () => { it.hover = false; flash(r, side, it.done, 2200); };
+      const done = () => { it.opened = true; refreshStatus(r, side); };
       const fallback = () => {
         const ta = h('textarea', null, { 'aria-hidden': 'true', style: 'position:fixed;opacity:0' });
         ta.value = it.copy; document.body.append(ta); ta.select();
@@ -535,7 +538,8 @@
       go(state.screen === sid ? 'home' : sid);
       return;
     }
-    flash(r, side, 'DEPARTED', 4000);
+    if (side === 'top') { it.opened = true; refreshStatus(r, side); } // e.g. LinkedIn: ARRIVED in green
+    else flash(r, side, 'DEPARTED', 4000);
   }
 
   function buildRow(r, side) {
@@ -635,7 +639,10 @@
 
   function songLines(n) {
     const s = state.song;
-    return s ? [clip(s.title, n), clip(s.artist, n)] : ['', ''];
+    if (!s) return ['', ''];
+    // an artist line that doesn't fit shows just the first-named artist ("DUA LIPA & THE BLESSED MADONNA" -> "DUA LIPA")
+    const artist = s.artist.length > n ? s.artist.split(/ & |, /)[0] : s.artist;
+    return [clip(s.title, n), clip(artist, n)];
   }
   function songLabel() {
     if (state.songSr) state.songSr.textContent = state.song ? `On today’s playlist: ${state.song.label}. Opens in Apple Music` : '';
@@ -716,6 +723,7 @@
     if (!boot) setTopHead(s, true);
     top.forEach((r, i) => {
       r.data = s.rows[i] || EMPTY;
+      if (r.data.item) { r.data.item.opened = false; r.data.item.hover = false; }
       fillRow(r, 'top', boot ? { delay: 700 + i * 170, cap: CFG.bootCap } : { delay: 60 + i * 90 });
       if (r.hit) { setHit(r); setLabel(r, 'top'); r.el.classList.remove('hover'); }
     });
