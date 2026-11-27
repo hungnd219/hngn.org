@@ -308,10 +308,12 @@
         done: (d.done || 'COPIED').toUpperCase(),
         status: (d.status || '').toUpperCase(),
         hoverStatus: (d.hover || '').toUpperCase(),
+        fixed: 'static' in d, // printed row: no rotation, nothing to click
         label: li.textContent.replace(/\s+/g, ' ').trim(),
         hover: false, flash: null,
       };
-      rows.push({ item, time: d.time || '*', code: d.code || '', place: d.place });
+      // data-gate fixes the gate; without it the gate rotates
+      rows.push({ item, time: d.time || '*', code: d.code || '', place: d.place, gate: 'gate' in d ? d.gate : null });
     });
     return rows;
   }
@@ -436,7 +438,8 @@
     else r.time.write(d.time, { stagger: 45, delay, cap });
     r.code.write(d.code, { stagger: 45, delay: delay + 120, cap });
     r.place.write(d.place, { stagger: 24, delay: delay + 200, cap });
-    if (d.item) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: delay + 350, cap });
+    if (d.gate != null) r.gate.write(d.gate, { stagger: 45, delay: delay + 350, cap });
+    else if (d.item) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: delay + 350, cap });
     else r.gate.write('', { delay: delay + 350 });
     refreshStatus(r, side, { delay: delay + 420, cap });
   }
@@ -459,7 +462,7 @@
     const apply = () => {
       topIcon.innerHTML = ICONS[s.icon] || '';
       topH2.textContent = s.title;
-      topBack.hidden = s.id === 'home' || IS404;
+      topBack.hidden = s.id === 'home' && !IS404;
       colLabels(topCols, s.cols);
       topTitle.classList.remove('fade'); topCols.classList.remove('fade');
     };
@@ -475,6 +478,7 @@
     hit.hidden = false;
     r.el.classList.toggle('live', isLive(it));
     if (!it) { hit.hidden = true; return; }
+    if (it.fixed) return; // plain text for screen readers, not a link or button
     if (it.copy) {
       hit.setAttribute('role', 'button');
       hit.setAttribute('tabindex', '0');
@@ -505,7 +509,7 @@
 
   function activate(r, side, e) {
     const it = r.data.item;
-    if (!it) return;
+    if (!it || it.fixed) return;
     if (it.copy) {
       e.preventDefault();
       const done = () => { it.hover = false; flash(r, side, it.done, 2200); };
@@ -595,7 +599,7 @@
     const tp = panel('top', s.title, s.icon, top);
     topTitle = tp.t; topIcon = tp.ic; topH2 = tp.h2; topCols = tp.cols;
     topBack = h('button', 'back', { type: 'button' }, '← Back');
-    topBack.addEventListener('click', () => go('home'));
+    topBack.addEventListener('click', () => (IS404 ? location.assign('/') : go('home')));
     topTitle.append(topBack);
     setTopHead(s, false);
     const bp = panel('bottom', nav.title, 'dep', bottom);
@@ -740,9 +744,10 @@
       await sleep(rand(CFG.rotate));
       const d = r.data;
       if (reduced() || !d.item || r.time.busy || r.gate.busy) continue;
-      const doTime = d.time === '*' && Math.random() < 0.75;
+      const canTime = d.time === '*', canGate = d.gate == null;
+      const doTime = canTime && (!canGate || Math.random() < 0.75);
       if (doTime) writeNonsense(r.time, nonsense('time', r.time.str));
-      if (!doTime || Math.random() < 0.5) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: doTime ? 500 : 0 });
+      if (canGate && (!doTime || Math.random() < 0.5)) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: doTime ? 500 : 0 });
     }
   }
 
