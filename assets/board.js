@@ -27,13 +27,13 @@
   const ALPHA = 'ABCDEFGHIJKLMNPQRSTUVWXYZ?'; // no O: it reads as a zero
   // tile counts per column, shared by both panels. Every row sits on a grid of tile-wide
   // slots: the colon takes one slot and each block is followed by one empty slot.
-  const W = { time: 4, code: 3, place: 14, gate: 2, status: 10 };
+  const W = { time: 4, code: 3, place: 15, gate: 2, status: 10 };
   const SLOTS = {
     full: (W.time + 1) + 1 + W.code + 1 + W.place + 1 + W.gate + 1 + W.status, // 38
     compact: (W.time + 1) + 1 + W.code + 1 + W.place + 1 + 1,                   // 26, lamp in the last slot
   };
   // music line: full width uses the slots after the time block and before the sound button
-  const songTiles = (mode) => (mode === 'compact' ? SLOTS.compact : SLOTS.full - (W.time + 1) - 1 - 2);
+  const songTiles = (mode) => SLOTS[mode] - 2; // one gap slot, then the sound button in the last slot
 
   const root = document.getElementById('board');
   const src = document.getElementById('source');
@@ -75,6 +75,7 @@
   const ICONS = {
     cam: '<path fill-rule="evenodd" d="M8.6 4.5 7.2 6.5H4a2 2 0 0 0-2 2V18a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8.5a2 2 0 0 0-2-2h-3.2l-1.4-2zM12 17.6a4.3 4.3 0 1 0 0-8.6 4.3 4.3 0 0 0 0 8.6zm0-2.1a2.2 2.2 0 1 1 0-4.4 2.2 2.2 0 0 1 0 4.4z"/>',
     bag: '<path fill-rule="evenodd" d="M9 3.5h6a1.2 1.2 0 0 1 1.2 1.2v2.1H20a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8.8a2 2 0 0 1 2-2h3.8V4.7A1.2 1.2 0 0 1 9 3.5zm.9 3.3h4.2V5.4H9.9zM2 12.6h20v1.3H2z"/>',
+    box: '<path fill-rule="evenodd" d="M12 2.2 21 6.6v10.8L12 21.8 3 17.4V6.6zm0 2.2L6.1 7.3 12 10.1l5.9-2.8zM4.9 8.8v7.4l6.1 3v-7.5zm14.2 0L13 11.7v7.5l6.1-3z"/>',
     mail: '<path fill-rule="evenodd" d="M3.2 5h17.6A1.2 1.2 0 0 1 22 6.2v11.6a1.2 1.2 0 0 1-1.2 1.2H3.2A1.2 1.2 0 0 1 2 17.8V6.2A1.2 1.2 0 0 1 3.2 5zm1.4 2L12 12.6 19.4 7z"/>',
     arr: `<g transform="rotate(28 12 12) translate(0 -1)">${PLANE}</g><rect x="2" y="21" width="20" height="1.6" rx=".8"/>`,
     dep: `<g transform="rotate(-28 12 12) translate(0 -1)">${PLANE}</g><rect x="2" y="21" width="20" height="1.6" rx=".8"/>`,
@@ -397,7 +398,7 @@
 
   // ---------- statuses ----------
   const TONES = {
-    BOARDING: 'green', 'ON TIME': 'green', OPEN: 'green',
+    BOARDING: 'green', ARRIVED: 'green', OPEN: 'green',
     'GO TO GATE': 'amber', SCHEDULED: 'amber',
     DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust', DEPARTED: 'rust', COPIED: 'rust',
   };
@@ -531,7 +532,7 @@
       go(state.screen === sid ? 'home' : sid);
       return;
     }
-    if (side === 'bottom') flash(r, side, 'DEPARTED', 4000);
+    flash(r, side, 'DEPARTED', 4000);
   }
 
   function buildRow(r, side) {
@@ -605,6 +606,7 @@
     const bp = panel('bottom', nav.title, 'dep', bottom);
     colLabels(bp.cols, nav.cols);
     root.append(tp.sec, bp.sec);
+    markSelected();
 
     // now playing + sound
     const tk = h('div', 'ticker');
@@ -613,7 +615,7 @@
     snd.append(svg('<path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off-only" d="M17 9.5l5 5M22 9.5l-5 5"/>'));
     snd.addEventListener('click', () => { Sound.set(!Sound.on); snd.setAttribute('aria-pressed', String(Sound.on)); });
     state.songSr = h('span', 'sr');
-    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, [h('span', null, null, 'Today’s'), h('span', null, null, 'playlist')]), lines, snd, state.songSr);
+    tk.append(h('div', 'tk-lbl', { 'aria-hidden': 'true' }, 'On today’s playlist...'), h('div', 'tk-body', null, [lines, snd]), state.songSr);
     if (!SONGS.length) tk.hidden = true;
     root.append(tk);
     state.lines = [...lines.children];
@@ -625,7 +627,7 @@
     return s ? [clip(s.title, n), clip(s.artist, n)] : ['', ''];
   }
   function songLabel() {
-    if (state.songSr) state.songSr.textContent = state.song ? `Today’s playlist: ${state.song.label}` : '';
+    if (state.songSr) state.songSr.textContent = state.song ? `On today’s playlist: ${state.song.label}` : '';
   }
   function fitTicker() {
     if (!state.lines || !SONGS.length) return;
@@ -677,6 +679,14 @@
   }
 
   // ---------- screens ----------
+  // the departure for the open screen shows in yellow (its status reads DEPARTED in red)
+  function markSelected() {
+    bottom.forEach((r) => {
+      const it = r.data.item;
+      if (r.el) r.el.classList.toggle('sel', !!it && screenFromHref(it.href) === state.screen && state.screen !== 'home');
+    });
+  }
+
   function show(id, { boot = false } = {}) {
     const s = screens[id] || screens.home;
     if (!s) return;
@@ -689,6 +699,7 @@
       fillRow(r, 'top', boot ? { delay: 700 + i * 170, cap: CFG.bootCap } : { delay: 60 + i * 90 });
       if (r.hit) { setHit(r); setLabel(r, 'top'); r.el.classList.remove('hover'); }
     });
+    markSelected();
     bottom.forEach((r, i) => {
       if (!boot && r.data.item) { r.place.pulse(14, 120 + i * 80); r.code.pulse(30, 120 + i * 80); }
       refreshStatus(r, 'bottom', { delay: boot ? 0 : 200 + i * 80 });
