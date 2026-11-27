@@ -741,10 +741,16 @@
   // ---------- screens ----------
   // the departure for the open screen shows in yellow (its status reads DEPARTED in red)
   function markSelected() {
+    let any = false;
     bottom.forEach((r) => {
       const it = r.data.item;
-      if (r.el) r.el.classList.toggle('sel', !!it && screenFromHref(it.href) === state.screen && state.screen !== 'home');
+      const on = !!it && screenFromHref(it.href) === state.screen && state.screen !== 'home';
+      any = any || on;
+      if (r.el) r.el.classList.toggle('sel', on);
     });
+    // the other departures recede so the eye lands on the selected one
+    const pane = bottom[0] && bottom[0].el && bottom[0].el.closest('.panel');
+    if (pane) pane.classList.toggle('has-sel', any);
   }
 
   function show(id, { boot = false } = {}) {

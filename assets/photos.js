@@ -17,6 +17,12 @@ window.HNGN_PHOTOS = {
     "h": 2000
    },
    {
+    "id": "2022-12-los-angeles",
+    "caption": "Los Angeles, Dec 2022",
+    "w": 2000,
+    "h": 1333
+   },
+   {
     "id": "2018-08-doha",
     "caption": "Doha, Aug 2018",
     "w": 1912,
@@ -49,6 +55,12 @@ window.HNGN_PHOTOS = {
    {
     "id": "2018-05-hanover",
     "caption": "Hanover, May 2018",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2018-04-philadelphia",
+    "caption": "Philadelphia, Apr 2018",
     "w": 2000,
     "h": 1333
    },
@@ -101,14 +113,44 @@ window.HNGN_PHOTOS = {
     "h": 1333
    },
    {
+    "id": "2017-03-san-francisco-b",
+    "caption": "San Francisco, Mar 2017",
+    "w": 2000,
+    "h": 1333
+   },
+   {
     "id": "2017-03-san-francisco",
     "caption": "San Francisco, Mar 2017",
     "w": 2000,
     "h": 1333
    },
    {
+    "id": "2017-03-denver",
+    "caption": "Denver, Mar 2017",
+    "w": 1333,
+    "h": 2000
+   },
+   {
+    "id": "2017-03-dallas",
+    "caption": "Dallas, Mar 2017",
+    "w": 2000,
+    "h": 1333
+   },
+   {
     "id": "2016-12-singapore",
     "caption": "Singapore, Dec 2016",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2016-11-charlotte",
+    "caption": "Charlotte, Nov 2016",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2016-05-munich",
+    "caption": "Munich, May 2016",
     "w": 2000,
     "h": 1333
    },
@@ -144,14 +186,20 @@ window.HNGN_PHOTOS = {
    }
   ]
  },
- "people-pets": {
-  "title": "People & Pets",
+ "cats": {
+  "title": "Cats",
   "items": [
    {
     "id": "2026-10-ho-chi-minh-city",
     "caption": "Ho Chi Minh City, Oct 2026",
     "w": 2000,
     "h": 1500
+   },
+   {
+    "id": "2018-07-taipei-b",
+    "caption": "Taipei, Jul 2018",
+    "w": 1944,
+    "h": 1296
    },
    {
     "id": "2018-07-taipei",
@@ -166,56 +214,44 @@ window.HNGN_PHOTOS = {
     "h": 1285
    },
    {
-    "id": "2018-04-philadelphia",
-    "caption": "Philadelphia, Apr 2018",
-    "w": 2000,
-    "h": 1333
+    "id": "2018-06-santiago",
+    "caption": "Santiago, Jun 2018",
+    "w": 1944,
+    "h": 1296
    },
    {
-    "id": "2017-12-istanbul",
+    "id": "2018-02-new-york",
+    "caption": "New York, Feb 2018",
+    "w": 1200,
+    "h": 1800
+   },
+   {
+    "id": "2017-12-istanbul-b",
     "caption": "Istanbul, Dec 2017",
     "w": 2000,
     "h": 2000
    },
    {
-    "id": "2017-08-penang",
+    "id": "2017-12-istanbul",
+    "caption": "Istanbul, Dec 2017",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2017-08-penang-b",
     "caption": "Penang, Aug 2017",
     "w": 2000,
     "h": 1333
    },
    {
-    "id": "2017-03-san-francisco",
-    "caption": "San Francisco, Mar 2017",
-    "w": 2000,
-    "h": 1333
-   },
-   {
-    "id": "2017-03-denver",
-    "caption": "Denver, Mar 2017",
-    "w": 1333,
-    "h": 2000
-   },
-   {
-    "id": "2017-03-dallas",
-    "caption": "Dallas, Mar 2017",
-    "w": 2000,
-    "h": 1333
+    "id": "2017-08-penang",
+    "caption": "Penang, Aug 2017",
+    "w": 1980,
+    "h": 1322
    },
    {
     "id": "2016-11-washington-dc",
     "caption": "Washington DC, Nov 2016",
-    "w": 2000,
-    "h": 1333
-   },
-   {
-    "id": "2016-11-charlotte",
-    "caption": "Charlotte, Nov 2016",
-    "w": 2000,
-    "h": 1333
-   },
-   {
-    "id": "2016-05-munich",
-    "caption": "Munich, May 2016",
     "w": 2000,
     "h": 1333
    }

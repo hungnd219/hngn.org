@@ -292,28 +292,51 @@ body {
 .tk-link.hover { background: rgba(240, 176, 60, .09); box-shadow: 0 0 0 calc(var(--tw) * .2) rgba(240, 176, 60, .09); }
 .tk-lines { flex: none; display: flex; flex-direction: column; gap: calc(var(--tw) * .12); }
 .tk-line { display: flex; }
+/* the button keeps the last tile slot (so it lines up with the column above) but draws a ring
+   the same height and border as the Back button, centred on that slot */
 .snd {
+  --ring: calc(var(--tw) * .94 + 2px); /* Back button: .5 font + 2 x .22 padding + 2 x 1px border */
   flex: none;
-  display: grid;
-  place-items: center;
+  position: relative;
   width: calc(var(--tw) * .86);
   height: calc(var(--tw) * .86);
   margin-right: calc(var(--tw) * .14);
   padding: 0;
   color: var(--amber-dim);
   background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.snd::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: var(--ring); height: var(--ring);
+  transform: translate(-50%, -50%);
   border: 1px solid var(--amber-dim);
   border-radius: 50%;
-  cursor: pointer;
-  position: relative;
+  transition: background-color .2s;
 }
 .snd::after { content: ""; position: absolute; inset: calc(var(--tw) * -.5); } /* easier to tap */
-.snd svg { width: 62%; height: 62%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.snd svg {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: calc(var(--ring) * .58); height: calc(var(--ring) * .58);
+  transform: translate(-50%, -50%);
+  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
 .snd .on-only { display: none; }
-.snd[aria-pressed="true"] { color: var(--amber); border-color: var(--amber); }
+.snd[aria-pressed="true"] { color: var(--amber); }
+.snd[aria-pressed="true"]::before { border-color: var(--amber); }
 .snd[aria-pressed="true"] .on-only { display: inline; }
 .snd[aria-pressed="true"] .off-only { display: none; }
-.snd:hover, .snd:focus-visible { background: rgba(240, 176, 60, .12); outline: none; }
+.snd:focus-visible { outline: none; }
+.snd:hover::before, .snd:focus-visible::before { background: rgba(240, 176, 60, .12); }
+
+/* a departure is open: the other rows recede (they come back on hover) */
+.panel .row .cell, .panel .row .lamp { transition: opacity .3s; }
+.panel.has-sel .row:not(.sel) .cell, .panel.has-sel .row:not(.sel) .lamp { opacity: .38; }
+.panel.has-sel .row:not(.sel).hover .cell, .panel.has-sel .row:not(.sel).hover .lamp { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   .lamp.blink { animation: none; }
@@ -358,7 +381,19 @@ body {
 @keyframes flapin { from { transform: rotateX(-88deg); opacity: 0; } to { transform: none; opacity: 1; } }
 
 .stage { position: relative; display: flex; align-items: center; justify-content: center; background: #050404; border-radius: calc(var(--tw) * .12); overflow: hidden; touch-action: pan-y; user-select: none; }
-.stage .photo { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: opacity .25s; }
+/* each photo sits in a warm white mat, like a mounted print */
+.stage .photo {
+  --mat: max(5px, calc(var(--tw) * .45));
+  display: block;
+  box-sizing: border-box;
+  max-width: calc(100% - var(--tw) * 1.4);
+  max-height: calc(100% - var(--tw) * 1.4);
+  width: auto; height: auto;
+  padding: var(--mat);
+  background: #f1ece0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .35), 0 calc(var(--tw) * .15) calc(var(--tw) * .7) rgba(0, 0, 0, .75);
+  transition: opacity .25s;
+}
 .stage .photo.loading { opacity: 0; }
 .gal-nav {
   position: absolute;
