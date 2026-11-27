@@ -164,7 +164,6 @@ body {
 }
 .row.hover { background: rgba(240, 176, 60, .09); }
 .row.sel, .row.sel.hover { background: none; }
-.row.sel .tile, .row.sel .colon { color: var(--rust); }
 .cell { display: flex; flex: none; align-items: center; }
 .hit { position: absolute; inset: 0; z-index: 5; border-radius: inherit; outline: none; -webkit-tap-highlight-color: transparent; }
 .hit[href], .hit[role="button"] { cursor: pointer; }

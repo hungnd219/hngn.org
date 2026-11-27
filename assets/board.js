@@ -416,7 +416,7 @@
       if (it.hover && isLive(it)) return 'GO TO GATE';
     } else {
       if (it.opened) return 'ARRIVED'; // stays until you leave and come back to this screen
-      if (it.hover && it.hoverStatus) return it.hoverStatus;
+      if (it.hover && (it.hoverStatus || it.greet)) return it.hoverStatus || it.greet; // arrivals greet on hover
     }
     return it.status;
   }
@@ -511,7 +511,7 @@
     if (!isLive(it)) return;
     r.el.classList.toggle('hover', on);
     if (on) r.place.pulse(16);
-    if (side === 'bottom' || it.hoverStatus) { it.hover = on; refreshStatus(r, side); }
+    if (side === 'bottom' || it.hoverStatus || it.greet) { it.hover = on; refreshStatus(r, side); }
   }
 
   function activate(r, side, e) {
