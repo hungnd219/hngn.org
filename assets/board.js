@@ -18,6 +18,7 @@
     },
     rotate: [3000, 8000],    // each row re-rolls its nonsense time / gate in this window
     songMs: 120000,          // music-of-the-day line changes this often
+    photoShuffleMs: 15000,   // gallery grids shuffle a few photos this often
   };
 
   // character drums: a tile flaps through these in order
@@ -741,16 +742,10 @@
   // ---------- screens ----------
   // the departure for the open screen shows in yellow (its status reads DEPARTED in red)
   function markSelected() {
-    let any = false;
     bottom.forEach((r) => {
       const it = r.data.item;
-      const on = !!it && screenFromHref(it.href) === state.screen && state.screen !== 'home';
-      any = any || on;
-      if (r.el) r.el.classList.toggle('sel', on);
+      if (r.el) r.el.classList.toggle('sel', !!it && screenFromHref(it.href) === state.screen && state.screen !== 'home');
     });
-    // the other departures recede so the eye lands on the selected one
-    const pane = bottom[0] && bottom[0].el && bottom[0].el.closest('.panel');
-    if (pane) pane.classList.toggle('has-sel', any);
   }
 
   function show(id, { boot = false } = {}) {
@@ -820,24 +815,94 @@
     if (state.gal) renderGallery(false);
   }
 
+  // ---- grid slots are split-flap tiles made of photo halves ----
+  G.order = {}; // gallery -> which photo sits in each slot
+  const thumbBg = (gid, idx) => `url("${photoSrc(gid, GALLERIES[gid].items[idx], true)}")`;
+
+  function makeSlot(gid) {
+    const a = h('a', 'thumb', { role: 'listitem' });
+    a.innerHTML = '<span class="ph t"><i></i></span><span class="ph b"><i></i></span><span class="ph ft"><i></i></span><span class="ph fb"><i></i></span>';
+    const [t, b, ft, fb] = Array.from(a.children, (c) => c.firstChild);
+    const slot = { el: a, t, b, ft, fb, gid, item: -1 };
+    a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      navTo(`${gid}/${slot.item + 1}`);
+    });
+    return slot;
+  }
+  function labelSlot(slot) {
+    const p = GALLERIES[slot.gid].items[slot.item];
+    slot.el.setAttribute('href', `#${slot.gid}/${slot.item + 1}`);
+    slot.el.setAttribute('aria-label', p.caption);
+    slot.el.title = p.caption;
+  }
+  function paintSlot(slot, idx) {
+    slot.item = idx;
+    slot.t.style.backgroundImage = slot.b.style.backgroundImage = thumbBg(slot.gid, idx);
+    labelSlot(slot);
+  }
+  // one flap: the top half of the current photo falls, revealing the next photo
+  function flapSlot(slot, idx, d) {
+    const cur = thumbBg(slot.gid, slot.item), next = thumbBg(slot.gid, idx);
+    slot.t.style.backgroundImage = next;
+    slot.ft.style.backgroundImage = cur;
+    slot.fb.style.backgroundImage = next;
+    slot.el.classList.add('flipping');
+    Sound.tick();
+    const a1 = slot.ft.parentNode.animate([{ transform: 'rotateX(0deg)' }, { transform: 'rotateX(-90deg)' }],
+      { duration: d / 2, easing: 'ease-in', fill: 'forwards' });
+    const a2 = slot.fb.parentNode.animate([{ transform: 'rotateX(90deg)' }, { transform: 'rotateX(0deg)' }],
+      { duration: d / 2, delay: d / 2, easing: 'ease-out', fill: 'backwards' });
+    return a2.finished.catch(() => {}).then(() => {
+      slot.b.style.backgroundImage = next;
+      slot.el.classList.remove('flipping');
+      a1.cancel(); a2.cancel();
+      slot.item = idx;
+      labelSlot(slot);
+    });
+  }
+  // every so often a few slots (never all) trade photos, each flapping through the photos in play
+  async function shuffleGrid() {
+    const slots = G.slots || [];
+    const free = slots.map((s, i) => i).filter((i) => !slots[i].el.matches(':hover, :focus-visible'));
+    if (free.length < 3) return;
+    const k = Math.min(free.length, slots.length - 1, 3 + Math.floor(Math.random() * 4)); // 3 to 6
+    const chosen = shuffle(free).slice(0, k);
+    const pool = chosen.map((i) => slots[i].item);
+    await Promise.all(chosen.map(async (si, j) => {
+      const slot = slots[si];
+      const target = pool[(j + 1) % k]; // a cyclic shift, so every chosen slot ends on a different photo
+      const passes = shuffle(pool.filter((x) => x !== slot.item && x !== target)).slice(0, 1 + Math.floor(Math.random() * 3));
+      await sleep(j * 110);
+      for (const idx of [...passes, target]) await flapSlot(slot, idx, 300);
+    }));
+    G.order[slots[0].gid] = slots.map((s) => s.item);
+  }
+  async function shuffleLoop() {
+    for (;;) {
+      await sleep(CFG.photoShuffleMs);
+      if (reduced() || !state.gal || state.gal.n != null) continue;
+      await shuffleGrid();
+    }
+  }
+
   function renderGallery(animate) {
     const { gid, n } = state.gal;
     const g = GALLERIES[gid];
     G.h2.textContent = g.title;
     if (n == null) {
       G.grid.hidden = false; G.single.hidden = true;
-      G.count.textContent = `${g.items.length} photos`;
+      G.count.textContent = '';
       if (G.gridFor !== gid || !G.grid.children.length) {
         G.grid.textContent = '';
-        g.items.forEach((p, i) => {
-          const a = h('a', 'thumb', { role: 'listitem', href: `#${gid}/${i + 1}`, title: p.caption, style: `--i:${i}` },
-            h('img', null, { src: photoSrc(gid, p, true), alt: p.caption, loading: 'lazy', decoding: 'async' }));
-          a.addEventListener('click', (e) => {
-            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-            e.preventDefault();
-            navTo(`${gid}/${i + 1}`);
-          });
-          G.grid.append(a);
+        if (!G.order[gid]) G.order[gid] = g.items.map((_, i) => i); // newest first
+        G.slots = G.order[gid].map((idx, pos) => {
+          const slot = makeSlot(gid);
+          slot.el.style.setProperty('--i', pos);
+          paintSlot(slot, idx);
+          G.grid.append(slot.el);
+          return slot;
         });
         G.gridFor = gid;
       }
@@ -892,6 +957,7 @@
     state.gal = { gid, n };
     if (screens.photography) state.screen = 'photography';
     if (!entering) { renderGallery(false); return; }
+    G.order[gid] = null; G.gridFor = null; // each visit starts newest first
     const fields = [...top, ...bottom].flatMap((r) => [r.time, r.code, r.place, r.gate, r.status]).concat(F.song.filter(Boolean));
     fields.forEach((f) => f.write('', { stagger: 8, delay: Math.random() * 150, direct: true }));
     const swap = () => {
@@ -1019,6 +1085,7 @@
       nameLoop();
       top.concat(bottom).forEach((r) => rotateLoop(r));
       songLoop();
+      shuffleLoop();
     }, reduced() ? 0 : 3800);
 
     let raf = 0;

@@ -333,11 +333,6 @@ body {
 .snd:focus-visible { outline: none; }
 .snd:hover::before, .snd:focus-visible::before { background: rgba(240, 176, 60, .12); }
 
-/* a departure is open: the other rows recede (they come back on hover) */
-.panel .row .cell, .panel .row .lamp { transition: opacity .3s; }
-.panel.has-sel .row:not(.sel) .cell, .panel.has-sel .row:not(.sel) .lamp { opacity: .38; }
-.panel.has-sel .row:not(.sel).hover .cell, .panel.has-sel .row:not(.sel).hover .lamp { opacity: 1; }
-
 @media (prefers-reduced-motion: reduce) {
   .lamp.blink { animation: none; }
   .ptitle, .cols, .row { transition: none; }
@@ -372,9 +367,26 @@ body {
   box-shadow: 0 calc(var(--tw) * .05) calc(var(--tw) * .15) rgba(0, 0, 0, .6);
   outline: none;
   transform-origin: 50% 0;
+  perspective: calc(var(--tw) * 25);
 }
-.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; transition: filter .2s, transform .3s; filter: saturate(.92) brightness(.92); }
-.thumb:hover img, .thumb:focus-visible img { filter: none; transform: scale(1.03); }
+/* a slot is a split-flap tile made of photo halves (same build as the letter tiles) */
+.thumb .ph { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; backface-visibility: hidden; }
+.thumb .t, .thumb .ft { top: 0; }
+.thumb .b, .thumb .fb { bottom: 0; }
+.thumb .ph i {
+  position: absolute; left: 0; right: 0; height: 200%;
+  background: var(--tile-lo) center / cover no-repeat;
+  filter: saturate(.92) brightness(.92);
+  transition: filter .2s, transform .3s;
+}
+.thumb .t i, .thumb .ft i { top: 0; }
+.thumb .b i, .thumb .fb i { bottom: 0; }
+.thumb .ft { z-index: 2; transform-origin: 50% 100%; visibility: hidden; }
+.thumb .fb { z-index: 2; transform-origin: 50% 0; transform: rotateX(90deg); visibility: hidden; }
+.thumb.flipping .ft, .thumb.flipping .fb { visibility: visible; }
+.thumb.flipping .ft i { filter: brightness(.7); }
+.thumb.flipping::after { content: ""; position: absolute; z-index: 3; left: 0; right: 0; top: calc(50% - .5px); height: 1px; background: rgba(0, 0, 0, .7); }
+.thumb:hover .ph i, .thumb:focus-visible .ph i { filter: none; transform: scale(1.03); }
 .thumb:focus-visible, .thumb:hover { box-shadow: 0 0 0 2px var(--amber), 0 calc(var(--tw) * .05) calc(var(--tw) * .15) rgba(0, 0, 0, .6); }
 /* thumbnails drop in like flaps when a gallery opens */
 .gal-grid.flipin .thumb { animation: flapin .45s cubic-bezier(.3, 1.3, .5, 1) both; animation-delay: calc(var(--i) * 35ms); }
@@ -423,5 +435,5 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .gal-grid.flipin .thumb { animation: none; }
-  .thumb img, .stage .photo { transition: none; }
+  .thumb .ph i, .stage .photo { transition: none; }
 }

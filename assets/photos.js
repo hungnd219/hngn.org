@@ -7,13 +7,13 @@ window.HNGN_PHOTOS = {
    {
     "id": "2026-09-toya",
     "caption": "Toya, Sep 2026",
-    "w": 1500,
+    "w": 1333,
     "h": 2000
    },
    {
     "id": "2026-08-vinh-hy",
     "caption": "Vinh Hy, Aug 2026",
-    "w": 1500,
+    "w": 1333,
     "h": 2000
    },
    {
@@ -113,7 +113,7 @@ window.HNGN_PHOTOS = {
     "h": 1333
    },
    {
-    "id": "2017-03-san-francisco-b",
+    "id": "2017-03-san-francisco-2",
     "caption": "San Francisco, Mar 2017",
     "w": 2000,
     "h": 1333
@@ -193,10 +193,10 @@ window.HNGN_PHOTOS = {
     "id": "2026-10-ho-chi-minh-city",
     "caption": "Ho Chi Minh City, Oct 2026",
     "w": 2000,
-    "h": 1500
+    "h": 1333
    },
    {
-    "id": "2018-07-taipei-b",
+    "id": "2018-07-taipei-2",
     "caption": "Taipei, Jul 2018",
     "w": 1944,
     "h": 1296
@@ -214,6 +214,12 @@ window.HNGN_PHOTOS = {
     "h": 1285
    },
    {
+    "id": "2018-06-santiago-2",
+    "caption": "Santiago, Jun 2018",
+    "w": 1944,
+    "h": 1296
+   },
+   {
     "id": "2018-06-santiago",
     "caption": "Santiago, Jun 2018",
     "w": 1944,
@@ -226,10 +232,28 @@ window.HNGN_PHOTOS = {
     "h": 1800
    },
    {
-    "id": "2017-12-istanbul-b",
+    "id": "2017-12-istanbul-5",
     "caption": "Istanbul, Dec 2017",
     "w": 2000,
-    "h": 2000
+    "h": 1334
+   },
+   {
+    "id": "2017-12-istanbul-4",
+    "caption": "Istanbul, Dec 2017",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2017-12-istanbul-3",
+    "caption": "Istanbul, Dec 2017",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2017-12-istanbul-2",
+    "caption": "Istanbul, Dec 2017",
+    "w": 2000,
+    "h": 1333
    },
    {
     "id": "2017-12-istanbul",
@@ -238,7 +262,7 @@ window.HNGN_PHOTOS = {
     "h": 1333
    },
    {
-    "id": "2017-08-penang-b",
+    "id": "2017-08-penang-2",
     "caption": "Penang, Aug 2017",
     "w": 2000,
     "h": 1333
