@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#17121c" />
+    <title>Between Houses</title>
+    <meta name="description" content="An 8-bit adventure about two cats, a lost house cat and a stray, finding a home between two apartment buildings. Play it in your browser." />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="canonical" href="https://hngn.org/between-houses/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Between Houses" />
+    <meta property="og:description" content="An 8-bit adventure about two cats, a lost house cat and a stray, finding a home between two apartment buildings. Play it in your browser." />
+    <meta property="og:url" content="https://hngn.org/between-houses/" />
+    <meta property="og:image" content="https://hngn.org/between-houses/share.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #17121c;
+        overflow: hidden;
+      }
+      #game {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+      }
+      .fail {
+        margin: 0;
+        padding: 24px;
+        color: #efe2c8;
+        font: 14px/1.5 ui-monospace, Menlo, Consolas, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game"></div>
+    <p class="fail" id="fail" hidden>Between Houses could not start in this browser.</p>
+    <noscript><p class="fail">Between Houses needs JavaScript to run.</p></noscript>
+    <script type="module">
+      try {
+        const { mount } = await import('./src/main.js');
+        mount(document.getElementById('game'));
+      } catch (e) {
+        document.getElementById('fail').hidden = false;
+      }
+    </script>
+  </body>
+</html>
