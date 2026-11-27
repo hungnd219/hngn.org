@@ -16,19 +16,17 @@
       hold: [2000, 3200],    // time showing HNGN
       restore: [60, 160],    // gap between tiles coming back
     },
-    times: {
-      every: [3000, 8000],   // each departure time re-rolls in this window
-      impossible: 0.6,       // share of times that are not valid clock times
-      bannedHH: [16, 21],    // first pair never in this range (could read as a year)
-    },
-    tickerMs: 7000,
-    tz: 'Asia/Ho_Chi_Minh',
-    city: 'HO CHI MINH CITY',
+    rotate: [3000, 8000],    // each row re-rolls its nonsense time / gate in this window
+    songMs: 60000,           // now-playing line changes this often
   };
 
-  const FULL = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.-@:/&'!?+";
+  // character drums: a tile flaps through these in order
+  const FULL = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,-@:/&'!?+()\"#$%*";
   const DIGITS = ' 0123456789';
-  const W = { time: 4, place: 13, code: 3, gate: 1, status: 9 };
+  const NUM = '0123456789';
+  const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ?';
+  // tile counts per column, shared by both panels
+  const W = { time: 4, code: 3, place: 14, gate: 2, status: 9 };
 
   const root = document.getElementById('board');
   const src = document.getElementById('source');
@@ -39,7 +37,6 @@
 
   // ---------- utils ----------
   const rand = ([a, b]) => a + Math.random() * (b - a);
-  const randInt = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const shuffle = (arr) => {
     const a = arr.slice();
@@ -60,11 +57,10 @@
     if (kids != null) (Array.isArray(kids) ? kids : [kids]).forEach((k) => el.append(k));
     return el;
   }
-  const svg = (markup, cls) => {
+  const svg = (markup) => {
     const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     s.setAttribute('viewBox', '0 0 24 24');
     s.setAttribute('aria-hidden', 'true');
-    if (cls) s.setAttribute('class', cls);
     s.innerHTML = markup;
     return s;
   };
@@ -138,6 +134,7 @@
       if (when > 0 && !reduced()) this.pend = setTimeout(() => this.set(ch, opts), when);
       else this.set(ch, opts);
     }
+    get busy() { return this.running || this.ch !== this.target; }
     pulse() {
       if (this.running || reduced() || !this.el.isConnected) return;
       this.running = true;
@@ -152,10 +149,18 @@
       this.running = false;
     }
     next() {
-      const tgt = this.target;
-      if (this.opts.direct) return tgt;
-      const drum = DIGITS.includes(this.ch) && DIGITS.includes(tgt) ? DIGITS : FULL;
-      const i = drum.indexOf(this.ch), j = drum.indexOf(tgt);
+      const cur = this.ch, tgt = this.target;
+      if (this.opts.direct || tgt === ' ') return tgt; // clearing a tile is a single flap
+      let drum;
+      if (this.opts.classed) {
+        // nonsense fields: digits only ever flap through digits, letters/? through letters/?;
+        // a tile that changes between the two flips straight to its new character
+        drum = NUM.includes(cur) && NUM.includes(tgt) ? NUM : ALPHA.includes(cur) && ALPHA.includes(tgt) ? ALPHA : null;
+        if (!drum) return tgt;
+      } else {
+        drum = DIGITS.includes(cur) && DIGITS.includes(tgt) ? DIGITS : FULL;
+      }
+      const i = drum.indexOf(cur), j = drum.indexOf(tgt);
       if (i < 0 || j < 0) return tgt;
       const dist = (j - i + drum.length) % drum.length;
       const left = Math.max(1, (this.opts.cap || CFG.cap) - this.steps);
@@ -172,10 +177,10 @@
       Sound.tick();
       const ft = this.ft.parentNode, fb = this.fb.parentNode;
       const a1 = ft.animate(
-        [{ transform: 'rotateX(0deg)', filter: 'brightness(1)' }, { transform: 'rotateX(-90deg)', filter: 'brightness(.5)' }],
+        [{ transform: 'rotateX(0deg)' }, { transform: 'rotateX(-90deg)' }],
         { duration: d / 2, easing: 'ease-in', fill: 'forwards' });
       const a2 = fb.animate(
-        [{ transform: 'rotateX(90deg)', filter: 'brightness(1.5)' }, { transform: 'rotateX(0deg)', filter: 'brightness(1)' }],
+        [{ transform: 'rotateX(90deg)' }, { transform: 'rotateX(0deg)' }],
         { duration: d / 2, delay: d / 2, easing: 'ease-out', fill: 'backwards' });
       return a2.finished.catch(() => {}).then(() => {
         this.b.textContent = next;
@@ -201,7 +206,9 @@
       else s += ' '.repeat(pad);
       return [...s];
     }
-    get text() { return this.chars.join('').trim(); }
+    get str() { return this.chars.join(''); }
+    get text() { return this.str.trim(); }
+    get busy() { return this.tiles.some((t) => t.busy); }
     mount(parent, colonAt) {
       this.cell = parent; this.tiles = []; this.colon = null;
       this.chars.forEach((c, i) => {
@@ -213,15 +220,13 @@
       this.syncColon();
     }
     unmount() { this.tiles = []; this.colon = null; this.cell = null; }
-    syncColon() { if (this.colon) this.colon.classList.toggle('off', !/^\d{4}$/.test(this.chars.join(''))); }
-    write(text, { stagger = 0, delay = 0, random = false, ...opts } = {}) {
+    syncColon() { if (this.colon) this.colon.classList.toggle('off', this.str.includes(' ')); }
+    write(text, { stagger = 0, delay = 0, order = null, ...opts } = {}) {
       const next = this.fmt(text);
-      let order = [...next.keys()];
-      if (random) order = shuffle(order);
-      order.forEach((i, k) => {
+      (order || [...next.keys()]).forEach((i, k) => {
         this.chars[i] = next[i];
         const tile = this.tiles[i];
-        if (tile) tile.schedule(next[i], opts, delay + (random ? k : i) * stagger);
+        if (tile) tile.schedule(next[i], opts, delay + k * stagger);
       });
       this.syncColon();
     }
@@ -234,6 +239,41 @@
       this.cell.classList.remove('tone-green', 'tone-amber', 'tone-rust');
       if (name) this.cell.classList.add('tone-' + name);
     }
+  }
+
+  // ---------- rotating nonsense (times and gates) ----------
+  // A nonsense value mixes letters, digits and "?". Every row always shows between `lo` and
+  // `hi` digits, including while it flips: each tile shows either its old or its new
+  // character, so every old/new mix is checked before a value is used.
+  const isNum = (c) => c >= '0' && c <= '9';
+  const numCount = (s) => [...s].filter(isNum).length;
+  const yearish = (s) => s.length === 4 && isNum(s[0]) && isNum(s[1]) && +s.slice(0, 2) >= 16 && +s.slice(0, 2) <= 21;
+  const NONSENSE = { time: [4, 1, 3], gate: [2, 1, 1] };
+  function nonsense(kind, prev) {
+    const [len, lo, hi] = NONSENSE[kind];
+    const okay = (s) => { const n = numCount(s); return n >= lo && n <= hi && !yearish(s); };
+    const prevOk = prev && prev.length === len && !prev.includes(' ') && okay(prev);
+    for (let tries = 0; tries < 2000; tries++) {
+      let s = '';
+      for (let i = 0; i < len; i++) s += Math.random() < 0.5 ? pick(NUM) : pick('ABCDEFGHIJKLMNOPQRSTUVWXYZ???');
+      if (s === prev || !okay(s)) continue;
+      if (prevOk) {
+        let all = true;
+        for (let m = 1; m < (1 << len) - 1 && all; m++) {
+          let mix = '';
+          for (let i = 0; i < len; i++) mix += (m >> i) & 1 ? s[i] : prev[i];
+          all = okay(mix);
+        }
+        if (!all) continue;
+      }
+      return s;
+    }
+    return prev && prevOk ? prev : (kind === 'gate' ? 'A1' : 'A1B2');
+  }
+  // non-digit positions flip first, so a row coming from a year (all digits) drops below 4 digits at once
+  function writeNonsense(f, value, { delay = 0, cap = CFG.cap } = {}) {
+    const order = [...Array(value.length).keys()].sort((a, b) => isNum(value[a]) - isNum(value[b]));
+    f.write(value, { order, stagger: 110, delay, cap, classed: true });
   }
 
   // ---------- content from the HTML source ----------
@@ -249,28 +289,22 @@
     if (!ol) return rows;
     [...ol.children].forEach((li) => {
       const d = li.dataset;
+      if (!('place' in d)) { rows.push({ ...EMPTY }); return; }
       const a = li.querySelector('a[href]');
       const item = {
         href: a ? a.getAttribute('href') : null,
         target: a ? a.getAttribute('target') : null,
         copy: d.copy || null,
-        done: d.done || null,
+        done: (d.done || 'COPIED').toUpperCase(),
         status: (d.status || '').toUpperCase(),
         label: li.textContent.replace(/\s+/g, ' ').trim(),
         hover: false, flash: null,
       };
-      if (!('place' in d)) { rows.push({ item: null, time: '', place: '', code: '', gate: '', lamp: 'off', first: true }); return; }
-      d.place.split('|').forEach((p, k) => rows.push({
-        item, first: k === 0,
-        time: k ? '' : d.time || '',
-        place: p,
-        code: k ? '' : d.code || '',
-        gate: k ? '' : d.gate || '',
-        lamp: k ? 'off' : d.lamp || 'off',
-      }));
+      rows.push({ item, time: d.time || '*', code: d.code || '', place: d.place });
     });
     return rows;
   }
+  const EMPTY = { item: null, time: '', code: '', place: '' };
 
   const screens = {};
   src.querySelectorAll('[data-screen]').forEach((s) => {
@@ -288,47 +322,37 @@
     cols: (navSrc ? navSrc.dataset.cols || '' : '').split('|'),
     rows: parseItems(navSrc && navSrc.querySelector('ol')),
   };
-  const tickerSrc = src.querySelector('[data-ticker]');
-  const MESSAGES = tickerSrc ? tickerSrc.textContent.split('|').map((m) => m.trim().toUpperCase()).filter(Boolean) : [];
 
-  const leftCount = Math.max(4, ...Object.values(screens).map((s) => s.rows.length));
-  const EMPTY = { item: null, time: '', place: '', code: '', gate: '', lamp: 'off', first: true };
+  // songs for the now-playing line: plain A–Z text that the tiles can show
+  function tileText(s) {
+    return String(s).replace(/[Đđ]/g, 'D').replace(/[Øø]/g, 'O').replace(/[Ææ]/g, 'AE').replace(/ß/g, 'SS').replace(/[Łł]/g, 'L')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[‘’`´]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/…/g, '...').replace(/_/g, ' ')
+      .toUpperCase().replace(/\s+/g, ' ').trim();
+  }
+  const fitsDrum = (s) => [...s].every((c) => FULL.includes(c));
+  const SONGS = (Array.isArray(window.HNGN_PLAYLIST) ? window.HNGN_PLAYLIST : [])
+    .map(([t, a]) => ({ title: tileText(t), artist: tileText(a), label: `${t} by ${a}` }))
+    .filter((s) => s.title && fitsDrum(s.title) && fitsDrum(s.artist));
+  // shorten to n tiles at a word boundary
+  function clip(s, n) {
+    if (s.length <= n) return s;
+    const cut = s.slice(0, n + 1).lastIndexOf(' ');
+    return (cut > n * 0.5 ? s.slice(0, cut) : s.slice(0, n)).trim();
+  }
+
+  const leftCount = Math.max(4, nav.rows.length, ...Object.values(screens).map((s) => s.rows.length));
+  while (nav.rows.length < leftCount) nav.rows.push({ ...EMPTY });
 
   // ---------- model ----------
-  const F = { name: new Field(NAME.length), clock: new Field(4), city: new Field(CFG.city.length), ticker: null };
-  const left = Array.from({ length: leftCount }, () => ({
-    time: new Field(W.time), place: new Field(W.place), code: new Field(W.code), data: EMPTY,
-  }));
-  while (nav.rows.length < leftCount) nav.rows.push({ ...EMPTY });
-  const right = nav.rows.map((d) => ({
-    time: new Field(W.time), place: new Field(W.place), gate: new Field(W.gate, 'right'), status: new Field(W.status), data: d,
-  }));
-  const state = { screen: 'home', mode: null, tw: 0, forceHNGN: false, tickerIdx: 0, tickerMsg: '', booted: false };
-
-  // ---------- nonsense departure times ----------
-  function nonsenseTime(prev) {
-    const [lo, hi] = CFG.times.bannedHH;
-    for (;;) {
-      let hh, mm;
-      if (Math.random() >= CFG.times.impossible) { hh = randInt(0, 23); mm = randInt(0, 59); }
-      else if (Math.random() < 0.5) { hh = randInt(24, 99); mm = randInt(0, 99); }
-      else { hh = randInt(0, 23); mm = randInt(60, 99); }
-      const s = String(hh).padStart(2, '0') + String(mm).padStart(2, '0');
-      if (s === prev) continue;
-      // the hour digits flip one at a time, so every old/new mix must be safe too
-      const p = /^\d\d/.test(prev || '') ? prev : s;
-      const mixes = [s[0] + s[1], p[0] + s[1], s[0] + p[1]].map(Number);
-      if (mixes.some((x) => x >= lo && x <= hi)) continue;
-      return s;
-    }
-  }
-  // hour digits flip straight to the new value (no cycling through year-like pairs); minutes cycle freely
-  function writeTime(f, next, { delay = 0, cap = CFG.cap } = {}) {
-    [...next].forEach((ch, i) => {
-      f.setAt(i, ch, i < 2 ? { direct: true } : { cap }, delay + i * 70);
-    });
-    f.syncColon();
-  }
+  const newRow = (data) => ({
+    time: new Field(W.time), code: new Field(W.code), place: new Field(W.place),
+    gate: new Field(W.gate), status: new Field(W.status), data,
+  });
+  const F = { name: new Field(NAME.length), song: [null, null] };
+  const top = Array.from({ length: leftCount }, () => newRow(EMPTY));
+  const bottom = nav.rows.map((d) => newRow(d));
+  const state = { screen: 'home', mode: null, tw: 0, forceHNGN: false, song: null, short: null };
 
   // ---------- routing ----------
   function screenFromHref(href) {
@@ -353,17 +377,28 @@
     const id = location.hash.slice(1);
     show(screens[id] ? id : 'home');
   }
+  function setTitle() {
+    const s = screens[state.screen];
+    if (state.screen === 'home' || !s) document.title = state.short && !IS404 ? state.short : TITLE;
+    else document.title = `${s.title} · ${TITLE}`;
+  }
 
   // ---------- statuses ----------
-  const TONES = { BOARDING: 'green', 'LAST CALL': 'amber', ARRIVED: 'amber', DELAYED: 'rust', TBA: 'rust' };
+  const TONES = {
+    BOARDING: 'green', 'ON TIME': 'green', OPEN: 'green', COPIED: 'green',
+    'LAST CALL': 'amber', SOON: 'amber',
+    DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust',
+  };
   const isLive = (item) => !!(item && (item.href || item.copy));
-  function statusText(r) {
+  function statusText(r, side) {
     const it = r.data.item;
     if (!it) return '';
     if (it.flash) return it.flash;
-    const sid = screenFromHref(it.href);
-    if (sid && sid === state.screen) return 'ARRIVED';
-    if (it.hover && isLive(it)) return 'LAST CALL';
+    if (side === 'bottom') {
+      const sid = screenFromHref(it.href);
+      if (sid && sid === state.screen) return 'ARRIVED';
+      if (it.hover && isLive(it)) return 'LAST CALL';
+    }
     return it.status;
   }
   function applyTone(r, txt) {
@@ -371,100 +406,91 @@
     r.status.tone(tone);
     if (r.lampEl) r.lampEl.className = 'lamp ' + ({ green: 'go', amber: 'blink', rust: 'dim' }[tone] || '');
   }
-  function refreshStatus(r, opts = {}) {
-    const txt = statusText(r);
+  function refreshStatus(r, side, opts = {}) {
+    const txt = statusText(r, side);
     if (r.status.text !== txt) r.status.write(txt, { stagger: 28, ...opts });
-    if (opts.delay && !reduced()) setTimeout(() => applyTone(r, statusText(r)), opts.delay);
+    if (opts.delay && !reduced()) setTimeout(() => applyTone(r, statusText(r, side)), opts.delay);
     else applyTone(r, txt);
   }
-  function flash(r, txt, ms) {
+  function flash(r, side, txt, ms) {
     const it = r.data.item;
-    it.flash = txt; refreshStatus(r);
+    it.flash = txt; refreshStatus(r, side);
     clearTimeout(it.flashT);
-    it.flashT = setTimeout(() => { it.flash = null; refreshStatus(r); }, ms);
+    it.flashT = setTimeout(() => { it.flash = null; refreshStatus(r, side); }, ms);
+  }
+
+  // write a whole row (both panels use the same columns)
+  function fillRow(r, side, { delay = 0, cap = CFG.cap } = {}) {
+    const d = r.data;
+    if (d.item && d.time === '*') writeNonsense(r.time, nonsense('time', r.time.str), { delay, cap });
+    else r.time.write(d.time, { stagger: 45, delay, cap });
+    r.code.write(d.code, { stagger: 45, delay: delay + 120, cap });
+    r.place.write(d.place, { stagger: 24, delay: delay + 200, cap });
+    if (d.item) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: delay + 350, cap });
+    else r.gate.write('', { delay: delay + 350 });
+    refreshStatus(r, side, { delay: delay + 420, cap });
   }
 
   // ---------- building the board ----------
-  let leftTitle, leftCols, leftBack, leftIcon, leftH2;
+  let topTitle, topCols, topBack, topIcon, topH2;
 
-  function colLabels(container, defs) {
+  function colDefs(cols) {
+    const defs = [['l-time', cols[0]], ['l-code', cols[1]], ['l-place', cols[2]]];
+    if (state.mode === 'compact') defs.push(['l-lamp', '']);
+    else defs.push(['l-gate', cols[3]], ['l-status', cols[4]]);
+    return defs;
+  }
+  function colLabels(container, cols) {
     container.textContent = '';
-    defs.forEach(([cls, txt]) => container.append(h('span', cls, null, txt || '')));
+    colDefs(cols).forEach(([cls, txt]) => container.append(h('span', cls, null, txt || '')));
   }
 
-  function leftColDefs(s) {
-    const c = s.cols;
-    const defs = [['l-time', c[0]], ['l-place', c[1]], ['l-code', c[2]], ['l-lamp', '']];
-    return defs;
-  }
-  function rightColDefs() {
-    const c = nav.cols;
-    const defs = [['l-time', c[0]], ['l-place', c[1]]];
-    if (state.mode !== 'compact') defs.push(['l-gate', c[2]], ['l-status', c[3]]);
-    else defs.push(['l-lamp', '']);
-    return defs;
-  }
-
-  function panelTitle(side, title, icon) {
-    const wrap = h('div', 'ptitle');
-    const ic = svg(ICONS[icon] || '');
-    const h2 = h('h2', null, { id: 'pt-' + side }, title);
-    wrap.append(ic, h2);
-    return { wrap, ic, h2 };
-  }
-
-  function setLeftHead(s, animate) {
+  function setTopHead(s, animate) {
     const apply = () => {
-      leftIcon.innerHTML = ICONS[s.icon] || '';
-      leftH2.textContent = s.title;
-      leftBack.hidden = s.id === 'home' || IS404;
-      colLabels(leftCols, leftColDefs(s));
-      leftTitle.classList.remove('fade'); leftCols.classList.remove('fade');
+      topIcon.innerHTML = ICONS[s.icon] || '';
+      topH2.textContent = s.title;
+      topBack.hidden = s.id === 'home' || IS404;
+      colLabels(topCols, s.cols);
+      topTitle.classList.remove('fade'); topCols.classList.remove('fade');
     };
     if (!animate || reduced()) return apply();
-    leftTitle.classList.add('fade'); leftCols.classList.add('fade');
+    topTitle.classList.add('fade'); topCols.classList.add('fade');
     setTimeout(apply, 160);
   }
 
   function setHit(r) {
     const it = r.data.item;
     const hit = r.hit;
-    ['href', 'target', 'rel', 'role', 'tabindex', 'aria-disabled', 'aria-hidden'].forEach((a) => hit.removeAttribute(a));
+    ['href', 'target', 'rel', 'role', 'tabindex', 'aria-disabled'].forEach((a) => hit.removeAttribute(a));
     hit.hidden = false;
     r.el.classList.toggle('live', isLive(it));
     if (!it) { hit.hidden = true; return; }
-    if (!r.data.first) { hit.setAttribute('aria-hidden', 'true'); hit.setAttribute('tabindex', '-1'); }
     if (it.href) {
       hit.setAttribute('href', it.href);
       if (it.target) { hit.setAttribute('target', it.target); hit.setAttribute('rel', 'noopener'); }
     } else if (it.copy) {
       hit.setAttribute('role', 'button');
-      if (r.data.first) hit.setAttribute('tabindex', '0');
+      hit.setAttribute('tabindex', '0');
     } else {
       hit.setAttribute('role', 'link');
       hit.setAttribute('aria-disabled', 'true');
-      if (r.data.first) hit.setAttribute('tabindex', '0');
+      hit.setAttribute('tabindex', '0');
     }
   }
-
-  function labelFor(r, side) {
-    const d = r.data;
-    if (!d.item) return '';
-    if (side === 'right') return `${d.item.label}. Gate ${d.gate}. ${statusText(r).toLowerCase()}`;
-    return d.first ? d.item.label : '';
-  }
   function setLabel(r, side) {
+    const it = r.data.item;
     r.hit.textContent = '';
-    r.hit.append(h('span', 'sr', null, labelFor(r, side)));
+    if (!it) return;
+    const st = statusText(r, side);
+    r.hit.append(h('span', 'sr', null, st ? `${it.label}. ${st.toLowerCase()}` : it.label));
   }
 
-  function hoverItem(rows, r, on, side) {
+  function hoverRow(r, on, side) {
     const it = r.data.item;
     if (!isLive(it)) return;
-    const group = rows.filter((x) => x.data.item === it);
-    group.forEach((x) => x.el.classList.toggle('hover', on));
-    if (on) group.forEach((x, k) => x.place.pulse(16, k * 60));
-    if (side === 'right') { it.hover = on; refreshStatus(r); }
+    r.el.classList.toggle('hover', on);
+    if (on) r.place.pulse(16);
+    if (side === 'bottom') { it.hover = on; refreshStatus(r, side); }
   }
 
   function activate(r, side, e) {
@@ -472,11 +498,7 @@
     if (!it) return;
     if (it.copy) {
       e.preventDefault();
-      const done = () => {
-        r.place.write(it.done || 'COPIED', { stagger: 22 });
-        clearTimeout(it.copyT);
-        it.copyT = setTimeout(() => { if (r.data.item === it) r.place.write(r.data.place, { stagger: 22 }); }, 2200);
-      };
+      const done = () => flash(r, side, it.done, 2200);
       const fallback = () => {
         const ta = h('textarea', null, { 'aria-hidden': 'true', style: 'position:fixed;opacity:0' });
         ta.value = it.copy; document.body.append(ta); ta.select();
@@ -487,7 +509,7 @@
       else fallback();
       return;
     }
-    if (!it.href) { e.preventDefault(); if (side === 'right') flash(r, 'TBA', 1600); return; }
+    if (!it.href) { e.preventDefault(); flash(r, side, 'TBA', 1600); return; }
     const sid = screenFromHref(it.href);
     if (sid) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -495,32 +517,32 @@
       go(state.screen === sid ? 'home' : sid);
       return;
     }
-    if (side === 'right') flash(r, 'DEPARTED', 4000);
+    if (side === 'bottom') flash(r, side, 'DEPARTED', 4000);
   }
 
-  function buildRow(r, side, rows) {
+  function buildRow(r, side) {
     const compact = state.mode === 'compact';
     r.el = h('li', 'row');
-    const tc = h('span', 'cell c-time'); r.time.mount(tc, 2); r.el.append(tc);
-    const pc = h('span', 'cell c-place'); r.place.mount(pc); r.el.append(pc);
+    const cell = (cls, f, colonAt) => { const c = h('span', 'cell ' + cls); f.mount(c, colonAt); r.el.append(c); };
+    cell('c-time', r.time, 2);
+    cell('c-code', r.code);
+    cell('c-place', r.place);
     r.lampEl = null;
-    if (side === 'left') {
-      const cc = h('span', 'cell c-code'); r.code.mount(cc); r.el.append(cc);
-      r.lampEl = h('span', 'lamp ' + (r.data.lamp || ''), { 'aria-hidden': 'true' }); r.el.append(r.lampEl);
-    } else if (!compact) {
-      const gc = h('span', 'cell c-gate'); r.gate.mount(gc); r.el.append(gc);
-      const sc = h('span', 'cell c-status'); r.status.mount(sc); r.el.append(sc);
-    } else {
+    if (compact) {
       r.gate.unmount(); r.status.unmount();
       r.lampEl = h('span', 'lamp', { 'aria-hidden': 'true' }); r.el.append(r.lampEl);
+    } else {
+      cell('c-gate', r.gate);
+      cell('c-status', r.status);
     }
     r.hit = h('a', 'hit');
     r.el.append(r.hit);
     setHit(r); setLabel(r, side);
-    r.hit.addEventListener('mouseenter', () => hoverItem(rows, r, true, side));
-    r.hit.addEventListener('mouseleave', () => hoverItem(rows, r, false, side));
-    r.hit.addEventListener('focus', () => hoverItem(rows, r, true, side));
-    r.hit.addEventListener('blur', () => hoverItem(rows, r, false, side));
+    applyTone(r, r.status.text);
+    r.hit.addEventListener('mouseenter', () => hoverRow(r, true, side));
+    r.hit.addEventListener('mouseleave', () => hoverRow(r, false, side));
+    r.hit.addEventListener('focus', () => hoverRow(r, true, side));
+    r.hit.addEventListener('blur', () => hoverRow(r, false, side));
     r.hit.addEventListener('click', (e) => activate(r, side, e));
     r.hit.addEventListener('keydown', (e) => {
       if ((e.key === 'Enter' || e.key === ' ') && !r.hit.hasAttribute('href')) { e.preventDefault(); activate(r, side, e); }
@@ -528,13 +550,26 @@
     return r.el;
   }
 
+  function panel(side, title, icon, rows) {
+    const sec = h(side === 'bottom' ? 'nav' : 'section', 'panel', { 'aria-labelledby': 'pt-' + side });
+    const t = h('div', 'ptitle');
+    const ic = svg(ICONS[icon] || '');
+    const h2 = h('h2', null, { id: 'pt-' + side }, title);
+    t.append(ic, h2);
+    const cols = h('div', 'cols', { 'aria-hidden': 'true' });
+    const list = h('ol', 'rows', side === 'top' ? { 'aria-live': 'polite' } : null);
+    rows.forEach((r) => list.append(buildRow(r, side)));
+    sec.append(t, cols, list);
+    return { sec, t, ic, h2, cols };
+  }
+
   function build() {
     root.textContent = '';
     root.dataset.mode = state.mode;
     const s = screens[state.screen] || screens.home;
 
-    // header
-    const nameA = h('a', 'name', { href: '/', 'aria-label': NAME === 'HUNG NGUYEN' ? 'Hung Nguyen' : NAME });
+    // name
+    const nameA = h('a', 'name', { href: '/', 'aria-label': 'Hung Nguyen' });
     F.name.mount(nameA);
     nameA.addEventListener('click', (e) => {
       if (IS404) return;
@@ -544,81 +579,68 @@
     });
     root.append(h('header', 'head', null, [h('h1', 'h1', null, nameA)]));
 
-    // left panel
-    const panels = h('div', 'panels');
-    const lp = h('section', 'panel panel-left', { 'aria-labelledby': 'pt-left' });
-    const lt = panelTitle('left', s.title, s.icon);
-    leftTitle = lt.wrap; leftIcon = lt.ic; leftH2 = lt.h2;
-    leftBack = h('button', 'back', { type: 'button' }, '← ' + (screens.home ? screens.home.title : 'Back'));
-    leftBack.addEventListener('click', () => go('home'));
-    leftTitle.append(leftBack);
-    leftCols = h('div', 'cols', { 'aria-hidden': 'true' });
-    const lrows = h('ol', 'rows', { 'aria-live': 'polite' });
-    left.forEach((r) => lrows.append(buildRow(r, 'left', left)));
-    lp.append(leftTitle, leftCols, lrows);
-    setLeftHead(s, false);
+    // arrivals (or the screen chosen in departures) on top, departures below
+    const tp = panel('top', s.title, s.icon, top);
+    topTitle = tp.t; topIcon = tp.ic; topH2 = tp.h2; topCols = tp.cols;
+    topBack = h('button', 'back', { type: 'button' }, '← ' + (screens.home ? screens.home.title : 'Back'));
+    topBack.addEventListener('click', () => go('home'));
+    topTitle.append(topBack);
+    setTopHead(s, false);
+    const bp = panel('bottom', nav.title, 'dep', bottom);
+    colLabels(bp.cols, nav.cols);
+    root.append(tp.sec, bp.sec);
 
-    // right panel
-    const rp = h('nav', 'panel panel-right', { 'aria-labelledby': 'pt-right' });
-    const rt = panelTitle('right', nav.title, 'dep');
-    const rcols = h('div', 'cols', { 'aria-hidden': 'true' });
-    colLabels(rcols, rightColDefs());
-    const rrows = h('ol', 'rows');
-    right.forEach((r) => rrows.append(buildRow(r, 'right', right)));
-    rp.append(rt.wrap, rcols, rrows);
-    right.forEach((r) => applyTone(r, r.status.text));
-
-    panels.append(lp, rp);
-    root.append(panels);
-
-    // bottom bar: ticker + sound, then the local clock
-    const foot = h('div', 'foot');
+    // now playing + sound
     const tk = h('div', 'ticker');
-    const tiles = h('span', 'tk-tiles', { 'aria-hidden': 'true' });
+    const lines = h('span', 'tk-lines', { 'aria-hidden': 'true' }, [h('span', 'tk-line'), h('span', 'tk-line')]);
     const snd = h('button', 'snd', { type: 'button', 'aria-pressed': String(Sound.on), 'aria-label': 'Flap sound', title: 'Flap sound' });
     snd.append(svg('<path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off-only" d="M17 9.5l5 5M22 9.5l-5 5"/>'));
     snd.addEventListener('click', () => { Sound.set(!Sound.on); snd.setAttribute('aria-pressed', String(Sound.on)); });
-    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, 'INFO'), tiles, snd);
-    const cityCell = h('span', 'cell c-city', { 'aria-hidden': 'true' });
-    F.city.mount(cityCell);
-    const timeCell = h('span', 'cell c-time', { 'aria-hidden': 'true' });
-    F.clock.mount(timeCell, 2);
-    const clock = h('div', 'clock', null, [
-      h('span', 'clock-lbl', { 'aria-hidden': 'true' }, 'Local time'),
-      cityCell, timeCell,
-      h('span', 'sr', null, 'Local time in Ho Chi Minh City'),
-    ]);
-    foot.append(tk, clock);
-    root.append(foot);
-    state.tickerEl = tiles;
+    state.songSr = h('span', 'sr');
+    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, [h('span', null, null, 'Now'), h('span', null, null, 'playing')]), lines, snd, state.songSr);
+    if (!SONGS.length) tk.hidden = true;
+    root.append(tk);
+    state.lines = [...lines.children];
+    songLabel();
   }
 
+  function songLines(n) {
+    const s = state.song;
+    return s ? [clip(s.title, n), clip(s.artist, n)] : ['', ''];
+  }
+  function songLabel() {
+    if (state.songSr) state.songSr.textContent = state.song ? `Now playing: ${state.song.label}` : '';
+  }
   function fitTicker() {
-    const el = state.tickerEl;
-    if (!el) return;
-    el.textContent = '';
-    const n = Math.max(6, Math.floor(el.clientWidth / state.tw));
-    const f = new Field(n, 'center');
-    f.chars = f.fmt(state.tickerMsg.length <= n ? state.tickerMsg : '');
-    f.mount(el);
-    F.ticker = f;
+    if (!state.lines || !SONGS.length) return;
+    state.lines.forEach((l) => { l.textContent = ''; });
+    const n = Math.max(6, Math.floor(state.lines[0].clientWidth / state.tw));
+    const text = songLines(n);
+    state.lines.forEach((l, i) => {
+      const f = new Field(n);
+      f.chars = f.fmt(state.songShown ? text[i] : '');
+      f.mount(l);
+      F.song[i] = f;
+    });
+  }
+  function playSong(song, { delay = 0, cap = CFG.cap } = {}) {
+    state.song = song; state.songShown = true;
+    songLabel();
+    if (!F.song[0]) return;
+    const text = songLines(F.song[0].w);
+    F.song.forEach((f, i) => f.write(text[i], { stagger: 30, delay: delay + i * 250, cap }));
   }
 
   // ---------- layout ----------
-  const UNITS = { wide: 59, stack: 33.5, compact: 25 };
+  const UNITS = { full: 38.6, compact: 25.5 };
   function layout() {
     const vw = document.documentElement.clientWidth;
     const gutter = vw < 640 ? 12 : 24;
     const avail = Math.min(vw - 2 * gutter, 1800);
-    let mode = 'wide';
-    let tw = avail / UNITS.wide;
-    if (tw < 18.5) {
-      mode = vw < 640 ? 'compact' : 'stack';
-      tw = avail / UNITS[mode];
-    }
-    tw = Math.max(10, Math.floor(Math.min(tw, 30)));
+    const mode = vw < 640 ? 'compact' : 'full';
+    let tw = Math.max(10, Math.floor(Math.min(avail / UNITS[mode], 30)));
     const setVars = () => {
-      const hw = state.mode === 'compact'
+      const hw = mode === 'compact'
         ? Math.floor(Math.min(tw * 2.4, (avail - tw * 1.6) / NAME.length))
         : Math.floor(Math.min(tw * 2.3, 64));
       root.style.setProperty('--tw', tw + 'px');
@@ -629,12 +651,11 @@
     state.mode = mode;
     setVars();
     if (changed) build();
-    if (state.tickerEl) state.tickerEl.textContent = '';
-    // refine from the real size: everything scales with --tw
+    if (state.lines) state.lines.forEach((l) => { l.textContent = ''; });
+    // refine from the real size (everything scales with --tw); on larger screens also fit the height
     const w = Math.max(root.offsetWidth, root.scrollWidth);
     let exact = tw * avail / w;
-    // stacked boards are tall: shrink to fit the screen height where that stays readable
-    if (mode === 'stack') exact = Math.min(exact, Math.max(18, tw * (innerHeight - 2 * gutter) / root.offsetHeight));
+    if (mode === 'full') exact = Math.min(exact, Math.max(16, tw * (innerHeight - 2 * gutter) / root.offsetHeight));
     const next = Math.max(10, Math.floor(Math.min(exact, 30)));
     if (next !== tw) { tw = next; setVars(); }
     fitTicker();
@@ -647,32 +668,18 @@
     const changed = s.id !== state.screen;
     state.screen = s.id;
     if (!boot && !changed) return;
-    if (!boot) setLeftHead(s, true);
-    const cap = boot ? CFG.bootCap : CFG.cap;
-    left.forEach((r, i) => {
-      const d = s.rows[i] || EMPTY;
-      r.data = d;
-      const delay = boot ? 700 + i * 170 : 60 + i * 90;
-      r.time.write(d.time, { stagger: 45, delay, cap });
-      r.place.write(d.place, { stagger: 24, delay, cap });
-      r.code.write(d.code, { stagger: 45, delay: delay + 200, cap });
-      if (r.lampEl) {
-        r.lampEl.className = 'lamp';
-        setTimeout(() => { if (r.data === d && r.lampEl) r.lampEl.className = 'lamp ' + d.lamp; }, reduced() ? 0 : delay + 500);
-      }
-      if (r.hit) { setHit(r); setLabel(r, 'left'); r.el.classList.remove('hover'); }
+    if (!boot) setTopHead(s, true);
+    top.forEach((r, i) => {
+      r.data = s.rows[i] || EMPTY;
+      fillRow(r, 'top', boot ? { delay: 700 + i * 170, cap: CFG.bootCap } : { delay: 60 + i * 90 });
+      if (r.hit) { setHit(r); setLabel(r, 'top'); r.el.classList.remove('hover'); }
     });
-    right.forEach((r, i) => {
-      if (!boot && r.data.item) { r.place.pulse(14, 120 + i * 80); r.time.pulse(30, 120 + i * 80); }
-      refreshStatus(r, { delay: boot ? 0 : 200 + i * 80 });
-      if (r.hit) setLabel(r, 'right');
+    bottom.forEach((r, i) => {
+      if (!boot && r.data.item) { r.place.pulse(14, 120 + i * 80); r.code.pulse(30, 120 + i * 80); }
+      refreshStatus(r, 'bottom', { delay: boot ? 0 : 200 + i * 80 });
+      if (r.hit) setLabel(r, 'bottom');
     });
     setTitle();
-  }
-  function setTitle() {
-    const s = screens[state.screen];
-    if (state.screen === 'home' || !s) document.title = state.short && !IS404 ? state.short : TITLE;
-    else document.title = `${s.title} · ${TITLE}`;
   }
 
   // ---------- loops ----------
@@ -707,71 +714,46 @@
     }
   }
 
-  async function timeLoop(r) {
+  // every row with content re-rolls its nonsense time (where it has one) and gate now and then
+  async function rotateLoop(r) {
     for (;;) {
-      await sleep(rand(CFG.times.every));
+      await sleep(rand(CFG.rotate));
+      const d = r.data;
+      if (reduced() || !d.item || r.time.busy || r.gate.busy) continue;
+      const doTime = d.time === '*' && Math.random() < 0.75;
+      if (doTime) writeNonsense(r.time, nonsense('time', r.time.str));
+      if (!doTime || Math.random() < 0.5) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: doTime ? 500 : 0 });
+    }
+  }
+
+  async function songLoop() {
+    if (SONGS.length < 2) return;
+    for (;;) {
+      await sleep(CFG.songMs);
       if (reduced()) continue;
-      writeTime(r.time, nonsenseTime(r.time.chars.join('')));
-    }
-  }
-
-  function clockNow() {
-    try {
-      return new Intl.DateTimeFormat('en-GB', { timeZone: CFG.tz, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' })
-        .format(new Date()).replace(/\D/g, '');
-    } catch (e) {
-      const d = new Date(Date.now() + 7 * 3600e3);
-      return String(d.getUTCHours()).padStart(2, '0') + String(d.getUTCMinutes()).padStart(2, '0');
-    }
-  }
-
-  async function tickerLoop() {
-    if (!MESSAGES.length) return;
-    for (;;) {
-      await sleep(CFG.tickerMs);
-      if (reduced() || !F.ticker) continue;
-      const n = F.ticker.w;
-      const fits = MESSAGES.filter((m) => m.length <= n);
-      if (fits.length < 2) continue;
-      do { state.tickerIdx = (state.tickerIdx + 1) % MESSAGES.length; } while (MESSAGES[state.tickerIdx].length > n);
-      state.tickerMsg = MESSAGES[state.tickerIdx];
-      F.ticker.write(state.tickerMsg, { stagger: 35 });
+      let next;
+      do { next = pick(SONGS); } while (next === state.song);
+      playSong(next);
     }
   }
 
   // ---------- boot ----------
   function boot() {
-    const initial = screens[location.hash.slice(1)] ? location.hash.slice(1) : 'home';
-    state.screen = initial;
-    right.forEach((r) => { r.data.item && (r.data.item.flash = null); });
+    state.screen = screens[location.hash.slice(1)] ? location.hash.slice(1) : 'home';
+    state.song = SONGS.length ? pick(SONGS) : null;
+    state.songShown = false;
     layout();
 
     F.name.write(NAME, { stagger: 70, delay: 150, cap: CFG.bootCap });
-    F.city.write(CFG.city, { stagger: 40, delay: 2000, cap: CFG.bootCap });
-    F.clock.write(clockNow(), { stagger: 60, delay: 2400, cap: CFG.bootCap });
-    show(initial, { boot: true });
-    right.forEach((r, i) => {
-      const d = r.data;
-      if (!d.item) return;
-      const delay = 1300 + i * 170;
-      writeTime(r.time, nonsenseTime(''), { delay, cap: CFG.bootCap });
-      r.place.write(d.place, { stagger: 24, delay, cap: CFG.bootCap });
-      r.gate.write(d.gate, { delay: delay + 150, cap: CFG.bootCap });
-      refreshStatus(r, { delay: delay + 250, cap: CFG.bootCap });
-    });
-    state.tickerMsg = MESSAGES[0] || '';
-    if (F.ticker) F.ticker.write(state.tickerMsg.length <= F.ticker.w ? state.tickerMsg : '', { stagger: 35, delay: 2200, cap: CFG.bootCap });
+    show(state.screen, { boot: true });
+    bottom.forEach((r, i) => fillRow(r, 'bottom', { delay: 1500 + i * 170, cap: CFG.bootCap }));
+    if (state.song) playSong(state.song, { delay: 2600, cap: CFG.bootCap });
 
     setTimeout(() => {
       nameLoop();
-      right.forEach((r) => r.data.item && timeLoop(r));
-      tickerLoop();
-    }, reduced() ? 0 : 3600);
-
-    setInterval(() => {
-      const t = clockNow();
-      if (t !== F.clock.chars.join('')) F.clock.write(t, { stagger: 60 });
-    }, 1000);
+      top.concat(bottom).forEach((r) => rotateLoop(r));
+      songLoop();
+    }, reduced() ? 0 : 3800);
 
     let raf = 0;
     addEventListener('resize', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(layout); });

@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="/assets/board.css">
 <script>document.documentElement.classList.add('js')</script>
+<script src="/assets/playlist.js" defer></script>
 <script src="/assets/board.js" defer onerror="document.documentElement.classList.remove('js')"></script>
 </head>
 <body data-page="404">
@@ -21,26 +22,24 @@
 <div id="source" class="source">
   <h1 data-name="HUNG NGUYEN" data-variants="0,2,3,10|0,5,6,10">Hung Nguyen</h1>
 
-  <section data-screen="home" data-title="Arrivals" data-icon="arr" data-cols="Time|From|Code">
+  <section data-screen="home" data-title="Arrivals" data-icon="arr" data-cols="Time|Code|From|Gate|Status">
     <h2>Flight not found</h2>
     <ol>
-      <li data-time="4004" data-place="NOT FOUND" data-code="???" data-lamp="blink">This page does not exist.</li>
+      <li data-time="4004" data-code="???" data-place="NOT FOUND" data-status="CANCELLED">This page does not exist.</li>
       <li></li>
-      <li data-place="RETURN HOME"><a href="/">Back to the home page</a></li>
+      <li data-code="HOM" data-place="RETURN HOME" data-status="BOARDING"><a href="/">Back to the home page</a></li>
     </ol>
   </section>
 
-  <nav data-title="Departures" data-cols="Time|Destination|Gate|Status">
+  <nav data-title="Departures" data-cols="Time|Code|Destination|Gate|Status">
     <h2>Departures</h2>
     <ol>
-      <li data-place="WORK" data-gate="1" data-status="BOARDING"><a href="https://www.linkedin.com/in/hdn18/" target="_blank" rel="noopener">Work (LinkedIn)</a></li>
-      <li data-place="PHOTOGRAPHY" data-gate="2" data-status="DELAYED">Photography, coming later</li>
-      <li data-place="PROJECTS" data-gate="3" data-status="BOARDING"><a href="/#projects">Projects</a></li>
-      <li data-place="CONTACT" data-gate="4" data-status="BOARDING"><a href="/#contact">Contact</a></li>
+      <li data-code="WRK" data-place="WORK" data-status="BOARDING"><a href="https://www.linkedin.com/in/hdn18/" target="_blank" rel="noopener">Work (LinkedIn)</a></li>
+      <li data-code="PHT" data-place="PHOTOGRAPHY" data-status="DELAYED">Photography, coming later</li>
+      <li data-code="PRJ" data-place="PROJECTS" data-status="BOARDING"><a href="/#projects">Projects</a></li>
+      <li data-code="CON" data-place="CONTACT" data-status="BOARDING"><a href="/#contact">Contact</a></li>
     </ol>
   </nav>
-
-  <p data-ticker>Flight not found|Please return to the terminal|Mind the gap</p>
 </div>
 
 </body>

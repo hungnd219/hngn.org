@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&display=swap">
 <link rel="stylesheet" href="assets/board.css">
 <script>document.documentElement.classList.add('js')</script>
+<script src="assets/playlist.js" defer></script>
 <script src="assets/board.js" defer onerror="document.documentElement.classList.remove('js')"></script>
 </head>
 <body>
@@ -21,44 +22,44 @@
 <div id="source" class="source">
   <h1 data-name="HUNG NGUYEN" data-variants="0,2,3,10|0,5,6,10">Hung Nguyen</h1>
 
-  <section id="arrivals" data-screen="home" data-title="Arrivals" data-icon="arr" data-cols="Time|From|Code">
+  <!-- Columns on both panels: time, code, place, gate, status.
+       data-time="*" (or no data-time) means a rotating nonsense time; gates always rotate. -->
+  <section id="arrivals" data-screen="home" data-title="Arrivals" data-icon="arr" data-cols="Time|Code|From|Gate|Status">
     <h2>Arrivals</h2>
     <ol>
-      <li data-time="1996" data-place="HANOI" data-code="HAN">1996: Hanoi, Vietnam</li>
-      <li data-time="2014" data-place="HANOVER NH" data-code="HNV">2014: Hanover, New Hampshire (Dartmouth College)</li>
-      <li data-time="2016" data-place="BERLIN" data-code="SXF">2016: Berlin, Germany</li>
-      <li data-time="2018" data-place="SINGAPORE" data-code="SIN">2018: Singapore</li>
-      <li data-time="2026" data-place="HO CHI MINH" data-code="SGN" data-lamp="on">2026: Ho Chi Minh City, Vietnam (current location)</li>
+      <li data-time="1996" data-code="HAN" data-place="HANOI" data-status="ARRIVED">1996: Hanoi, Vietnam</li>
+      <li data-time="2014" data-code="HNV" data-place="HANOVER NH" data-status="ARRIVED">2014: Hanover, New Hampshire (Dartmouth College)</li>
+      <li data-time="2016" data-code="SXF" data-place="BERLIN" data-status="ARRIVED">2016: Berlin, Germany</li>
+      <li data-time="2018" data-code="SIN" data-place="SINGAPORE" data-status="ARRIVED">2018: Singapore</li>
+      <li data-time="2026" data-code="SGN" data-place="HO CHI MINH" data-status="ON TIME">2026: Ho Chi Minh City, Vietnam (current location)</li>
     </ol>
   </section>
 
-  <section id="projects" data-screen="projects" data-title="Projects" data-cols="ETA|Project|">
+  <section id="projects" data-screen="projects" data-title="Projects" data-cols="Time|Code|Project|Gate|Status">
     <h2>Projects</h2>
     <ol>
-      <li data-time="SOON" data-place="SHARK AND|ORCA'S 8-BIT|ADVENTURES" data-lamp="blink">Shark and Orca's 8-Bit Adventures, coming soon</li>
+      <li data-code="BHS" data-place="BETWEEN HOUSES" data-status="SOON">Between Houses, a game, coming soon</li>
     </ol>
   </section>
 
-  <section id="contact" data-screen="contact" data-title="Contact" data-cols="|Email|">
+  <section id="contact" data-screen="contact" data-title="Contact" data-cols="Time|Code|Contact|Gate|Status">
     <h2>Contact</h2>
     <ol>
-      <li data-place="HUNG@HNGN.ORG" data-lamp="on"><a href="mailto:hung@hngn.org">Email hung@hngn.org</a></li>
+      <li data-code="EML" data-place="HUNG@HNGN.ORG" data-status="OPEN"><a href="mailto:hung@hngn.org">Email hung@hngn.org</a></li>
       <li></li>
-      <li data-place="COPY ADDRESS" data-copy="hung@hngn.org" data-done="COPIED">Copy email address</li>
+      <li data-code="CPY" data-place="COPY ADDRESS" data-status="COPY" data-copy="hung@hngn.org" data-done="COPIED">Copy email address</li>
     </ol>
   </section>
 
-  <nav id="departures" data-title="Departures" data-cols="Time|Destination|Gate|Status">
+  <nav id="departures" data-title="Departures" data-cols="Time|Code|Destination|Gate|Status">
     <h2>Departures</h2>
     <ol>
-      <li data-place="WORK" data-gate="1" data-status="BOARDING"><a href="https://www.linkedin.com/in/hdn18/" target="_blank" rel="noopener">Work (LinkedIn)</a></li>
-      <li data-place="PHOTOGRAPHY" data-gate="2" data-status="DELAYED">Photography, coming later</li>
-      <li data-place="PROJECTS" data-gate="3" data-status="BOARDING"><a href="/#projects">Projects</a></li>
-      <li data-place="CONTACT" data-gate="4" data-status="BOARDING"><a href="/#contact">Contact</a></li>
+      <li data-code="WRK" data-place="WORK" data-status="BOARDING"><a href="https://www.linkedin.com/in/hdn18/" target="_blank" rel="noopener">Work (LinkedIn)</a></li>
+      <li data-code="PHT" data-place="PHOTOGRAPHY" data-status="DELAYED">Photography, coming later</li>
+      <li data-code="PRJ" data-place="PROJECTS" data-status="BOARDING"><a href="/#projects">Projects</a></li>
+      <li data-code="CON" data-place="CONTACT" data-status="BOARDING"><a href="/#contact">Contact</a></li>
     </ol>
   </nav>
-
-  <p data-ticker>Welcome to hngn.org|Xin chao - welcome|Mind the gap|Thank you for flying HNGN|All times are local-ish</p>
 </div>
 
 </body>
