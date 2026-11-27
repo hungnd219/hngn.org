@@ -358,9 +358,11 @@ export function createApp(input, opts = {}) {
     const note = list[cursor] && list[cursor].note;
     // (on the ledge's face, under the box)
     if (note) centred(g, note, Math.min(top + shown(list, 7) * TITLE_ROW + 20, VH - 10), C.grayL);
-    // which version this is, small and gray in the bottom right corner
+    // which version this is, small and gray in the top right corner
     const ver = WORDS.title.version.replace('{v}', CONFIG.version);
-    drawText(g, ver, VW - textWidth(ver) - 5, VH - 11, DIM);
+    drawText(g, ver, VW - textWidth(ver) - 5, 5, DIM);
+    // and along the bottom, which buttons choose and go back
+    centred(g, WORDS.title.keys, VH - 11, C.grayL);
   }
 
   function drawPause(g) {

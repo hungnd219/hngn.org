@@ -22,8 +22,10 @@ export const WORDS = {
     no: 'Go back',
     load: 'Load chapter',
     locked: 'Finish the story to unlock {mode}.',
-    // (small and gray, in the bottom corner of the title menu; {v} is CONFIG.version)
-    version: 'Version {v}',
+    // (small and gray, in the top right corner of the title menu; {v} is CONFIG.version)
+    version: 'v{v}',
+    // (along the bottom of the title menu, in the middle: not everybody knows which button is which)
+    keys: 'Space or ✕ to select, Shift or ◯ to go back',
   },
   pause: {
     title: 'PAUSED',
