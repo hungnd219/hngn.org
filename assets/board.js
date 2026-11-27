@@ -24,7 +24,7 @@
   const FULL = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,-@:/&'!?+()\"#$%*";
   const DIGITS = ' 0123456789';
   const NUM = '0123456789';
-  const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ?';
+  const ALPHA = 'ABCDEFGHIJKLMNPQRSTUVWXYZ?'; // no O: it reads as a zero
   // tile counts per column, shared by both panels. Every row sits on a grid of tile-wide
   // slots: the colon takes one slot and each block is followed by one empty slot.
   const W = { time: 4, code: 3, place: 14, gate: 2, status: 10 };
@@ -265,7 +265,7 @@
     const prevOk = prev && prev.length === len && !prev.includes(' ') && okay(prev);
     for (let tries = 0; tries < 2000; tries++) {
       let s = '';
-      for (let i = 0; i < len; i++) s += Math.random() < 0.5 ? pick(NUM) : pick('ABCDEFGHIJKLMNOPQRSTUVWXYZ???');
+      for (let i = 0; i < len; i++) s += Math.random() < 0.5 ? pick(NUM) : pick('ABCDEFGHIJKLMNPQRSTUVWXYZ???');
       if (s === prev || !okay(s)) continue;
       if (prevOk) {
         let all = true;
@@ -395,9 +395,9 @@
 
   // ---------- statuses ----------
   const TONES = {
-    BOARDING: 'green', 'ON TIME': 'green', OPEN: 'green', COPIED: 'green',
-    'GO TO GATE': 'amber', SOON: 'amber',
-    DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust',
+    BOARDING: 'green', 'ON TIME': 'green', OPEN: 'green',
+    'GO TO GATE': 'amber', SCHEDULED: 'amber',
+    DELAYED: 'rust', TBA: 'rust', CANCELLED: 'rust', DEPARTED: 'rust', COPIED: 'rust',
   };
   const isLive = (item) => !!(item && (item.href || item.copy));
   function statusText(r, side) {
@@ -406,7 +406,7 @@
     if (it.flash) return it.flash;
     if (side === 'bottom') {
       const sid = screenFromHref(it.href);
-      if (sid && sid === state.screen) return 'ARRIVED';
+      if (sid && sid === state.screen) return 'DEPARTED';
       if (it.hover && isLive(it)) return 'GO TO GATE';
     } else if (it.hover && it.hoverStatus) return it.hoverStatus;
     return it.status;
@@ -582,6 +582,7 @@
     // name
     const nameA = h('a', 'name', { href: '/', 'aria-label': 'Hung Nguyen' });
     F.name.mount(nameA);
+    lightCore();
     nameA.addEventListener('click', (e) => {
       if (IS404) return;
       e.preventDefault();
@@ -593,7 +594,7 @@
     // arrivals (or the screen chosen in departures) on top, departures below
     const tp = panel('top', s.title, s.icon, top);
     topTitle = tp.t; topIcon = tp.ic; topH2 = tp.h2; topCols = tp.cols;
-    topBack = h('button', 'back', { type: 'button' }, '← ' + (screens.home ? screens.home.title : 'Back'));
+    topBack = h('button', 'back', { type: 'button' }, '← Back');
     topBack.addEventListener('click', () => go('home'));
     topTitle.append(topBack);
     setTopHead(s, false);
@@ -608,7 +609,7 @@
     snd.append(svg('<path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on-only" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off-only" d="M17 9.5l5 5M22 9.5l-5 5"/>'));
     snd.addEventListener('click', () => { Sound.set(!Sound.on); snd.setAttribute('aria-pressed', String(Sound.on)); });
     state.songSr = h('span', 'sr');
-    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, [h('span', null, null, 'Music'), h('span', null, null, 'of the day')]), lines, snd, state.songSr);
+    tk.append(h('span', 'tk-lbl', { 'aria-hidden': 'true' }, [h('span', null, null, 'Today’s'), h('span', null, null, 'playlist')]), lines, snd, state.songSr);
     if (!SONGS.length) tk.hidden = true;
     root.append(tk);
     state.lines = [...lines.children];
@@ -620,7 +621,7 @@
     return s ? [clip(s.title, n), clip(s.artist, n)] : ['', ''];
   }
   function songLabel() {
-    if (state.songSr) state.songSr.textContent = state.song ? `Music of the day: ${state.song.label}` : '';
+    if (state.songSr) state.songSr.textContent = state.song ? `Today’s playlist: ${state.song.label}` : '';
   }
   function fitTicker() {
     if (!state.lines || !SONGS.length) return;
@@ -693,6 +694,11 @@
   }
 
   // ---------- loops ----------
+  // the four HNGN tiles turn yellow while they hold the short name
+  function lightCore() {
+    F.name.tiles.forEach((t, i) => t.el.classList.toggle('lit', !!state.core && state.core.includes(i)));
+  }
+
   async function nameLoop() {
     const N = F.name;
     const live = [...NAME].map((c, i) => (c === ' ' ? -1 : i)).filter((i) => i >= 0);
@@ -715,8 +721,12 @@
       const drop = shuffle(live.filter((i) => !core.includes(i)));
       for (const i of drop) { N.setAt(i, ' ', { direct: true }); await sleep(rand(C.decay)); }
       state.short = core.map((i) => NAME[i]).join('');
+      state.core = core;
+      lightCore();
       setTitle();
       await sleep(rand(C.hold));
+      state.core = null;
+      lightCore();
       for (const i of shuffle(drop)) { N.setAt(i, NAME[i], { cap: 6 }); await sleep(rand(C.restore)); }
       state.short = null;
       setTitle();

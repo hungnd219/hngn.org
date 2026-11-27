@@ -113,7 +113,7 @@ body {
 .ptitle.fade { opacity: 0; }
 .ptitle svg { width: calc(var(--tw) * 1.15); height: calc(var(--tw) * 1.15); fill: currentColor; flex: none; }
 .ptitle svg:empty { display: none; }
-.ptitle h2 { margin: 0; font: 500 calc(var(--tw) * .95)/1 var(--font-label); letter-spacing: .14em; text-transform: uppercase; }
+.ptitle h2 { margin: 0; font: italic 500 calc(var(--tw) * .95)/1 var(--font-label); letter-spacing: .14em; text-transform: uppercase; }
 .back {
   margin-left: auto;
   font: 500 calc(var(--tw) * .5)/1 var(--font-label);
@@ -173,7 +173,7 @@ body {
   width: calc(var(--tw) * .86);
   margin-right: calc(var(--tw) * .14);
   text-align: center;
-  font: 500 calc(var(--tw) * .9)/1 var(--font-tile);
+  font: 300 calc(var(--tw) * .9)/1 var(--font-tile);
   color: var(--glyph);
 }
 
@@ -204,7 +204,7 @@ body {
   height: calc(var(--s) * 1.42);
   margin-right: calc(var(--s) * .14);
   perspective: calc(var(--s) * 6);
-  font: 500 calc(var(--s) * .98)/1 var(--font-tile);
+  font: 300 calc(var(--s) * .98)/1 var(--font-tile);
   color: var(--glyph);
   border-radius: calc(var(--s) * .08);
   box-shadow: 0 calc(var(--s) * .04) calc(var(--s) * .08) rgba(0, 0, 0, .6);
@@ -244,6 +244,8 @@ body {
   background: rgba(0, 0, 0, .9);
   box-shadow: 0 1px 0 rgba(255, 255, 255, .05);
 }
+[data-mode="compact"] .tile, [data-mode="compact"] .colon { font-weight: 500; }
+.name .tile.lit { color: var(--amber); }
 /* phones: the thinnest hinge the screen can draw, so middle strokes (E, F, H, A) stay visible */
 [data-mode="compact"] .tile::after { top: calc(50% - .25px); height: .5px; box-shadow: none; background: rgba(0, 0, 0, .8); }
 @media (min-resolution: 3dppx) {
