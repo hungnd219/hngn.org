@@ -214,10 +214,28 @@ window.HNGN_PHOTOS = {
     "h": 1285
    },
    {
-    "id": "2018-06-santiago-2",
+    "id": "2018-06-santiago-5",
     "caption": "Santiago, Jun 2018",
     "w": 1944,
     "h": 1296
+   },
+   {
+    "id": "2018-06-santiago-4",
+    "caption": "Santiago, Jun 2018",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2018-06-santiago-3",
+    "caption": "Santiago, Jun 2018",
+    "w": 2000,
+    "h": 1333
+   },
+   {
+    "id": "2018-06-santiago-2",
+    "caption": "Santiago, Jun 2018",
+    "w": 2000,
+    "h": 1332
    },
    {
     "id": "2018-06-santiago",

@@ -36,7 +36,7 @@ body {
   color: var(--glyph);
   font-family: var(--font-label);
 }
-@media (max-width: 639px) { body { padding: 12px; } }
+@media (max-width: 639px) { body { padding: 8px; } }
 
 .sr {
   position: absolute !important;
@@ -89,7 +89,7 @@ body {
 .name { display: flex; text-decoration: none; color: inherit; border-radius: 4px; outline: none; }
 .name:focus-visible { box-shadow: 0 0 0 2px var(--amber); }
 .name .tile { --s: var(--hw); }
-.js .board[data-mode="compact"] { padding: calc(var(--tw) * .55); --px: calc(var(--tw) * .6); }
+.js .board[data-mode="compact"] { padding: calc(var(--tw) * .35); --px: calc(var(--tw) * .6); }
 
 /* panels */
 .panel {
@@ -369,24 +369,23 @@ body {
   transform-origin: 50% 0;
   perspective: calc(var(--tw) * 25);
 }
-/* a slot is a split-flap tile made of photo halves (same build as the letter tiles) */
-.thumb .ph { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; backface-visibility: hidden; }
+/* a slot is a split-flap tile made of photo halves (same build as the letter tiles). At rest only
+   the whole photo shows; the halves appear just while a flap runs, so no seam shows on phones. */
+.thumb .whole { position: absolute; inset: 0; overflow: hidden; }
+.thumb .whole i { position: absolute; inset: 0; background: var(--tile-lo) center / cover no-repeat; transition: transform .3s; }
+.thumb .ph { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; backface-visibility: hidden; visibility: hidden; }
 .thumb .t, .thumb .ft { top: 0; }
 .thumb .b, .thumb .fb { bottom: 0; }
-.thumb .ph i {
-  position: absolute; left: 0; right: 0; height: 200%;
-  background: var(--tile-lo) center / cover no-repeat;
-  filter: saturate(.92) brightness(.92);
-  transition: filter .2s, transform .3s;
-}
+.thumb .ph i { position: absolute; left: 0; right: 0; height: 200%; background: var(--tile-lo) center / cover no-repeat; }
 .thumb .t i, .thumb .ft i { top: 0; }
 .thumb .b i, .thumb .fb i { bottom: 0; }
-.thumb .ft { z-index: 2; transform-origin: 50% 100%; visibility: hidden; }
-.thumb .fb { z-index: 2; transform-origin: 50% 0; transform: rotateX(90deg); visibility: hidden; }
-.thumb.flipping .ft, .thumb.flipping .fb { visibility: visible; }
+.thumb .ft { z-index: 2; transform-origin: 50% 100%; }
+.thumb .fb { z-index: 2; transform-origin: 50% 0; transform: rotateX(90deg); }
+.thumb.flipping .ph { visibility: visible; }
+.thumb.flipping .whole { visibility: hidden; }
 .thumb.flipping .ft i { filter: brightness(.7); }
 .thumb.flipping::after { content: ""; position: absolute; z-index: 3; left: 0; right: 0; top: calc(50% - .5px); height: 1px; background: rgba(0, 0, 0, .7); }
-.thumb:hover .ph i, .thumb:focus-visible .ph i { filter: none; transform: scale(1.03); }
+.thumb:hover .whole i, .thumb:focus-visible .whole i { transform: scale(1.03); }
 .thumb:focus-visible, .thumb:hover { box-shadow: 0 0 0 2px var(--amber), 0 calc(var(--tw) * .05) calc(var(--tw) * .15) rgba(0, 0, 0, .6); }
 /* thumbnails drop in like flaps when a gallery opens */
 .gal-grid.flipin .thumb { animation: flapin .45s cubic-bezier(.3, 1.3, .5, 1) both; animation-delay: calc(var(--i) * 35ms); }
@@ -407,10 +406,9 @@ body {
   transition: opacity .25s;
 }
 .stage .photo.loading { opacity: 0; }
+/* previous / next sit centred under the photo, between it and the caption tiles */
+.gal-ctrl { display: flex; justify-content: center; gap: calc(var(--tw) * 1.2); margin-top: calc(var(--tw) * .5); }
 .gal-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   display: grid;
   place-items: center;
   width: calc(var(--tw) * 1.6);
@@ -419,21 +417,17 @@ body {
   min-height: 34px;
   padding: 0;
   color: var(--amber);
-  background: rgba(10, 8, 6, .55);
-  border: 1px solid rgba(240, 176, 60, .45);
+  background: transparent;
+  border: 1px solid var(--amber-dim);
   border-radius: 50%;
   cursor: pointer;
-  opacity: .75;
-  transition: opacity .2s, background-color .2s;
+  transition: background-color .2s, border-color .2s;
 }
-.gal-nav.prev { left: calc(var(--tw) * .5); }
-.gal-nav.next { right: calc(var(--tw) * .5); }
 .gal-nav svg { width: 55%; height: 55%; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.stage:hover .gal-nav, .gal-nav:focus-visible { opacity: 1; }
-.gal-nav:hover, .gal-nav:focus-visible { background: rgba(10, 8, 6, .8); outline: none; }
+.gal-nav:hover, .gal-nav:focus-visible { background: rgba(240, 176, 60, .12); border-color: var(--amber); outline: none; }
 .gal-cap { display: flex; margin-top: calc(var(--tw) * .5); }
 
 @media (prefers-reduced-motion: reduce) {
   .gal-grid.flipin .thumb { animation: none; }
-  .thumb .ph i, .stage .photo { transition: none; }
+  .thumb .whole i, .stage .photo { transition: none; }
 }

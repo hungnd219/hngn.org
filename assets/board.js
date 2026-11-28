@@ -438,7 +438,7 @@
       if (it.hover && isLive(it)) return 'GO TO GATE';
     } else {
       if (it.opened) return 'ARRIVED'; // stays until you leave and come back to this screen
-      if (it.hover && (it.hoverStatus || it.greet)) return it.hoverStatus || it.greet; // arrivals greet on hover
+      if (it.hover && it.hoverStatus) return it.hoverStatus;
     }
     return it.status;
   }
@@ -467,6 +467,8 @@
     else r.time.write(d.time, { stagger: 45, delay, cap });
     r.code.write(d.code, { stagger: 45, delay: delay + 120, cap });
     r.place.write(d.place, { stagger: 24, delay: delay + 200, cap });
+    r.place.tone('');
+    if (d.item) { d.item.greeting = false; clearTimeout(d.item.greetT); }
     if (d.gate != null) r.gate.write(d.gate, { stagger: 45, delay: delay + 350, cap });
     else if (d.item) writeNonsense(r.gate, nonsense('gate', r.gate.str), { delay: delay + 350, cap });
     else r.gate.write('', { delay: delay + 350 });
@@ -528,12 +530,25 @@
     r.hit.append(h('span', 'sr', null, st ? `${it.label}. ${st.toLowerCase()}` : it.label));
   }
 
+  // arrivals: the local greeting flips in, in yellow, over the city name (and back again)
+  function showGreeting(r, on) {
+    const it = r.data.item;
+    it.greeting = on;
+    r.place.write(on ? it.greet : r.data.place, { stagger: 22 });
+    r.place.tone(on ? 'amber' : '');
+  }
+
   function hoverRow(r, on, side) {
     const it = r.data.item;
     if (!isLive(it)) return;
     r.el.classList.toggle('hover', on);
+    if (it.greet) {
+      it.hover = on;
+      if (r.lastPointer !== 'touch') showGreeting(r, on); // a tap is handled on click
+      return;
+    }
     if (on) r.place.pulse(16);
-    if (side === 'bottom' || it.hoverStatus || it.greet) { it.hover = on; refreshStatus(r, side); }
+    if (side === 'bottom' || it.hoverStatus) { it.hover = on; refreshStatus(r, side); }
   }
 
   function activate(r, side, e) {
@@ -552,7 +567,17 @@
       else fallback();
       return;
     }
-    if (!it.href) { e.preventDefault(); flash(r, side, it.greet || 'TBA', it.greet ? 2500 : 1600); return; }
+    if (it.greet) {
+      // with a mouse the greeting is already showing; on a phone a tap shows it for a few seconds
+      e.preventDefault();
+      if (r.lastPointer === 'touch' || !it.greeting) {
+        showGreeting(r, true);
+        clearTimeout(it.greetT);
+        it.greetT = setTimeout(() => { if (r.data.item === it && !(it.hover && r.lastPointer !== 'touch')) showGreeting(r, false); }, 2500);
+      }
+      return;
+    }
+    if (!it.href) { e.preventDefault(); flash(r, side, 'TBA', 1600); return; }
     const gid = galFromHref(it.href);
     if (gid) {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -591,6 +616,7 @@
     r.el.append(r.hit);
     setHit(r); setLabel(r, side);
     applyTone(r, r.status.text);
+    r.hit.addEventListener('pointerdown', (e) => { r.lastPointer = e.pointerType; });
     r.hit.addEventListener('mouseenter', () => hoverRow(r, true, side));
     r.hit.addEventListener('mouseleave', () => hoverRow(r, false, side));
     r.hit.addEventListener('focus', () => hoverRow(r, true, side));
@@ -707,17 +733,20 @@
   }
 
   // ---------- layout ----------
-  const UNITS = { full: SLOTS.full + 3.8, compact: SLOTS.compact + 2.3 };
+  const UNITS = { full: SLOTS.full + 3.8, compact: SLOTS.compact + 1.9 };
+  // sizes snap to the screen's physical pixels (a third of a CSS pixel on a 3x phone), not whole
+  // CSS pixels, so a phone-sized board can use nearly all of the screen's width
+  const snap = (v) => { const r = window.devicePixelRatio || 1; return Math.floor(v * r) / r; };
   function layout() {
     const vw = document.documentElement.clientWidth;
-    const gutter = vw < 640 ? 12 : 24;
+    const gutter = vw < 640 ? 8 : 24;
     const avail = Math.min(vw - 2 * gutter, 1800);
     const mode = vw < 640 ? 'compact' : 'full';
-    let tw = Math.max(10, Math.floor(Math.min(avail / UNITS[mode], 30)));
+    let tw = Math.max(10, snap(Math.min(avail / UNITS[mode], 30)));
     const setVars = () => {
       const hw = mode === 'compact'
-        ? Math.floor(Math.min(tw * 2.4, (avail - tw * 1.6) / NAME.length))
-        : Math.floor(Math.min(tw * 2.3, 64));
+        ? snap(Math.min(tw * 2.4, (avail - tw * 1.6) / NAME.length))
+        : snap(Math.min(tw * 2.3, 64));
       root.style.setProperty('--tw', tw + 'px');
       root.style.setProperty('--hw', hw + 'px');
       root.style.setProperty('--slots', SLOTS[mode]);
@@ -734,7 +763,7 @@
     const w = Math.max(root.offsetWidth, root.scrollWidth);
     let exact = tw * avail / w;
     if (mode === 'full') exact = Math.min(exact, Math.max(16, tw * (innerHeight - 2 * gutter) / root.offsetHeight));
-    const next = Math.max(10, Math.floor(Math.min(exact, 30)));
+    const next = Math.max(10, snap(Math.min(exact, 30)));
     if (next !== tw) { tw = next; setVars(); }
     if (inGallery) { root.classList.add('gal'); sizeStage(); }
   }
@@ -797,7 +826,8 @@
     next.append(svg('<path d="M9 5l7 7-7 7"/>'));
     prev.addEventListener('click', () => step(-1));
     next.addEventListener('click', () => step(1));
-    G.stage = h('div', 'stage', null, [G.img, prev, next]);
+    G.stage = h('div', 'stage', null, [G.img]);
+    const ctrl = h('div', 'gal-ctrl', null, [prev, next]); // arrows sit under the photo, above the caption
     let x0 = null;
     G.stage.addEventListener('pointerdown', (e) => { x0 = e.clientX; });
     G.stage.addEventListener('pointerup', (e) => {
@@ -809,7 +839,7 @@
     F.cap.chars = F.cap.fmt(G.capText || '');
     F.cap.mount(cap);
     G.capSr = h('p', 'sr', { 'aria-live': 'polite' });
-    G.single.append(G.stage, cap, G.capSr);
+    G.single.append(G.stage, ctrl, cap, G.capSr);
     sec.append(title, G.grid, G.single);
     root.append(sec);
     if (state.gal) renderGallery(false);
@@ -821,9 +851,12 @@
 
   function makeSlot(gid) {
     const a = h('a', 'thumb', { role: 'listitem' });
-    a.innerHTML = '<span class="ph t"><i></i></span><span class="ph b"><i></i></span><span class="ph ft"><i></i></span><span class="ph fb"><i></i></span>';
-    const [t, b, ft, fb] = Array.from(a.children, (c) => c.firstChild);
-    const slot = { el: a, t, b, ft, fb, gid, item: -1 };
+    // at rest only the whole photo shows; the four half-layers appear just while a flap runs.
+    // (Showing two halves at rest left a faint seam on phones: Safari snaps each half to the pixel
+    // grid on its own, and the middle of a thumbnail rarely falls on a whole pixel.)
+    a.innerHTML = '<span class="whole"><i></i></span><span class="ph t"><i></i></span><span class="ph b"><i></i></span><span class="ph ft"><i></i></span><span class="ph fb"><i></i></span>';
+    const [whole, t, b, ft, fb] = Array.from(a.children, (c) => c.firstChild);
+    const slot = { el: a, whole, t, b, ft, fb, gid, item: -1 };
     a.addEventListener('click', (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
@@ -839,7 +872,7 @@
   }
   function paintSlot(slot, idx) {
     slot.item = idx;
-    slot.t.style.backgroundImage = slot.b.style.backgroundImage = thumbBg(slot.gid, idx);
+    slot.whole.style.backgroundImage = slot.t.style.backgroundImage = slot.b.style.backgroundImage = thumbBg(slot.gid, idx);
     labelSlot(slot);
   }
   // one flap: the top half of the current photo falls, revealing the next photo
@@ -856,6 +889,7 @@
       { duration: d / 2, delay: d / 2, easing: 'ease-out', fill: 'backwards' });
     return a2.finished.catch(() => {}).then(() => {
       slot.b.style.backgroundImage = next;
+      slot.whole.style.backgroundImage = next;
       slot.el.classList.remove('flipping');
       a1.cancel(); a2.cancel();
       slot.item = idx;
@@ -875,7 +909,9 @@
     await Promise.all(chosen.map(async (si, j) => {
       const slot = slots[si];
       const target = pool[(j + 1) % k]; // a cyclic shift, so every chosen slot ends on a different photo
-      const passes = shuffle(pool.filter((x) => x !== slot.item && x !== target)).slice(0, 1 + Math.floor(Math.random() * 3));
+      // phones do a little less: fewer in-between photos per slot
+      const most = state.mode === 'compact' ? 1 : 3;
+      const passes = shuffle(pool.filter((x) => x !== slot.item && x !== target)).slice(0, 1 + Math.floor(Math.random() * most));
       await sleep(j * 110);
       for (const idx of [...passes, target]) await flapSlot(slot, idx, 300);
     }));
@@ -933,7 +969,7 @@
   function sizeStage() {
     if (!state.gal || state.gal.n == null || !G.stage) return;
     G.stage.style.height = '0px';
-    const gutter = document.documentElement.clientWidth < 640 ? 12 : 24;
+    const gutter = document.documentElement.clientWidth < 640 ? 8 : 24;
     const room = innerHeight - 2 * gutter - root.offsetHeight;
     const w = SLOTS[state.mode] * state.tw;
     const ideal = state.mode === 'compact' ? w : w * 2 / 3;
