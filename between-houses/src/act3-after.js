@@ -227,6 +227,8 @@ export function create(ctx) {
       // (said in a box of its own, whatever goal the game had: the story is told, and the game is open)
       { call: () => { ctx.story().goal = ''; } },
       { goal: W.goals.after },
+      // (and one box more, the owner's: Battle mode is on the title menu from now on)
+      ctx.tip(W.battleTip),
     ];
   }
   const homecomingDone = () => {

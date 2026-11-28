@@ -197,6 +197,8 @@ export const ENCOUNTERS = {
     guide: true,
     phases: [{ foes: [{ kind: 'scar', hp: 36, atk: 6, heavy: null, specials: [] }], maxRounds: 3, hideRounds: true, ends: { won: 'draw', lost: 'draw', timeout: 'draw', draw: 'draw' } }],
     intro: WORDS.act0.scarIntro,
+    // (each shown once, over the menu it is about: see `lesson` in battle-screen.js)
+    lessons: { menu: WORDS.act0.scarMenu, aim: WORDS.act0.scarAim },
     words: { draw: WORDS.act0.scarDraw },
   }),
   // Act 0: Orca wants the plate to himself. Shark alone again, now with Chomp; it does not matter who wins.

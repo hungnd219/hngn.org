@@ -47,7 +47,8 @@ const MOVE_NAMES = new RegExp(
   'g'
 );
 // what the text panel picks out: moves, the buttons and menu items a hint names, and the icons in their colours
-const PICKED = [[MOVE_NAMES, MOVE_INK], [CONTROLS, MOVE_INK], ...ICON_INK];
+// (and the menu's own Attack, where a lesson names it beside Defend)
+const PICKED = [[MOVE_NAMES, MOVE_INK], [new RegExp('\\b' + COPY.menu.attack + '\\b', 'g'), MOVE_INK], [CONTROLS, MOVE_INK], ...ICON_INK];
 // ...and what a tip box over the fight picks out: the names of moves and of conditions, as they are written
 const TIP_WORDS = [...new Set([...Object.values(MOVES).map((m) => m.name), ...Object.values(COPY.conditions).map((c) => c.name)].filter(Boolean))].sort((a, b) => b.length - a.length);
 // the star for a special in a foe's thought bubble, and the crosshair beside the odds: the colours the lessons give them
@@ -414,6 +415,19 @@ export function createBattleScreen(input, opts = {}) {
     teach = { list, i: 0, then };
     mode = 'teach';
   }
+  // A lesson over the menu: its words in a box of their own above the panel, with the menu they are about
+  // on the screen under them. Until it is put away (the action button, or a tap) the buttons do nothing else.
+  // An encounter's `lessons` are each shown once: `menu` the first time your menu comes up, `aim` the first
+  // time a target is being chosen (the odds beside the crosshair are lit while it is up).
+  let lesson = null; // { key, text }
+  const taught = new Set();
+  function teachOnce(key) {
+    const text = enc && enc.lessons && enc.lessons[key];
+    if (!text || taught.has(key)) return;
+    taught.add(key);
+    lesson = { key, text: say(text, {}) };
+    sfx.learn();
+  }
   const talkBox = createDialog(input);
   const faces = new Map();
   function showTalk(list, then) {
@@ -596,6 +610,7 @@ export function createBattleScreen(input, opts = {}) {
       who = t.ready.length > 1 || B.party.length > 1 ? null : t.who;
       menus = [who ? rootMenu() : whoMenu(t.ready)];
       mode = 'menu';
+      teachOnce('menu');
     } else {
       // a beat before an opponent moves, so the eye can find it
       who = t.who;
@@ -615,6 +630,7 @@ export function createBattleScreen(input, opts = {}) {
   const open = (m) => () => menus.push(m());
   function targetMenu(id) {
     const verb = MOVES[id].verb || COPY.menu.hit;
+    teachOnce('aim');
     return { id, ask: MOVES[id].name, wide: true, items: [...B.targets(who, id).map((t) => ({ label: verb + ' ' + label(t), target: t, go: doMove(id, t) })), BACK], i: 0 };
   }
   // why: the reason it cannot be used just now (shown in red above what it does)
@@ -1005,6 +1021,11 @@ export function createBattleScreen(input, opts = {}) {
         sfx.blip();
         if (++pageI >= pages.length) afterPages();
       }
+    } else if (mode === 'menu' && lesson) {
+      if (confirm()) {
+        sfx.blip();
+        lesson = null;
+      }
     } else if (mode === 'menu') {
       const m = menu();
       const len = m.items.length;
@@ -1052,7 +1073,7 @@ export function createBattleScreen(input, opts = {}) {
       else tile = i;
       return;
     }
-    if (mode !== 'menu') {
+    if (mode !== 'menu' || lesson) {
       input.down('a');
       input.up('a');
       return;
@@ -1196,7 +1217,9 @@ export function createBattleScreen(input, opts = {}) {
       // conditions of whoever stands above on the same side (room is kept there for three conditions,
       // so that the bubble does not jump about as they come and go)
       const top = Math.round(v.y) - height(v) + v.ink * ZOOM;
-      const rim = active && (frame >> 4) & 1 ? GOLD : INK; // gold, and blinking, while it is this one's turn
+      // gold, and blinking, while it is this one's turn; and while the page that explains the bubbles is up
+      const shown = mode === 'pages' && pages[pageI] === COPY.fight.guide;
+      const rim = (active || shown) && (frame >> 4) & 1 ? GOLD : INK;
       const ax = Math.round(v.x) - 7;
       const ay = top - 18;
       const taken = B.all.some((o) => {
@@ -1343,6 +1366,12 @@ export function createBattleScreen(input, opts = {}) {
       lines(g, text, 26, PANEL_Y - n * LH - 14, VW - 60, TEXT, 6);
       if ((frame >> 4) & 1) drawText(g, '>', VW - 30, PANEL_Y - 20, GOLD);
     }
+    if (lesson && mode === 'menu') {
+      const n = wrapText(lesson.text, VW - 60).length;
+      box(g, 20, PANEL_Y - n * LH - 18, VW - 40, n * LH + 9);
+      lines(g, lesson.text, 26, PANEL_Y - n * LH - 14, VW - 60, TEXT, 6);
+      if ((frame >> 4) & 1) drawText(g, '>', VW - 30, PANEL_Y - 20, GOLD);
+    }
   }
   function drawFight(g) {
     if (mode === 'select') return drawSelect(g);
@@ -1451,6 +1480,8 @@ export function createBattleScreen(input, opts = {}) {
       if (nx + 11 + textWidth(hp) + 5 + fw > right) hp = String(t.hp);
       icon(g, 'hp', nx, ROW(0), STAT_COLOUR.hp);
       drawText(g, hp, nx + 11, ROW(0), TEXT);
+      // (the lesson about the odds is up: a bar of light behind them, as behind a stat in a lesson)
+      if (aimed && lesson && lesson.key === 'aim') R(g, right - fw - 3, ROW(0) - 2, fw + 6, LH, (frame >> 4) & 1 ? '#4a4353' : '#3a3542');
       if (aimed) icon(g, 'acc', right - fw, ROW(0), ACC_INK);
       drawText(g, fig, right - textWidth(fig), ROW(0), mend ? '#8fdc8a' : TEXT);
       if (cover) drawText(g, say(COPY.menu.covers, { name: label(cover) }), nx, ROW(1), DIM);
@@ -1528,6 +1559,7 @@ export function createBattleScreen(input, opts = {}) {
       get who() { return who; },
       get menu() { return mode === 'menu' ? menu().items.map((it, i) => (i === menu().i ? '>' : '') + it.label + (it.off ? '(off)' : '')) : null; },
       get line() { return mode === 'pages' ? pages[pageI] : line; },
+      get lesson() { return lesson && mode === 'menu' ? lesson.text : null; },
       // what a fighter is saying, while they talk: { name, text }
       get talk() { return mode === 'talk' && talkBox.state ? { name: talkBox.state.name, text: talkBox.state.text } : null; },
       get wins() { return wins; },

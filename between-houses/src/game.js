@@ -527,6 +527,7 @@ export function createGame(input, host = {}) {
   const dialog = createDialog(input);
   let scene = null; // a scripted scene in progress: { id, steps, i, wait, ... }
   let hold = 0; // frames Do has been held with nothing to do (a long hold is a nap)
+  let lockFree = false; // while he may not walk: no direction has been held since (so the next one is a fresh press)
   let swapT = 0; // frames the swap button has been down (a tap swaps; a hold shows the cats' sheet)
   let swapWant = false; // a tap is waiting for the cats to stand still
   let nap = null; // { t, gained } while the cats are napping
@@ -4399,7 +4400,14 @@ export function createGame(input, host = {}) {
         }
       } else {
         hold = 0;
-        // (the opening's first lesson is the meow, and nothing else: he does not walk until it is done)
+        // (the opening's first lesson is the meow, and nothing else: he does not walk until it is done.
+        // A direction pressed meanwhile, afresh, is told to the story, which may say why not: see `stuck`)
+        if (!story.flags.noWalk) lockFree = false;
+        else if (!input.dir()) lockFree = true;
+        else if (lockFree) {
+          lockFree = false;
+          quests.stuck(cats[leader]);
+        }
         const d = story.flags.noWalk ? null : input.dir();
         if (d) tryMove(d);
         else {
@@ -5409,7 +5417,12 @@ export function createGame(input, host = {}) {
       const bar = Math.round(scene.bars * 10);
       R(g, 0, 0, VW, bar, C.void);
       R(g, 0, VH - bar, VW, bar, C.void);
-      if (scene.canSkip) {
+      // On the top bar, at the right, one hint at a time. All through the Prologue, while there is a box to
+      // move on (and the scene is not being skipped), which button does that; otherwise how to skip the scene.
+      if (story.mode === 'story' && story.act === 0 && dialog.active && !scene.skip) {
+        const t = WORDS.title.next;
+        drawText(g, t, VW - textWidth(t) - 4, 1, C.grayD);
+      } else if (scene.canSkip) {
         const t = WORDS.title.skip;
         drawText(g, t, VW - textWidth(t) - 4, 1, scene.skip ? C.yellow : C.grayD);
       }

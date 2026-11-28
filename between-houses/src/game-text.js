@@ -14,7 +14,10 @@ export const WORDS = {
     back: 'Back',
     sandbox: 'Sandbox',
     help: 'Help',
-    skip: 'Hold Shift or ◯ to skip',
+    // (at the right end of the bar along the top of a scene: how to skip it; or, all through the Prologue while
+    // a box is up, which button moves the box on. One or the other, never both)
+    skip: 'Skip cutscene: hold Shift or ◯',
+    next: 'Next: Space or ✕',
     battleMode: 'Battle mode',
     sound: 'Sound: {mode}',
     overwrite: 'Are you sure? This will overwrite your current progress.',
@@ -304,7 +307,7 @@ export const WORDS = {
     goalSearch: 'Look for your human.',
     // the first lesson is the meow, and nothing else: he cannot walk until he has called three times
     tipMeow: 'Press Z or ▢ to meow. Call for your human: they might hear.',
-    calls: ['{c} meows. Only the rain answers.', "{c} calls again, louder. He's never had to call twice before.", '{c} meows as loudly as he can. A lamp flickers. Nobody comes.'],
+    calls: ['{c} meows. Only the rain answers. {c} decides to meow again.', "{c} calls again, louder. He's never had to call twice before. Maybe the next meow will work?", '{c} meows as loudly as he can. A lamp flickers. Nobody comes.'],
     goFind: ['shark', "Okay. Then I'll go find them."],
     tipMove: 'Walk with the arrows or the D-pad.',
     // (he stays on the pavers until the opening is over)
@@ -317,9 +320,12 @@ export const WORDS = {
     ],
     scarIntro: [
       "Scar doesn't ask twice. {S} has never been in a fight in his life.",
-      'Swipe is the only attack a house cat knows. Defend to reduce incoming damage by half.',
-      "Attacks can miss, depending on their accuracy and on the target's agility. ⌖ shows how likely a hit is to land.",
+      'Battles are turn-based. On your turn, Attack to deal damage, or Defend to reduce incoming damage by half.',
     ],
+    // two lessons that wait until what they are about is on the screen (`lessons` on the fight, in story.js):
+    // the first time the menu comes up, and the first time a target is being chosen
+    scarMenu: 'Arrows or D-pad to move through the menu. Space or ✕ to select. Shift or ◯ to go back.',
+    scarAim: "Attacks can miss, depending on their accuracy and on the target's agility. ⌖ shows how likely a hit is to land.",
     scarDraw: 'Neither of them can finish the fight. They stand in the rain, out of breath, and look at each other.',
     scarAsks: [
       ['scar', "You fight like a sofa cushion. But you didn't run. Who are you?"],
@@ -452,7 +458,7 @@ export const WORDS = {
       ['scar', 'But come back and tell me things. And house cat, remember: eat first. Always eat first.'],
     ],
     joined: '{O} has joined {S}. From now on the two of them go everywhere together.',
-    tipSwap: "Press C or △ to swap which cat leads. Hold it down to see the cats' stats. Press Esc or ☰ to open the menu.",
+    tipSwap: "Press C or △ to swap which cat leads. Hold it down to see the cats' stats. Press Esc or ☰ to open the menu and see your current goal.",
     tipRun: 'Hold Shift or ◯ to run.',
     bush: '{O} knows a dry bush on the far side of the lawn. They sleep there back to back, like cats who have done it for years.',
   },
@@ -473,7 +479,7 @@ export const WORDS = {
       ['orca', "She never stays to watch. The food's always good."],
       ['shark', 'Eat first.'],
     ],
-    introKeys: "Arrows or D-pad to walk. Space or ✕ to interact; hold it to nap. Z or ▢ to meow. Hold C or △ for the cats' stats. Esc or ☰ to open the menu.",
+    introKeys: "Arrows or D-pad to walk. Space or ✕ to interact; hold it to nap. Z or ▢ to meow. Hold C or △ for the cats' stats. Esc or ☰ to open the menu and see your current goal.",
     goalBreakfast: "Eat first. There's a plate behind the cafe.",
     breakfast: [
       ['orca', 'Better. Now: see that orange blur, over at the playground?'],

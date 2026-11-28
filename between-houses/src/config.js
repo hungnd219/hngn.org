@@ -1,7 +1,7 @@
 // Names and tunables — the first place to look when personalising the game.
 export const CONFIG = {
   title: 'Between Houses',
-  version: '1.0.3', // shown in a corner of the title menu (WORDS.title.version)
+  version: '1.0.4', // shown in a corner of the title menu (WORDS.title.version)
 
   // the first cat leads at the start; press C / the swap button to switch
   cats: [

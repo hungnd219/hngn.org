@@ -517,6 +517,13 @@ export function createQuests(api) {
       moved = since = mews = 0;
     });
   }
+  // He has been told to call, and the player has pressed a direction: the tip about the meow, again.
+  // (Walking is not taught until he has called three times, and the arrows did nothing and said nothing.)
+  function stuck() {
+    if (!on() || story().act !== 0 || a0() !== 'call' || api.busy()) return;
+    sfx.learn();
+    api.openDialog({ name: WORDS.notes.tip, kind: 'tip', text: W0.tipMeow });
+  }
   // Scar comes out of the rain at him: the first fight, and nobody wins it
   function scarComes(L) {
     const s = scar();
@@ -1998,5 +2005,5 @@ export function createQuests(api) {
     if ([bbc, flower, bare].some(atGarnet)) z.push({ box: GARNET_FRONT });
     return z;
   }
-  return { begin, begin0, ate, update, meow, talk, bump, blocks, keepOut, linesFor, present, roadHit, give, news, HOME, debug: { man, stripes, polka, scarf, vet, nb, mum, kid, kicked, BREAKFAST, balls, BALLS, bbc, flower, GARNET_CATS, ally, snake, rat, sons, THANOS_AT, RAT_PATCH, NAP_BARS, NAP_NEST, WAIT, NEST, BABY_AT, HOME_BOX, SPOT, get mamaArmed() { return mamaArmed; }, get snakeArmed() { return snakeArmed; }, get tags() { return tags; }, set tagAt(v) { tagAt = v; }, get escorting() { return escorting; }, get ratsArmed() { return ratsArmed; }, get grip() { return grip; }, get phase() { return phase; }, set phase(p) { phase = p; phaseT = 0; }, get watching() { return watching; } } };
+  return { begin, begin0, ate, update, meow, stuck, talk, bump, blocks, keepOut, linesFor, present, roadHit, give, news, HOME, debug: { man, stripes, polka, scarf, vet, nb, mum, kid, kicked, BREAKFAST, balls, BALLS, bbc, flower, GARNET_CATS, ally, snake, rat, sons, THANOS_AT, RAT_PATCH, NAP_BARS, NAP_NEST, WAIT, NEST, BABY_AT, HOME_BOX, SPOT, get mamaArmed() { return mamaArmed; }, get snakeArmed() { return snakeArmed; }, get tags() { return tags; }, set tagAt(v) { tagAt = v; }, get escorting() { return escorting; }, get ratsArmed() { return ratsArmed; }, get grip() { return grip; }, get phase() { return phase; }, set phase(p) { phase = p; phaseT = 0; }, get watching() { return watching; } } };
 }

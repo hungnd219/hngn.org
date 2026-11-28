@@ -23,6 +23,8 @@ export const A3 = {
     // the hint that there is more to see
     after: "The story is told. But there's still more to explore: the apartment and the garden are both yours to roam. Go and see friends downstairs with news, bring them presents, meet somebody by the BBQ shed in the evenings, or try new toys upstairs.",
   },
+  // (after that goal, at the end of the homecoming: what finishing the story has opened on the title menu)
+  battleTip: 'Battle mode is now available from the main menu. Select any character from the story to test your battle prowess.',
   // on a black screen, after what came of it all
   later: ['', 'Some time later...'],
 
