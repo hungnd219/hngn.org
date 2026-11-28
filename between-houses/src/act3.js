@@ -8,7 +8,7 @@
 //                   shed     Scar and the kittens cornered; Socks leads them over the road; three
 //                            dogs, and Thanos.
 //                   tobox    Back over the road to Mamacat's box, where everybody is. Sleep.
-//                   morning  Hưng and Trang find them there. From here friends can be asked along.
+//                   morning  Stripes and Polka find them there. From here friends can be asked along.
 //   act3-garnet.js  Garnet
 //                   garnet   What the others have seen: why Garnet.
 //                   doors    BBC with no collar, Flower above it all: two against two.
@@ -27,7 +27,7 @@
 //                   pick     One of them comes.
 //                   walk     The garden with nobody in it, the barrier, the long way round.
 //                   jetty    The three of them, a boat full of dogs, and the last fight.
-//                   won      A man in the river, and Hưng and Trang following Orca.
+//                   won      A man in the river, and Stripes and Polka following Orca.
 //                   after    The epilogue (home from the honeymoon), and free roaming for good.
 //
 // How far it has got is `story.quest.act3` (one of ACT3_STAGES); `story.act`

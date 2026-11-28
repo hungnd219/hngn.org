@@ -4,12 +4,12 @@
 // that plays them is src/act3-garnet.js.
 //
 // A scene is a list of lines, each [who, words]: '' is the narrator, and the
-// others are 'shark', 'orca', 'cheetos', 'mama', 'hung', 'trang', and the
+// others are 'shark', 'orca', 'cheetos', 'mama', 'stripes', 'polka', and the
 // names in `who` below (BBC, Flower, the guard, Flower's human, Purple
 // Scarf). A caption is a line at the bottom of the screen with no name on it
 // ({c} is whoever leads, {o} the other cat, {n} a friend who is along).
 //
-// Hưng and Trang never use each other's names: each calls the other "dummy".
+// Stripes and Polka never use each other's names: each calls the other "dummy".
 export const A3 = {
   // name plates of the people this part brings in
   names: {
@@ -25,7 +25,7 @@ export const A3 = {
     wait: "Be at Garnet's doors when Flower's human comes down for her delivery: between 4 and 5 in the afternoon. (Hold Space or ✕ to nap.)",
     flat: "Look around Purple Scarf's apartment. What's she doing with the dogs?",
     out: 'Get out, by her front door.',
-    regroup: 'Go home. Tell Hưng and Trang.',
+    regroup: 'Go home. Tell Stripes and Polka.',
   },
 
   // ----------------------------------------------------------------- garnet
@@ -352,9 +352,9 @@ export const A3 = {
   // the first time the pair are back in their own flat (the plan's draft, as it stands)
   firstHome: [
     ['', 'The apartment. The robot vacuum is back on its dock, turned to face the wall. Two bowls are full by the window, and the front door has been left open behind them.'],
-    ['trang', 'You came back.'],
-    ['hung', 'Of course they came back, dummy. This is where the food is.'],
-    ['trang', "That's not why."],
+    ['polka', 'You came back.'],
+    ['stripes', 'Of course they came back, dummy. This is where the food is.'],
+    ['polka', "That's not why."],
     ['orca', 'They left the door open.'],
     ['shark', "I said we'd come back."],
     ['orca', 'You said it was ours.'],

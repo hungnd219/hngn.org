@@ -6,8 +6,8 @@
 //   pick     One of the line is asked along (it can be changed until the fight).
 //   walk     The garden with nobody in it; the barrier; the long way round to the jetty.
 //   jetty    The three come down off the boat, Golf Club has his say, and the last fight begins.
-//   won      He swings at cats who are not there, and goes into the river. Orca fetches Hưng and
-//            Trang, and the neighbours follow. The End.
+//   won      He swings at cats who are not there, and goes into the river. Orca fetches Stripes and
+//            Polka, and the neighbours follow. The End.
 //   after    Free roaming, for good.
 //
 // What this part keeps in story.flags (all `a3j…`): (a3jOut, in older saves, is no longer used)
@@ -41,7 +41,7 @@ const GARNET_STEP = [[GARNET.doorX - 1, GARNET.y - 1], [GARNET.doorX + 2, GARNET
 const GARNET_OUT = [[GARNET.doorX, GARNET.y - 2], [GARNET.doorX + 1, GARNET.y - 2]];
 // in front of the kibble machine (Shark, Orca), as Act 2 has it
 const FEEDER = [[43, 3], [44, 3]];
-// the neighbours who come along the walkway behind Hưng and Trang
+// the neighbours who come along the walkway behind Stripes and Polka
 const NEIGHBOURS = [
   [{ k: '#17131a', s: '#e2ad84', h: '#2a2320', c: '#4a78b0', v: '#365a8a', p: '#3a3a44', o: '#d9d4cc' }, false],
   [{ k: '#17131a', s: '#f0c8a0', h: '#3b2a22', c: '#d8704a', v: '#b2542f', p: '#5a5148', o: '#f4f1ea' }, true],
@@ -60,7 +60,7 @@ export function create(ctx) {
   const X = (id) => ctx.extra(id);
   const fid = () => f().a3jFriend || null;
   // ('owner' in this part's words is Flower's human: the garden's story has an owner of its own)
-  const lines = (list, indoors) => ctx.lines(list.map(([who, t]) => [indoors && who === 'hung' ? 0 : indoors && who === 'trang' ? 1 : who === 'owner' ? 'fowner' : who, t]));
+  const lines = (list, indoors) => ctx.lines(list.map(([who, t]) => [indoors && who === 'stripes' ? 0 : indoors && who === 'polka' ? 1 : who === 'owner' ? 'fowner' : who, t]));
   const say1 = (l, indoors) => lines([l], indoors)[0];
 
   // ---- the people and animals of this part
@@ -77,8 +77,8 @@ export function create(ctx) {
   const scarf = () => X('l');
   const bbc = () => X('bbc');
   const flower = () => X('flower');
-  const hung = () => X('hung');
-  const trang = () => X('trang');
+  const stripes = () => X('stripes');
+  const polka = () => X('polka');
   const hide = (...list) => {
     for (const e of list) if (e) Object.assign(e, { hidden: true, pic: null, sat: false, holds: null });
   };
@@ -196,7 +196,7 @@ export function create(ctx) {
           if (Math.max(Math.abs(dx), Math.abs(dy)) === r && ctx.home.free(x + dx, y + dy) && !not.some(([a, b]) => a === x + dx && b === y + dy)) return [x + dx, y + dy];
     return [x, y];
   };
-  // In the flat: they tell Hưng and Trang everything, and are fed. Then they wait for the dark.
+  // In the flat: they tell Stripes and Polka everything, and are fed. Then they wait for the dark.
   function tellScene() {
     const H = ctx.home;
     const [sh, or] = ctx.cats();
@@ -453,7 +453,7 @@ export function create(ctx) {
       scarf().holds = durianBag();
     }
     for (const e of [club, green(), scarf()]) if (e) Object.assign(e, { pic: null, sat: false });
-    hide(...nbs, son, hung(), trang());
+    hide(...nbs, son, stripes(), polka());
     if (!cats) return;
     ctx.putCat(0, ...FACE.shark, 'right');
     ctx.putCat(1, ...FACE.orca, 'right');
@@ -586,7 +586,7 @@ export function create(ctx) {
     stopFollowing(was);
     if (was && was !== 'bbc' && stray(was)) strays.settle(stray(was));
     delete f().a3jFriend;
-    hide(club, green(), scarf(), ...nbs, son, hung(), trang(), bbc(), flower(), X('fowner'));
+    hide(club, green(), scarf(), ...nbs, son, stripes(), polka(), bbc(), flower(), X('fowner'));
     ctx.showCat(0, true);
     ctx.showCat(1, true);
     if (f().a3jDone) return;
@@ -608,8 +608,8 @@ export function create(ctx) {
   function wonScene() {
     const id = fid();
     const friend = friendActor();
-    const h = hung();
-    const t = trang();
+    const h = stripes();
+    const t = polka();
     const fl = flower();
     const owner = X('fowner');
     // who has fetched the humans: the ones from the line who did not come to the jetty, and are not
@@ -624,7 +624,7 @@ export function create(ctx) {
     // two who chased them backed up against the boat, everybody else behind (down the gangway and along it)
     const ON = {
       shark: [26, 9], orca: [26, 10], friend: [25, 8], green: [29, 8], l: [29, 10],
-      hung: [24, 9], trang: [24, 10], fowner: [23, 8], flower: [24, 8],
+      stripes: [24, 9], polka: [24, 10], fowner: [23, 8], flower: [24, 8],
       cheetos: [21, 9], socks: [21, 10], bbc: [20, 10], thanos: [20, 9], son: [19, 9],
       nbs: [[22, 9], [22, 10], [22, 11], [23, 11], [23, 12]],
     };
@@ -766,7 +766,7 @@ export function create(ctx) {
       { walks: [['green', ...P(...ON.green)], ['l', ...P(...ON.l)]] },
       { face: ['green', 'left'] },
       { face: ['l', 'left'] },
-      // Orca has seen Hưng and Trang among them: he goes over, and asks
+      // Orca has seen Stripes and Polka among them: he goes over, and asks
       ...lines(W.won.spots),
       { walks: [['orca', ...P(33, 15)]] },
       { face: ['orca', 'right'] },
@@ -784,7 +784,7 @@ export function create(ctx) {
       { camera: 'orca' },
       { walks: [
         ['orca', ...P(...ON.orca)], ['shark', ...P(...ON.shark)], ...(id ? [[id, ...P(...ON.friend)]] : []),
-        ['hung', ...P(...ON.hung)], ['trang', ...P(...ON.trang)], ...(owner ? [['fowner', ...P(...ON.fowner)]] : []), ...(fl ? [['flower', ...P(...ON.flower)]] : []),
+        ['stripes', ...P(...ON.stripes)], ['polka', ...P(...ON.polka)], ...(owner ? [['fowner', ...P(...ON.fowner)]] : []), ...(fl ? [['flower', ...P(...ON.flower)]] : []),
         ...cats.filter(([k]) => actorOf(k)).map(([k]) => [idOf(k), ...P(...ON[k])]),
         ...nbs.map((e, i) => [e.id, ...P(...ON.nbs[i])]),
       ], frames: 8 },
@@ -848,7 +848,7 @@ export function create(ctx) {
   function freeAll() {
     afterHomes(true);
     for (const id of ['cheetos', 'socks', 'mama', 'thanos', 'baby']) letGo(stray(id));
-    hide(club, green(), scarf(), ...nbs, son, hung(), trang(), X('fowner'));
+    hide(club, green(), scarf(), ...nbs, son, stripes(), polka(), X('fowner'));
     if (bbc()) ctx.placeExtra(bbc(), ...GARNET_STEP[0], 'down');
     if (flower()) ctx.placeExtra(flower(), ...GARNET_STEP[1], 'down');
     // Scar, by her new box the first time, and her own cat from there
@@ -872,7 +872,12 @@ export function create(ctx) {
     if (st !== 'after') afterHomes(false);
     if (!MINE.includes(st)) return void hide(club, greenShirt, ...nbs, son);
     if (st !== 'jetty' && st !== 'won') hide(club, green(), scarf(), ...nbs, son);
-    if (st === 'regroup') return void hide(bbc(), flower());
+    if (st === 'regroup') {
+      // (the goal as the game words it now: a game saved here keeps the words it was saved with, and
+      // the two humans were called something else before version 1.0.2)
+      if (!f().a3jTold) ctx.story().goal = GARNET_WORDS.goals.regroup;
+      return void hide(bbc(), flower());
+    }
     hide(flower());
     if (st === 'call' && !f().a3jLine) return waitAtBox();
     if (st === 'after') {
@@ -946,7 +951,7 @@ export function create(ctx) {
       if (fid() !== 'bbc') ask('bbc');
       return true;
     }
-    return [club, greenShirt, ...nbs, son].includes(e) || (MINE.includes(st) && ['l', 'hung', 'trang'].includes(e.id));
+    return [club, greenShirt, ...nbs, son].includes(e) || (MINE.includes(st) && ['l', 'stripes', 'polka'].includes(e.id));
   }
   // the barrier, the first time it is walked into
   function object(cat, o) {

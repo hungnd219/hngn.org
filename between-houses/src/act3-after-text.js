@@ -1,7 +1,7 @@
 // The epilogue's words: what comes after the jetty, and everything that is new
 // in the flat and the garden once the story is told (see act3-after.js).
 //
-// A line is [who, text]: '' the narrator; 'shark', 'orca'; 'hung', 'trang';
+// A line is [who, text]: '' the narrator; 'shark', 'orca'; 'stripes', 'polka';
 // the garden's cats by their ids ('cheetos', 'socks', 'mama', 'baby', 'scar',
 // 'thanos', 'bbc', 'flower'); 'owner' (Flower's human) and 'vet'.
 // {c} is the cat who is doing it and {o} the other one, as everywhere.
@@ -31,32 +31,32 @@ export const A3 = {
     dark: ['', "The apartment, late in the evening. The lights are off, and it's been very quiet in here for ten days."],
     door: ['', 'A key turns. The front door opens, the lights come on, and two suitcases come in behind two humans.'],
     in: [
-      ['trang', "We're home! ...Where are they? Sharkie? Orkie?"],
-      ['hung', 'Ten days in Hokkaido, dummy, and the first thing you say in your own house is the cats.'],
-      ['trang', 'It was you who put our honeymoon off for the cats.'],
-      ['hung', 'It was a year late already. They had only just moved in. What was a little longer?'],
-      ['trang', 'It was wonderful. The mountains, and the ice cream, and all of it. But every night I still looked at photos of these two.'],
-      ['hung', "Same here."],
+      ['polka', "We're home! ...Where are they? Sharkie? Orkie?"],
+      ['stripes', 'Ten days in Hokkaido, dummy, and the first thing you say in your own house is the cats.'],
+      ['polka', 'It was you who put our honeymoon off for the cats.'],
+      ['stripes', 'It was a year late already. They had only just moved in. What was a little longer?'],
+      ['polka', 'It was wonderful. The mountains, and the ice cream, and all of it. But every night I still looked at photos of these two.'],
+      ['stripes', "Same here."],
     ],
     run: ['', 'From the far end of the apartment: eight paws on the floor, practically galloping to the front door.'],
     meow: [
       ['shark', 'You came back.'],
       ['orca', "Of course they came back. ...I counted the days. Don't tell them."],
-      ['', 'What Hưng and Trang hear is this: meow. Mrrow. Meow, meow. Me-eow. MEOW! This time they understand all of it.'],
-      ['hung', 'Yes. Yes! We missed you too. Both of you.'],
+      ['', 'What Stripes and Polka hear is this: meow. Mrrow. Meow, meow. Me-eow. MEOW! This time they understand all of it.'],
+      ['stripes', 'Yes. Yes! We missed you too. Both of you.'],
     ],
     toys: [
-      ['trang', "Wait. We brought you something. Where's the small bag?"],
+      ['polka', "Wait. We brought you something. Where's the small bag?"],
       ['', 'Two soft toys, round and fat, with cat ears and little striped horns: a red one and a blue one. Each has two small fangs and a very pleased face.'],
-      ['trang', 'Demons. One each. Demons for my two little naughty demons.'],
+      ['polka', 'Demons. One each. Demons for my two little naughty demons.'],
       ['orca', 'It has my face.'],
       ['shark', 'It has your teeth.'],
     ],
     orchid: [
-      ['', 'Hưng brings in one more thing from the hallway: a white orchid in a pot, with a card tied to it.'],
-      ['hung', "From Flower's human, over in Garnet. \"Congratulations on the wedding. Better late than never, like your honeymoon.\""],
-      ['trang', "She came up to feed these two every day that we were away. I'm putting this in our bedroom, in the corner."],
-      ['trang', "And you two aren't eating it, okay? I looked it up: orchids are safe for cats. That's not the same as allowed."],
+      ['', 'Stripes brings in one more thing from the hallway: a white orchid in a pot, with a card tied to it.'],
+      ['stripes', "From Flower's human, over in Garnet. \"Congratulations on the wedding. Better late than never, like your honeymoon.\""],
+      ['polka', "She came up to feed these two every day that we were away. I'm putting this in our bedroom, in the corner."],
+      ['polka', "And you two aren't eating it, okay? I looked it up: orchids are safe for cats. That's not the same as allowed."],
       ['orca', "She said it's safe."],
       ['shark', "She said it's not allowed."],
       ['orca', 'She said safe FIRST.'],

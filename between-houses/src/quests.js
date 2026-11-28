@@ -3,12 +3,12 @@
 // calls them The Tabby and The Orange (see names.js): in the words, {S} and
 // {O} stand for whatever the two are called at the time.
 // Cheetos: Shark and Orca meet him, play-fight him, hear about the man who
-// hogs the monkey bars, meow him off them, and are noticed by Hưng and Trang
+// hogs the monkey bars, meow him off them, and are noticed by Stripes and Polka
 // for the first time.
 // Socks: at night something keeps tagging them; she fights, then asks for
 // help. The rats have her sock, across the road she has not dared cross since
 // a motorbike took one of her lives. The three cross together, the pair clear
-// out the rats, and the sock turns out to be Hưng's.
+// out the rats, and the sock turns out to be Stripes's.
 // Mamacat: her kitten is lost on the building side of the road. The pair find
 // him at the wrong humming box, a snake goes for him, and Shark gets in the
 // way (and has learned Protect). The pair fight the snake, which bites Shark
@@ -20,7 +20,7 @@
 // turns up at the shed with the next thing; after the third she tells them where Thanos walks.
 // Thanos: Babycat's father, who owes his son a great many dinners. Nobody finds him by looking:
 // Scar knows where he is at midnight, on the pavers by the BBQ shed. Beaten, he gets back up
-// with two of his sons, and that fight is lost; Hưng and Trang come running,
+// with two of his sons, and that fight is lost; Stripes and Polka come running,
 // and carry the pair home. End of Act 1.
 //
 // The game calls in here at a few points (see createGame): every frame while
@@ -50,7 +50,7 @@ const DARK = { k: '#0b0a10', s: '#17151e', h: '#0b0a10', c: '#14121b', v: '#1010
 // garden tiles
 const HOME = [[72, 29], [73, 29]]; // where the pair wake up
 const S_TILE = [BARS.x + 3, BARS.y]; // under the middle of the monkey bars
-const WATCHERS = [[52, 33], [53, 33]]; // where Hưng and Trang stand of an evening (or the nearest free tiles)
+const WATCHERS = [[52, 33], [53, 33]]; // where Stripes and Polka stand of an evening (or the nearest free tiles)
 const EVENING = [17, 20.5]; // when the man is at the bars, and the two of them are about
 const REST = 210; // frames he stands between sets
 const HANG = 330; // ...and hangs for
@@ -61,7 +61,7 @@ const NEST = [9, PLANT_S]; // the rats' bush, left of Amber's doors
 const BY_NEST = [[9, PLANT_S - 1], [10, PLANT_S - 1], [11, PLANT_S - 2]]; // where Shark, Orca and Socks stand in front of it
 const SOCK_AT = [8, PLANT_S - 2]; // on the open pavement, clear of the palm
 // where the pair sleep after each of the big days: a shrub by the playground, and the bush the rats have left
-const NAP_BARS = [[44, 34], [45, 34]]; // (the bush one along to the west: the nearer one is where Hưng and Trang have been standing)
+const NAP_BARS = [[44, 34], [45, 34]]; // (the bush one along to the west: the nearer one is where Stripes and Polka have been standing)
 const NAP_NEST = [[NEST[0], NEST[1]], [NEST[0] + 1, NEST[1]]];
 // the way home from the vet's: where the car pulls up on the building side (its nose, in tiles), and
 // where the two of them get out, on the kerb at Amber's crossing
@@ -91,7 +91,7 @@ const SPOT = {
   round: [at(0, -2), at(-2, -2)],
   // (the night's bush: west of the palm, whose crown would hide all four of them)
   nap: [at(-8, 1), at(-9, 1)], mamaWaits: at(-7, -1), babySleeps: at(-7, 1),
-  allyOff: at(-10, -1), hungFrom: at(-13, -1), trangFrom: at(-14, -1), hung: at(-4, -1), trang: at(-5, -1), plate: at(1, -1),
+  allyOff: at(-10, -1), stripesFrom: at(-13, -1), polkaFrom: at(-14, -1), stripes: at(-4, -1), polka: at(-5, -1), plate: at(1, -1),
 };
 
 // Mission select ("Select chapter" on the title menu): each entry starts the
@@ -218,9 +218,9 @@ export function createQuests(api) {
     return { stand: all, sit: all, walk: { left: [cv, cv], right: [cv, cv], down: [cv, cv], up: [cv, cv] } };
   })();
   const balls = BALLS.map((_, i) => api.addExtra('ball' + i, '', ballSprite, { low: true }));
-  const hung = api.addExtra('hung', 'Hưng', makeHuman(HUMAN_PALS.him, false, { coat: HUMAN_COATS.him }));
+  const stripes = api.addExtra('stripes', 'Stripes', makeHuman(HUMAN_PALS.him, false, { coat: HUMAN_COATS.him }));
   const lady = api.addExtra('lady', W.ladyName, makeHuman(HUMAN_PALS.owner, true, { coat: HUMAN_COATS.owner })); // Flower's human, in Act 1
-  const trang = api.addExtra('trang', 'Trang', makeHuman(HUMAN_PALS.her, true, { coat: HUMAN_COATS.her }));
+  const polka = api.addExtra('polka', 'Polka', makeHuman(HUMAN_PALS.her, true, { coat: HUMAN_COATS.her }));
   let grip = 3; // good meows he can take before he falls
   let watching = -1; // which cat he has his eye on (its index), or -1
   let phase = 'rest';
@@ -267,7 +267,7 @@ export function createQuests(api) {
     ...lines(talk),
     { wait: 50 },
     { fade: 'out' },
-    { call: () => { api.sleepOver(); hung.hidden = trang.hidden = scarf.hidden = true; leave(); if (during) during(); } },
+    { call: () => { api.sleepOver(); stripes.hidden = polka.hidden = scarf.hidden = true; leave(); if (during) during(); } },
     { wait: 50 },
     { fade: 'in' },
     { wait: 50 },
@@ -280,8 +280,8 @@ export function createQuests(api) {
   };
   function watchersArrive() {
     const [a, b] = spots();
-    api.placeExtra(hung, a[0], a[1], 'right');
-    api.placeExtra(trang, b[0], b[1], 'right');
+    api.placeExtra(stripes, a[0], a[1], 'right');
+    api.placeExtra(polka, b[0], b[1], 'right');
     return [a, b];
   }
 
@@ -620,24 +620,24 @@ export function createQuests(api) {
       { call: () => { kicked.hidden = true; delete kicked.fast; delete man.fast; } },
       ...lines(W0.kick.slice(1)),
       // ...and somebody who has come out with the evening's plate
-      { call: () => api.placeExtra(trang, softFrom[0], softFrom[1], 'right') },
-      { walk: ['trang', ...S(-3, 1)] },
+      { call: () => api.placeExtra(polka, softFrom[0], softFrom[1], 'right') },
+      { walk: ['polka', ...S(-3, 1)] },
       { face: ['s', 'left'] },
-      { bubble: ['trang', '!', 50] },
+      { bubble: ['polka', '!', 50] },
       ...lines(W0.toldOff.slice(0, 3)),
       { say: W0.toldOff[3] },
       { walk: ['s', ...S(9, 1)] },
       { call: () => (man.hidden = true) },
       { say: W0.some },
-      { camera: 'trang' },
+      { camera: 'polka' },
       { wait: 30 },
-      { walk: ['trang', ...S(-1, 0)] },
+      { walk: ['polka', ...S(-1, 0)] },
       { wait: 50 },
       { call: () => { people.kibble.push({ x: P[0], y: P[1], born: api.clock(), keep: true }); sfx.land(); } },
       { camera: [GOX + P[0], P[1]] },
       { wait: 110 },
-      { walk: ['trang', GOX + softFrom[0], softFrom[1]] },
-      { call: () => (trang.hidden = true) },
+      { walk: ['polka', GOX + softFrom[0], softFrom[1]] },
+      { call: () => (polka.hidden = true) },
       { wait: 80 },
       { camera: null },
       { wait: 40 },
@@ -656,7 +656,7 @@ export function createQuests(api) {
       { call: () => api.startFight(ENCOUNTERS.orcaMeet(), { quiet: true, then: secondPlate }) },
     ]);
   }
-  // Whoever won: Hưng and Trang, who saw it, come back out. There is no reason to fight: there is
+  // Whoever won: Stripes and Polka, who saw it, come back out. There is no reason to fight: there is
   // enough for everybody, and here is a second plate. The pair eat side by side, and the two humans go.
   // The Orange has always eaten alone; what he takes from it, for now, is that two cats get two plates.
   function secondPlate() {
@@ -671,20 +671,20 @@ export function createQuests(api) {
       { camera: [GOX + P[0], P[1] + 1] },
       { wait: 30 },
       { say: W0.back },
-      { call: () => { api.placeExtra(trang, from[0], from[1], 'right'); api.placeExtra(hung, from[0] - 1, from[1], 'right'); } },
-      { walks: [['trang', ...S(-3, 1)], ['hung', ...S(-3, 0)]] },
-      { face: ['trang', 'right'] },
-      { face: ['hung', 'right'] },
+      { call: () => { api.placeExtra(polka, from[0], from[1], 'right'); api.placeExtra(stripes, from[0] - 1, from[1], 'right'); } },
+      { walks: [['polka', ...S(-3, 1)], ['stripes', ...S(-3, 0)]] },
+      { face: ['polka', 'right'] },
+      { face: ['stripes', 'right'] },
       { face: ['shark', 'left'] },
       { face: ['orca', 'left'] },
       { bubble: ['orca', '!', 50] },
       ...lines(W0.enough),
-      { walk: ['hung', ...S(-1, 2)] },
+      { walk: ['stripes', ...S(-1, 2)] },
       { wait: 30 },
       { call: () => { plate2 = { x: P[0], y: P[1] + 2, born: api.clock(), keep: true }; people.kibble.push(plate2); sfx.land(); } },
       { say: W0.second },
-      { walk: ['hung', ...S(-3, 0)] },
-      { face: ['hung', 'right'] },
+      { walk: ['stripes', ...S(-3, 0)] },
+      { face: ['stripes', 'right'] },
       // one plate each
       { walks: [['orca', ...S(1, 0)], ['shark', ...S(1, 2)]] },
       { call: () => { for (const cat of api.cats()) { cat.dir = 'left'; api.act(cat, 'eat', 150); } } },
@@ -692,8 +692,8 @@ export function createQuests(api) {
       { call: () => { for (const k of [first(), plate2]) if (k) people.eat(k); api.mend(MEND.plate); sfx.purr(); } },
       { say: W0.twoPlates },
       ...lines(W0.friends),
-      { walks: [['trang', GOX + from[0], from[1]], ['hung', GOX + from[0] - 1, from[1]]] },
-      { call: () => { hung.hidden = trang.hidden = true; } },
+      { walks: [['polka', GOX + from[0], from[1]], ['stripes', GOX + from[0] - 1, from[1]]] },
+      { call: () => { stripes.hidden = polka.hidden = true; } },
       { wait: 40 },
       // the humans gone, Scar comes back out from under her roof
       { walk: ['scar', ...S(3, 3)] },
@@ -703,7 +703,7 @@ export function createQuests(api) {
       ...lines(W0.math),
       { camera: null },
     ], () => {
-      hung.hidden = trang.hidden = true;
+      stripes.hidden = polka.hidden = true;
       for (const k of [first(), plate2]) if (k && people.kibble.includes(k)) people.eat(k);
       manWithClub();
     });
@@ -895,7 +895,7 @@ export function createQuests(api) {
     q().cheetos = 'done';
     q().socks = 'tell'; // (nothing of hers until Scar has heard about this)
     falling = true;
-    const home = hung.hidden ? watchersArrive() : [[hung.tx - GOX, hung.ty], [trang.tx - GOX, trang.ty]];
+    const home = stripes.hidden ? watchersArrive() : [[stripes.tx - GOX, stripes.ty], [polka.tx - GOX, polka.ty]];
     const [hx, hy] = api.freeNear(L.tx - GOX - 2, L.ty + 1, 2);
     const [tx, ty] = api.freeNear(L.tx - GOX - 3, L.ty + 1, 2, [[hx, hy]]);
     const plate = api.freeNear(L.tx - GOX - 1, L.ty + 1, 1, [[hx, hy], [tx, ty]]);
@@ -924,14 +924,14 @@ export function createQuests(api) {
       { bubble: ['cheetos', '!!', 50] },
       ...lines(W.after),
       // and so do the two humans who saw it all from across the playground
-      { walk: ['trang', GOX + tx, ty] },
-      { walk: ['hung', GOX + hx, hy] },
-      { face: ['trang', 'right'] },
-      { face: ['hung', 'right'] },
+      { walk: ['polka', GOX + tx, ty] },
+      { walk: ['stripes', GOX + hx, hy] },
+      { face: ['polka', 'right'] },
+      { face: ['stripes', 'right'] },
       ...lines(W.meeting.slice(0, 3)),
       { call: () => { kib = { x: plate[0], y: plate[1], born: api.clock() }; people.kibble.push(kib); sfx.land(); } },
       { say: W.meeting[3] },
-      { walk: ['hung', GOX + hx - 1, hy] },
+      { walk: ['stripes', GOX + hx - 1, hy] },
       { say: W.coffee },
       { call: () => { for (const cat of api.cats()) { cat.dir = plate[0] < cat.tx - GOX ? 'left' : 'down'; api.act(cat, 'eat', 150); } } },
       { wait: 150 },
@@ -939,8 +939,8 @@ export function createQuests(api) {
       { say: W.eaten },
       stronger(W.boost),
       { say: W.bye },
-      { walk: ['hung', GOX + home[0][0], home[0][1]] },
-      { walk: ['trang', GOX + home[1][0], home[1][1]] },
+      { walk: ['stripes', GOX + home[0][0], home[0][1]] },
+      { walk: ['polka', GOX + home[1][0], home[1][1]] },
       { say: W.cheetosNight },
       // off he goes, to his bars; the night; and in the morning there is somebody to tell
       { walk: ['cheetos', GOX + toBars[0], toBars[1]] },
@@ -1086,19 +1086,19 @@ export function createQuests(api) {
     const c = spot(5, 0, [a, b]);
     const east = api.freeNear(c[0] + 15, c[1], 3, [a, b, c]); // the way to Garnet, along the pavement
     const plate = api.freeNear(SOCK_AT[0], SOCK_AT[1], 1, [a, b, c]);
-    const nbAt = api.freeNear(b[0], b[1] + 1, 2, [a, b, c, plate]); // the neighbour, beside Hưng and Trang
+    const nbAt = api.freeNear(b[0], b[1] + 1, 2, [a, b, c, plate]); // the neighbour, beside Stripes and Polka
     let kib = null;
     api.playScene('meeting-2', [
       { bubble: ['socks', '♥♥', 90] },
       { sfx: 'purr' },
       ...lines(W.sockGiven),
       { say: W.meeting2[0] },
-      { call: () => { api.placeExtra(hung, door[0], door[1], 'up'); sfx.door(); } },
-      { walk: ['hung', GOX + a[0], a[1]] },
-      { call: () => api.placeExtra(trang, door[0] + 1, door[1], 'up') },
-      { walk: ['trang', GOX + b[0], b[1]] },
-      { face: ['hung', 'left'] },
-      { face: ['trang', 'left'] },
+      { call: () => { api.placeExtra(stripes, door[0], door[1], 'up'); sfx.door(); } },
+      { walk: ['stripes', GOX + a[0], a[1]] },
+      { call: () => api.placeExtra(polka, door[0] + 1, door[1], 'up') },
+      { walk: ['polka', GOX + b[0], b[1]] },
+      { face: ['stripes', 'left'] },
+      { face: ['polka', 'left'] },
       ...lines(W.meeting2.slice(1)),
       // and somebody else, from the other building
       { call: () => api.placeExtra(scarf, east[0], east[1], 'left') },
@@ -1108,8 +1108,8 @@ export function createQuests(api) {
       { face: ['l', 'left'] },
       { camera: null },
       ...lines(W.scarfLooks),
-      { face: ['hung', 'right'] },
-      { face: ['trang', 'right'] },
+      { face: ['stripes', 'right'] },
+      { face: ['polka', 'right'] },
       ...lines(W.scarfTalk.slice(0, 5)),
       // (and a neighbour, on his way out, who has heard enough)
       { call: () => { api.placeExtra(nb, door[0] + 1, door[1], 'up'); sfx.door(); } },
@@ -1120,8 +1120,8 @@ export function createQuests(api) {
       { say: W.scarfGoes },
       { walk: ['l', GOX + east[0], east[1]] },
       { call: () => (scarf.hidden = true) },
-      { face: ['hung', 'left'] },
-      { face: ['trang', 'left'] },
+      { face: ['stripes', 'left'] },
+      { face: ['polka', 'left'] },
       { face: ['nb', 'left'] },
       ...lines(W.nbGoes),
       { walk: ['nb', GOX + door[0] + 1, door[1]] },
@@ -1136,10 +1136,10 @@ export function createQuests(api) {
       { say: W.groom },
       learned(W.learnGroom, 'GROOM'),
       { say: W.bye2 },
-      { walk: ['trang', GOX + door[0] + 1, door[1]] },
-      { call: () => (trang.hidden = true) },
-      { walk: ['hung', GOX + door[0], door[1]] },
-      { call: () => { hung.hidden = true; sfx.door(); } },
+      { walk: ['polka', GOX + door[0] + 1, door[1]] },
+      { call: () => (polka.hidden = true) },
+      { walk: ['stripes', GOX + door[0], door[1]] },
+      { call: () => { stripes.hidden = true; sfx.door(); } },
       // Socks is off with her sock; the night in the rats' old bush; and in the morning there is somebody to tell
       { say: W.socksGoes },
       { call: () => vanish(s) },
@@ -1380,9 +1380,9 @@ export function createQuests(api) {
       { say: W.allyGoes },
       { walk: ['ally', ...S('allyOff')] },
       { call: () => (ally.hidden = true) },
-      { call: () => { api.placeExtra(hung, SPOT.hungFrom[0], SPOT.hungFrom[1], 'right'); api.placeExtra(trang, SPOT.trangFrom[0], SPOT.trangFrom[1], 'right'); } },
-      { walk: ['hung', ...S('hung')] },
-      { walk: ['trang', ...S('trang')] },
+      { call: () => { api.placeExtra(stripes, SPOT.stripesFrom[0], SPOT.stripesFrom[1], 'right'); api.placeExtra(polka, SPOT.polkaFrom[0], SPOT.polkaFrom[1], 'right'); } },
+      { walk: ['stripes', ...S('stripes')] },
+      { walk: ['polka', ...S('polka')] },
       ...lines(W.meeting3),
       { call: () => { kib = { x: SPOT.plate[0], y: SPOT.plate[1], born: api.clock() }; people.kibble.push(kib); sfx.land(); } },
       { call: () => { sh.dir = 'up'; or.dir = 'left'; for (const k of api.cats()) api.act(k, 'eat', 150); } },
@@ -1391,10 +1391,10 @@ export function createQuests(api) {
       { say: W.eaten3 },
       stronger(W.boost3),
       ...lines(W.bye3),
-      { walk: ['trang', ...S('trangFrom')] },
-      { call: () => (trang.hidden = true) },
-      { walk: ['hung', ...S('hungFrom')] },
-      { call: () => (hung.hidden = true) },
+      { walk: ['polka', ...S('polkaFrom')] },
+      { call: () => (polka.hidden = true) },
+      { walk: ['stripes', ...S('stripesFrom')] },
+      { call: () => (stripes.hidden = true) },
       // the night in the bush by the wrong box; the two of them do not go home either
       ...overnight(SPOT.nap, () => {
         sit(m, SPOT.mamaWaits, 'left');
@@ -1409,7 +1409,7 @@ export function createQuests(api) {
       { goal: W.goalNext3 },
     ], () => {
       // the two of them are their own cats again
-      ally.hidden = hung.hidden = trang.hidden = true;
+      ally.hidden = stripes.hidden = polka.hidden = true;
       m.pause = b.pause = 0;
     });
   }
@@ -1506,8 +1506,8 @@ export function createQuests(api) {
     // The way home. Rain again, a car pulling up, and two bags: the opening, the other way
     // round. This time the bags are carried indoors.
     { call: () => {
-      trang.torch = false;
-      hung.hidden = trang.hidden = t.hidden = true;
+      polka.torch = false;
+      stripes.hidden = polka.hidden = t.hidden = true;
       for (const s of sons) s.hidden = true;
       api.showCat(0, false);
       api.showCat(1, false);
@@ -1526,24 +1526,24 @@ export function createQuests(api) {
     { say: ['', W.rainHome] },
     { until: () => !homeCar || homeCar.v < 0.05 },
     { wait: 50 },
-    { call: () => { api.placeExtra(hung, HOME_KERB[0][0], HOME_KERB[0][1], 'down'); hung.holds = bagSprite.stand.down; hung.fast = trang.fast = 17; sfx.door(); } },
+    { call: () => { api.placeExtra(stripes, HOME_KERB[0][0], HOME_KERB[0][1], 'down'); stripes.holds = bagSprite.stand.down; stripes.fast = polka.fast = 17; sfx.door(); } },
     { wait: 40 },
-    { call: () => { api.placeExtra(trang, HOME_KERB[1][0], HOME_KERB[1][1], 'down'); trang.holds = bagSprite.stand.down; sfx.door(); } },
+    { call: () => { api.placeExtra(polka, HOME_KERB[1][0], HOME_KERB[1][1], 'down'); polka.holds = bagSprite.stand.down; sfx.door(); } },
     { wait: 50 },
     { say: ['', W.bagsHome] },
-    { walk: ['hung', GOX + ENTRANCE.doorX + 1, ENTRANCE.y] },
-    { face: ['hung', 'down'] },
+    { walk: ['stripes', GOX + ENTRANCE.doorX + 1, ENTRANCE.y] },
+    { face: ['stripes', 'down'] },
     { wait: 25 },
-    { call: () => { hung.hidden = true; sfx.door(); } },
-    { walk: ['trang', GOX + ENTRANCE.doorX, ENTRANCE.y] },
-    { face: ['trang', 'down'] },
+    { call: () => { stripes.hidden = true; sfx.door(); } },
+    { walk: ['polka', GOX + ENTRANCE.doorX, ENTRANCE.y] },
+    { face: ['polka', 'down'] },
     { wait: 25 },
-    { call: () => { trang.hidden = true; sfx.door(); if (homeCar) homeCar.stopAt = null; } },
+    { call: () => { polka.hidden = true; sfx.door(); if (homeCar) homeCar.stopAt = null; } },
     { wait: 130 },
     { say: ['', W.carriedHome] },
     { fade: 'out' },
     { camera: null },
-    { call: () => { hung.holds = trang.holds = null; delete hung.fast; delete trang.fast; hung.hidden = trang.hidden = true; api.adopt(); } },
+    { call: () => { stripes.holds = polka.holds = null; delete stripes.fast; delete polka.fast; stripes.hidden = polka.hidden = true; api.adopt(); } },
     { wait: 40 },
     // (Act 2 opens in the dark, where this leaves off: see begin in home.js)
   ];
@@ -1583,14 +1583,14 @@ export function createQuests(api) {
         t.pose = 'stand';
         api.placeExtra(sons[0], s0[0], s0[1], 'left');
         api.placeExtra(sons[1], s1[0], s1[1], 'left');
-        hung.hidden = trang.hidden = true;
+        stripes.hidden = polka.hidden = true;
       } },
       { wait: 60 },
       { say: ['', W.down] },
-      { call: () => { api.placeExtra(trang, from[0], from[1], 'right'); api.placeExtra(hung, from[0] - 1, from[1], 'right'); trang.torch = true; sfx.startle(); } },
+      { call: () => { api.placeExtra(polka, from[0], from[1], 'right'); api.placeExtra(stripes, from[0] - 1, from[1], 'right'); polka.torch = true; sfx.startle(); } },
       { say: W.hey },
-      { walk: ['trang', GOX + h[0], h[1]] },
-      { walk: ['hung', GOX + g[0], g[1]] },
+      { walk: ['polka', GOX + h[0], h[1]] },
+      { walk: ['stripes', GOX + g[0], g[1]] },
       { bubble: ['thanos', 'Hsss!', 60] },
       { sfx: 'hiss' },
       { say: ['', W.thanosGoes] },
@@ -1738,15 +1738,15 @@ export function createQuests(api) {
       else if (b.hidden && api.tileFree(BALLS[i][0], BALLS[i][1])) api.placeExtra(b, BALLS[i][0], BALLS[i][1], 'down');
     });
     const eve = evening();
-    // Hưng and Trang, out for their evening walk: they leave a plate, and watch the playground
-    if (eve && hung.hidden && !story().adopted) {
+    // Stripes and Polka, out for their evening walk: they leave a plate, and watch the playground
+    if (eve && stripes.hidden && !story().adopted) {
       const [a] = watchersArrive();
       if (plateDay !== api.day()) {
         plateDay = api.day();
         const spot = api.freeNear(a[0] + 2, a[1] + 1, 2);
         people.kibble.push({ x: spot[0], y: spot[1], born: api.clock() });
       }
-    } else if (!eve && !hung.hidden && !api.visible(hung.px, hung.py)) hung.hidden = trang.hidden = true;
+    } else if (!eve && !stripes.hidden && !api.visible(stripes.px, stripes.py)) stripes.hidden = polka.hidden = true;
 
     const stage = q().cheetos;
     if (stage === 'bars') {
@@ -1921,7 +1921,7 @@ export function createQuests(api) {
       api.act(cat, 'look', 40);
       return api.say(api.fmt(W.ball[first ? 0 : 1], cat));
     }
-    if (e !== hung && e !== trang) return undefined;
+    if (e !== stripes && e !== polka) return undefined;
     api.bubble(e, q().cheetos === 'done' ? '♥' : '?', 70);
     api.act(cat, 'look', 40);
     api.say(api.fmt(pick((q().cheetos === 'done' ? W.friendly : W.wary)[cat.cfg.id]), cat));
@@ -1977,7 +1977,7 @@ export function createQuests(api) {
 
   // Places the story keeps clear of the garden's passers-by and cats for now (see keepOut in game.js): a box
   // in garden tiles, and the named cats who belong in it all the same.
-  let rescuing = false; // the pair are down in front of Thanos, and Hưng and Trang are on their way
+  let rescuing = false; // the pair are down in front of Thanos, and Stripes and Polka are on their way
   let dropOff = false; // the car is pulling up at Amber's doors with the two of them in it
   const PAVERS = [SHED.x - 1, SHED.y - 12, SHED.x + SHED.w + 4, SHED.y + SHED.h + 1]; // the BBQ pavers, where Thanos waits
   function keepOut() {
@@ -1998,5 +1998,5 @@ export function createQuests(api) {
     if ([bbc, flower, bare].some(atGarnet)) z.push({ box: GARNET_FRONT });
     return z;
   }
-  return { begin, begin0, ate, update, meow, talk, bump, blocks, keepOut, linesFor, present, roadHit, give, news, HOME, debug: { man, hung, trang, scarf, vet, nb, mum, kid, kicked, BREAKFAST, balls, BALLS, bbc, flower, GARNET_CATS, ally, snake, rat, sons, THANOS_AT, RAT_PATCH, NAP_BARS, NAP_NEST, WAIT, NEST, BABY_AT, HOME_BOX, SPOT, get mamaArmed() { return mamaArmed; }, get snakeArmed() { return snakeArmed; }, get tags() { return tags; }, set tagAt(v) { tagAt = v; }, get escorting() { return escorting; }, get ratsArmed() { return ratsArmed; }, get grip() { return grip; }, get phase() { return phase; }, set phase(p) { phase = p; phaseT = 0; }, get watching() { return watching; } } };
+  return { begin, begin0, ate, update, meow, talk, bump, blocks, keepOut, linesFor, present, roadHit, give, news, HOME, debug: { man, stripes, polka, scarf, vet, nb, mum, kid, kicked, BREAKFAST, balls, BALLS, bbc, flower, GARNET_CATS, ally, snake, rat, sons, THANOS_AT, RAT_PATCH, NAP_BARS, NAP_NEST, WAIT, NEST, BABY_AT, HOME_BOX, SPOT, get mamaArmed() { return mamaArmed; }, get snakeArmed() { return snakeArmed; }, get tags() { return tags; }, set tagAt(v) { tagAt = v; }, get escorting() { return escorting; }, get ratsArmed() { return ratsArmed; }, get grip() { return grip; }, get phase() { return phase; }, set phase(p) { phase = p; phaseT = 0; }, get watching() { return watching; } } };
 }

@@ -79,7 +79,7 @@ export const A3 = {
   cheetosBack: 'Cheetos comes out from under the hedge and falls in behind {o} again.',
 
   // going up to the flat during the night (a caption)
-  emptyFlat: 'The apartment is dark, and nobody is home: Hưng and Trang are out looking for two cats. The kibble machine has been left full.',
+  emptyFlat: 'The apartment is dark, and nobody is home: Stripes and Polka are out looking for two cats. The kibble machine has been left full.',
 
   // ---- shed: Scar and the kittens, three dogs, Socks, and Thanos
   shed: {
@@ -160,29 +160,29 @@ export const A3 = {
   ],
   boxSleep: ['', 'They lie down where they are. Nobody has ever fallen asleep so fast.'],
 
-  // ---- morning: Hưng and Trang find them
+  // ---- morning: Stripes and Polka find them
   morning: {
     doors: ['', "Morning. Amber's doors open, and two people come out who haven't been to bed."],
     found: [
-      ['hung', 'There. THERE. By the box, look. Both of them.'],
-      ['trang', 'The door was open, and the vacuum was on its back. We looked all night.'],
-      ['hung', "One, two... there's the little orange one. And the one with the socks. Three, four... are those kittens? How many cats are there in this garden?"],
-      ['trang', "The cats didn't run away, dummy. They came back for their friends."],
+      ['stripes', 'There. THERE. By the box, look. Both of them.'],
+      ['polka', 'The door was open, and the vacuum was on its back. We looked all night.'],
+      ['stripes', "One, two... there's the little orange one. And the one with the socks. Three, four... are those kittens? How many cats are there in this garden?"],
+      ['polka', "The cats didn't run away, dummy. They came back for their friends."],
       ['', "For a moment neither of them says anything."],
     ],
     plate: [
-      ['hung', 'Well. Nobody here has had breakfast.'],
+      ['stripes', 'Well. Nobody here has had breakfast.'],
       ['', 'He puts a big plate down in the middle of them all, the way the two of them always did.'],
     ],
     wait: ['', 'Orca looks at the plate. Then he sits down, and waits until Cheetos has eaten.'],
     first: ['orca', "That's right, Cheetos. Eat first."],
     eaten: ['', "Then everybody eats. Shark and Orca eat until they're full."],
     bye: [
-      ['trang', 'Do we carry the cats back up? The vet said they needed time to recover from that fight. And now with all those dogs down here...'],
-      ['hung', "They were climbing our curtains yesterday, dummy. I think they're fine. Besides... I have a feeling they're in the middle of something."],
-      ['trang', "...Fine. But I'll ask the guard to keep an eye on the cats. And did he ever get back to you about where the dogs came from?"],
-      ['hung', "Yeah. He said the guards were checking the gate all day, but didn't see a single dog come in. I'll ask him again."],
-      ['trang', 'Well. Shark. Orca. ...The door is open. Come back up when you like. And be safe, okay?'],
+      ['polka', 'Do we carry the cats back up? The vet said they needed time to recover from that fight. And now with all those dogs down here...'],
+      ['stripes', "They were climbing our curtains yesterday, dummy. I think they're fine. Besides... I have a feeling they're in the middle of something."],
+      ['polka', "...Fine. But I'll ask the guard to keep an eye on the cats. And did he ever get back to you about where the dogs came from?"],
+      ['stripes', "Yeah. He said the guards were checking the gate all day, but didn't see a single dog come in. I'll ask him again."],
+      ['polka', 'Well. Shark. Orca. ...The door is open. Come back up when you like. And be safe, okay?'],
     ],
     gone: ['', 'The two of them go back in, slowly, looking over their shoulders all the way.'],
   },

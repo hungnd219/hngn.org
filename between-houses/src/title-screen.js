@@ -33,6 +33,8 @@ import { makeCat, CAT_PALS } from './sprites.js';
 import { word, grow, paint, extrude, edge } from './display-type.js';
 
 export const VW = 320, VH = 208;
+// the line the prompt is on (the title menu puts its line about the buttons on the same one: app.js)
+export const PROMPT_Y = 195;
 const LEDGE = 178; // the top of the ledge in the foreground, in front of the towers: the cats sit on it
 const FEET = 182; // where a cat's feet are, a little way into the ledge's top
 const HORIZON = 126; // the far bank's foot, where the river starts
@@ -339,8 +341,8 @@ export function createTitle({ seed = Date.now(), prompt = 'PRESS X TO START' } =
       // the prompt, blinking: on for a second, off for a third of one
       if (mode === 'press' && !dim && t % 80 < 60) {
         const str = prompt, x = Math.round(160 - textWidth(str) / 2);
-        drawText(g, str, x + 1, 196, COL.ink);
-        drawText(g, str, x, 195, COL.prompt);
+        drawText(g, str, x + 1, PROMPT_Y + 1, COL.ink);
+        drawText(g, str, x, PROMPT_Y, COL.prompt);
       }
     },
     bird() { if (!bird) startBird(); },

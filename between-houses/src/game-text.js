@@ -104,7 +104,7 @@ export const WORDS = {
     sock: { name: 'sock', a: 'a sock' },
     hairtie: { name: 'hair tie', a: 'a hair tie' },
     // The three toys (the flat's own). take, drop: instead of the lines further down. play: a cat has
-    // walked onto it. human: handed to Hưng or Trang, who throws it for him. cat: offered to one of the
+    // walked onto it. human: handed to Stripes or Polka, who throws it for him. cat: offered to one of the
     // garden's cats who has no use for it ({n}: that cat).
     mouse: {
       name: 'toy mouse', a: 'the toy mouse',
@@ -233,7 +233,7 @@ export const WORDS = {
     costNone: 'That hurt.',
   },
   // Act 1, as far as it is built: Cheetos, the man on the monkey bars, and
-  // the first meeting with Hưng and Trang. In a scene, each line is [who, words]:
+  // the first meeting with Stripes and Polka. In a scene, each line is [who, words]:
   // '' is the narrator.
   // boxes of their own: a move learned, numbers gone up, a tip. statWords are picked out in colour.
   notes: { newMove: 'NEW MOVE', stronger: 'STRONGER', tip: 'TIP', friend: 'NEW FRIEND', statWords: ['HP', 'ATK', 'AGL', '+1', '+3'] },
@@ -365,7 +365,7 @@ export const WORDS = {
       ['scar', "So. Here's what you need to know to survive out here. Be wary of other cats. They'll fight you for a plate. Especially Thanos: the big, orange, vicious one."],
       ['scar', 'And humans. Be wary of humans too. Some humans will kick you just for being alive.'],
     ],
-    // (right on cue: Green Shirt, out training, and a stray sitting where he runs; and Trang, who has come out
+    // (right on cue: Green Shirt, out training, and a stray sitting where he runs; and Polka, who has come out
     // with the evening's plate)
     kick: [
       ['', "Out on the pavers a man in a bright green shirt comes running. A small gray cat is sitting in his way. He doesn't go around it. He kicks it."],
@@ -373,9 +373,9 @@ export const WORDS = {
       ['scar', 'That one. Every cat here knows that shirt.'],
     ],
     toldOff: [
-      ['trang', "HEY! What do you think you're doing? He was just sitting there!"],
+      ['polka', "HEY! What do you think you're doing? He was just sitting there!"],
       ['s', "He was sitting in my way. I'm trying to train here."],
-      ['trang', "Really? Picking on a harmless cat? Kick one again and you'll be famous on the internet by tonight."],
+      ['polka', "Really? Picking on a harmless cat? Kick one again and you'll be famous on the internet by tonight."],
       ['', 'The man in the green shirt looks at her, and at the plate in her hand, and walks off mumbling to himself.'],
     ],
     some: ['scar', 'But some of them...'],
@@ -394,14 +394,14 @@ export const WORDS = {
     // the two of them are friends.) And The Orange, who has always eaten alone, does some arithmetic.
     back: ['', 'Footsteps on the pavers. The one with the long hair is back, and this time a tall one is with her.'],
     enough: [
-      ['trang', "Hey, hey. No fighting, you two. There's enough for everybody."],
-      ['hung', "Two cats, one plate. That's on us, dummy. Hold on."],
+      ['polka', "Hey, hey. No fighting, you two. There's enough for everybody."],
+      ['stripes', "Two cats, one plate. That's on us, dummy. Hold on."],
     ],
     second: ['', 'The tall one puts a second plate down, a little way from the first, and steps back.'],
     twoPlates: ['', "Two plates. {O} eats fast, with one eye on {S}. {S} takes his time: he's never had a plate taken away from him."],
     friends: [
-      ['trang', 'See? There was nothing to fight about.'],
-      ['hung', "Let's not push our luck. Come on."],
+      ['polka', 'See? There was nothing to fight about.'],
+      ['stripes', "Let's not push our luck. Come on."],
     ],
     math: [
       ['orca', 'One cat, one plate. Two cats... two plates.'],
@@ -535,9 +535,9 @@ export const WORDS = {
       ['cheetos', "I'm going up there right now. And tomorrow. And every evening."],
     ],
     meeting: [
-      ['trang', 'Did you see that? Those two just ran him off.'],
-      ['hung', "He's been kicking at cats for weeks. Good for them."],
-      ['trang', "These cats are so thin, though. Give them the whole bag."],
+      ['polka', 'Did you see that? Those two just ran him off.'],
+      ['stripes', "He's been kicking at cats for weeks. Good for them."],
+      ['polka', "These cats are so thin, though. Give them the whole bag."],
       ['', 'The two humans with the treats put a full plate down and step back.'],
     ],
     coffee: ['', 'The tall one has a paper cup from the cafe. {S} is at the plate before he has thought about it. {O} waits until both humans have taken one more step back.'],
@@ -632,7 +632,7 @@ export const WORDS = {
       ['cheetos', "Until then, EVERYTHING. You're a house cat. Have you ever climbed a tree? Have you tried the water from the shed? Or fought an actual rat? EVERYTHING."],
     ],
     tip: 'Cats who look around get stronger. The first big tree climbed boosts AGL, the first drink from the faucet at the BBQ shed boosts HP, and the first rats chased off boost ATK. Or hold Space or ✕ to nap until dark.',
-    bye: ['hung', 'See you tomorrow, little friends.'],
+    bye: ['stripes', 'See you tomorrow, little friends.'],
     goalNext: 'At night, look for the ghost: on the lawn and among the bushes east of the playground. Until then, the day is yours.',
     // Socks
     tag1: ['', "Something taps {O} on the tail. By the time he turns around there's nothing there but a swaying branch."],
@@ -710,8 +710,8 @@ export const WORDS = {
     ],
     meeting2: [
       ['', 'The glass doors slide open, and the two humans with the treats come out.'],
-      ['hung', "Is that... those are my socks. The striped ones. I've been looking for them for weeks."],
-      ['trang', 'They blew off the balcony. I told you drying stuff on the balcony was a bad idea.'],
+      ['stripes', "Is that... those are my socks. The striped ones. I've been looking for them for weeks."],
+      ['polka', 'They blew off the balcony. I told you drying stuff on the balcony was a bad idea.'],
     ],
     // one of the three who cannot stand cats: seen here for the first time, coming from Garnet
     scarf: 'Purple Scarf',
@@ -724,8 +724,8 @@ export const WORDS = {
     ],
     scarfTalk: [
       ['l', 'Were those rats? Running out of that bush? Disgusting.'],
-      ['trang', 'They were. But those two cats just took care of them.'],
-      ['hung', "That's why we love cats. Nature's very own pest control."],
+      ['polka', 'They were. But those two cats just took care of them.'],
+      ['stripes', "That's why we love cats. Nature's very own pest control."],
       ['l', "Cats ARE pests. Nothing but big rats."],
       ['l', "And now they're right outside the front door? I'm sending management another complaint tomorrow."],
       ['nb', 'Lady, give management a break. You spent half an hour last week at the general meeting talking their ear off about cats. And for what?'],
@@ -740,15 +740,15 @@ export const WORDS = {
       ['nb', 'Good kitties. All of you.'],
     ],
     meeting2b: [
-      ['hung', 'Who wears a scarf in this heat?'],
-      ['trang', "Never mind her. Dummy, let the one with the white socks keep your socks. And let's give our little friends their dinner."],
+      ['stripes', 'Who wears a scarf in this heat?'],
+      ['polka', "Never mind her. Dummy, let the one with the white socks keep your socks. And let's give our little friends their dinner."],
     ],
     eaten2: ['', 'A full plate, eaten to the last crumb, while Socks keeps one paw on her socks.'],
     groom: ['', "{O} cleans a rat bite on {S}'s ear, carefully, the way he saw it done once. It helps."],
     boost2: '{S} and {O} are stronger: HP is up for both, and ATK for {O}.',
     learnGroom: "{O} learned GROOM! He cleans up a hurt friend: a quarter of their HP back, and whatever is ailing them he takes on himself.",
     learnProtect: '{S} learned PROTECT! He steps in front of his friends and takes every hit meant for them, at a quarter of the hurt.',
-    bye2: ['trang', 'Good night, you three.'],
+    bye2: ['polka', 'Good night, you three.'],
     // Socks is off with her sock before they sleep; the morning after: off to tell Scar
     socksGoes: ['', 'Socks takes her socks away, one and then the other, and is gone into the dark before anybody can say good night.'],
     wake2: ['', 'They sleep long and deep. The bush smells like rat, but only a little. None of the rats will come back.'],
@@ -869,18 +869,18 @@ export const WORDS = {
     ],
     allyGoes: ['', 'The white cat looks from one of them to the other, decides that its favor is paid, and leaves.'],
     meeting3: [
-      ['trang', "Hey, dummy. Look. It's those two again. With a kitten this time."],
-      ['hung', 'Is the big one bleeding?'],
-      ['trang', 'There was a snake. I saw it from the corner. He got between it and the kitten.'],
-      ['hung', "The bars, the rats, and now this. These two are some special cats."],
-      ['trang', "Put the plate down by them. All of it. And don't stare at the mother."],
+      ['polka', "Hey, dummy. Look. It's those two again. With a kitten this time."],
+      ['stripes', 'Is the big one bleeding?'],
+      ['polka', 'There was a snake. I saw it from the corner. He got between it and the kitten.'],
+      ['stripes', "The bars, the rats, and now this. These two are some special cats."],
+      ['polka', "Put the plate down by them. All of it. And don't stare at the mother."],
     ],
     eaten3: ['', "A full plate. Mamacat lets Babycat eat first, then the pair, and takes what's left herself. Nobody argues."],
     boost3: '{S} and {O} are stronger: HP and ATK are up.',
     morning3: ['', "They sleep long and deep. When {S} wakes, something very small is asleep against his tail, and its mother is sitting a little way off, pretending that she hasn't been there the whole time."],
     bye3: [
-      ['trang', "We're going to have to do something about these two."],
-      ['hung', 'One thing at a time. Be good, little friends.'],
+      ['polka', "We're going to have to do something about these two."],
+      ['stripes', 'One thing at a time. Be good, little friends.'],
     ],
     pointsOn3: [
       ['mama', "You fed my son from your plate, and one of you bled for him. I don't like owing."],
@@ -913,19 +913,19 @@ export const WORDS = {
     thanosLater: ['thanos', "I'll be here. I'm always here."],
     thanosLost: ['', "They're still in one piece, more or less. He's still on the pavers. Walk back up to him to try again."],
     down: "{S} can't get up. {O} can't either, but he's trying to stand in front of {S} anyway. Three pairs of the same yellow eyes come closer.",
-    hey: ['trang', 'HEY! GET OFF THEM! Go on, GET!'],
+    hey: ['polka', 'HEY! GET OFF THEM! Go on, GET!'],
     thanosGoes: "Thanos looks at the light, and at the two humans running behind it. He decides that he's made his point. He and his sons melt into the dark.",
     meeting4: [
-      ['hung', 'You were right. That WAS a cat fight we heard from the balcony.'],
-      ['hung', "Look. It's the two from the playground. The big one isn't getting up. The little one is bleeding as well."],
-      ['trang', 'We need to get them out of here. This place is a warzone.'],
-      ['hung', 'Out of here to where?'],
-      ['trang', 'The vet. Then home. Ours.'],
-      ['hung', 'Just like that?'],
-      ['trang', "We were going to adopt two cats anyway. The toys, the bowls, the Litter-Robot. It's all been sitting there for a month. What are we waiting for?"],
-      ['hung', "...Two cats. These two. Okay. I'll carry the big one."],
-      ['hung', "What about the others? The mother with the kitten will never let us near her."],
-      ['trang', "We'll keep feeding them. And there's a lady in Garnet who leaves food behind the cafe. I'll ask her to put more plates out on the evenings we can't."],
+      ['stripes', 'You were right. That WAS a cat fight we heard from the balcony.'],
+      ['stripes', "Look. It's the two from the playground. The big one isn't getting up. The little one is bleeding as well."],
+      ['polka', 'We need to get them out of here. This place is a warzone.'],
+      ['stripes', 'Out of here to where?'],
+      ['polka', 'The vet. Then home. Ours.'],
+      ['stripes', 'Just like that?'],
+      ['polka', "We were going to adopt two cats anyway. The toys, the bowls, the Litter-Robot. It's all been sitting there for a month. What are we waiting for?"],
+      ['stripes', "...Two cats. These two. Okay. I'll carry the big one."],
+      ['stripes', "What about the others? The mother with the kitten will never let us near her."],
+      ['polka', "We'll keep feeding them. And there's a lady in Garnet who leaves food behind the cafe. I'll ask her to put more plates out on the evenings we can't."],
     ],
     pickedUp: 'Hands. Warm ones. {O} has never been picked up in his life, and is too tired to bite anybody. {S} had almost forgotten what it felt like.',
     carried: "They're carried over the road they fought so hard to cross. Then there's a car, and for a while, nothing but the sound of it.",
@@ -943,27 +943,27 @@ export const WORDS = {
       ['vet', "His teeth, though, are the strongest I've seen all year. Nothing like the little one's."],
       ['vet', "They'll need a day or two to recover from the fight, but these are two healthy cats."],
       ['vet', "Keep them indoors while they heal, and feed them well."],
-      ['trang', 'We can do that. I think I know what kind of wet food to get.'],
-      ['hung', "She's done her research."],
+      ['polka', 'We can do that. I think I know what kind of wet food to get.'],
+      ['stripes', "She's done her research."],
       ['vet', 'And if you can ever catch the other stray cats, bring them in. I see the garden cats for free once a week.'],
     ],
     vetChip: [
       ['vet', 'One more thing. The big one is no stray. He has a microchip.'],
-      ['hung', 'He has an owner?'],
+      ['stripes', 'He has an owner?'],
       ['vet', "A name and a phone number, at least. No name for the cat. Whoever his owner is, they didn't bother to fill in that line."],
       ['shark', "A number. That's my human. They're going to get my human!"],
-      ['hung', "I'll call."],
+      ['stripes', "I'll call."],
     ],
     vetCall: [
-      ['', 'Hưng holds the phone to his ear. It rings for a long time.'],
-      ['hung', "Hello? I think we found your cat. A gray tabby, with a white bib and a kink in his tail. He was in a fight, but he's at the vet now, and..."],
+      ['', 'Stripes holds the phone to his ear. It rings for a long time.'],
+      ['stripes', "Hello? I think we found your cat. A gray tabby, with a white bib and a kink in his tail. He was in a fight, but he's at the vet now, and..."],
       ['', 'A click.'],
-      ['hung', '...They hung up.'],
-      ['trang', 'Call them again?'],
+      ['stripes', '...They stripes up.'],
+      ['polka', 'Call them again?'],
       ['', "This time it doesn't even ring."],
-      ['trang', 'I suppose nobody is coming for him.'],
-      ['hung', "The cloudy eye. Do you think that's why they left him?"],
-      ['trang', 'If it is, they never deserved him.'],
+      ['polka', 'I suppose nobody is coming for him.'],
+      ['stripes', "The cloudy eye. Do you think that's why they left him?"],
+      ['polka', 'If it is, they never deserved him.'],
       ['vet', "This happens more often than you'd think."],
     ],
     vetAlone: [
@@ -975,13 +975,13 @@ export const WORDS = {
     ],
     vetNames: [
       ['vet', "Now, I need a name for their records. What are they called?"],
-      ['trang', "They don't have names yet."],
-      ['hung', 'Let me think. The little one. Orange cat... orange... cat... or... ca...'],
-      ['hung', 'Orca!'],
-      ['trang', 'An orca is black and white, dummy.'],
-      ['hung', 'And this one is orange and furious. Orca.'],
-      ['trang', 'Fine. Then the big one has to match. Something else from the sea, with teeth.'],
-      ['trang', "He doesn't seem fierce. But he did walk in front of a snake for a kitten. ...Shark."],
+      ['polka', "They don't have names yet."],
+      ['stripes', 'Let me think. The little one. Orange cat... orange... cat... or... ca...'],
+      ['stripes', 'Orca!'],
+      ['polka', 'An orca is black and white, dummy.'],
+      ['stripes', 'And this one is orange and furious. Orca.'],
+      ['polka', 'Fine. Then the big one has to match. Something else from the sea, with teeth.'],
+      ['polka', "He doesn't seem fierce. But he did walk in front of a snake for a kitten. ...Shark."],
       ['vet', "Shark and Orca. I've heard worse names."],
     ],
     namedTitle: 'NAMES',
@@ -996,7 +996,7 @@ export const WORDS = {
       ['orca', 'OW. What was THAT?'],
       ['shark', "A chip. If you ever get lost, it tells them who to call."],
       ['orca', '...Huh. So somebody would come. For me.'],
-      ['trang', "Come on, Shark. Come on, Orca. Let's go home."],
+      ['polka', "Come on, Shark. Come on, Orca. Let's go home."],
     ],
     // the way home: rain again, a car, and two bags. The opening, the other way round.
     rainHome: 'Rain again. A car pulls up outside the glass doors of Amber.',
@@ -1014,8 +1014,8 @@ export const WORDS = {
       orca: ['The two humans with the treats. {c} keeps {o} between himself and them.', "She makes a small kissing noise at {c}. {c} isn't falling for that."],
     },
     friendly: {
-      shark: ['Trang crouches and holds out a hand. {c} pushes his whole head into it. He had forgotten about hands.', 'Hưng: "Look who it is." {c} leans on his ankle.'],
-      orca: ['Trang crouches and holds out a hand. {c} sniffs it from as far off as his neck will stretch. Chicken. Interesting.', 'Hưng: "Look who it is." {c} allows one finger on the top of his head. One.'],
+      shark: ['Polka crouches and holds out a hand. {c} pushes his whole head into it. He had forgotten about hands.', 'Stripes: "Look who it is." {c} leans on his ankle.'],
+      orca: ['Polka crouches and holds out a hand. {c} sniffs it from as far off as his neck will stretch. Chicken. Interesting.', 'Stripes: "Look who it is." {c} allows one finger on the top of his head. One.'],
     },
     thanos: "Thanos doesn't even stand up. One paw comes out, claws first, and {c} and {o} are already running.",
     // What the garden's cats do when the pair walk into them outside a scene: these fit the story as

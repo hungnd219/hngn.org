@@ -1478,7 +1478,7 @@ export const TYPES = {
     },
   },
   // ------------------------------------------------ Purple Scarf's flat
-  // The same kind of flat as Hưng and Trang's, with nothing done to it. What
+  // The same kind of flat as Stripes and Polka's, with nothing done to it. What
   // two cats from a flat with a cat tunnel in it notice here is care, not money.
   psSacks: {
     w: 1, h: 2, up: 6, name: 'sacks', bump: 'look',
