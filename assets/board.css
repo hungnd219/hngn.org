@@ -397,8 +397,8 @@ body {
   --mat: max(10px, calc(var(--tw) * .9));
   display: block;
   box-sizing: border-box;
-  max-width: calc(100% - var(--tw) * 1.4);
-  max-height: calc(100% - var(--tw) * 1.4);
+  max-width: calc(100% - var(--tw) * 2.1); /* 1.5 x 1.4: 3:2 landscapes end up the same height as portraits */
+  max-height: calc(100% - var(--tw) * 1.4); /* so the mat always ends .7 tile above the photo area's bottom */
   width: auto; height: auto;
   padding: var(--mat);
   background: #f1ece0;
@@ -407,7 +407,7 @@ body {
 }
 .stage .photo.loading { opacity: 0; }
 /* previous / next sit centred under the photo, between it and the caption tiles */
-.gal-ctrl { display: flex; justify-content: center; gap: calc(var(--tw) * 1.2); margin-top: calc(var(--tw) * .5); }
+.gal-ctrl { display: flex; justify-content: center; gap: calc(var(--tw) * 1.2); margin-top: calc(var(--tw) * .3); } /* .7 + .3 above = 1.0 below */
 .gal-nav {
   display: grid;
   place-items: center;
@@ -425,7 +425,7 @@ body {
 }
 .gal-nav svg { width: 55%; height: 55%; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .gal-nav:hover, .gal-nav:focus-visible { background: rgba(240, 176, 60, .12); border-color: var(--amber); outline: none; }
-.gal-cap { display: flex; margin-top: calc(var(--tw) * .5); }
+.gal-cap { display: flex; margin-top: calc(var(--tw) * 1); }
 
 @media (prefers-reduced-motion: reduce) {
   .gal-grid.flipin .thumb { animation: none; }
