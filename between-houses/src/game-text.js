@@ -958,7 +958,7 @@ export const WORDS = {
       ['', 'Stripes holds the phone to his ear. It rings for a long time.'],
       ['stripes', "Hello? I think we found your cat. A gray tabby, with a white bib and a kink in his tail. He was in a fight, but he's at the vet now, and..."],
       ['', 'A click.'],
-      ['stripes', '...They stripes up.'],
+      ['stripes', '...They hung up.'],
       ['polka', 'Call them again?'],
       ['', "This time it doesn't even ring."],
       ['polka', 'I suppose nobody is coming for him.'],
