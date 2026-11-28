@@ -563,7 +563,7 @@ export function createGame(input, host = {}) {
     Object.assign(e, { tx: x, ty: gy, fx: x, fy: gy, px: x * T, py: gy * T, moving: false, hidden: false, dir: dir || e.dir });
   }
   // ---- somebody else's flat
-  // Purple Scarf's flat lies on the same map as Hưng and Trang's (FLATS and SCARF in map.js) and is
+  // Purple Scarf's flat lies on the same map as Stripes and Polka's (FLATS and SCARF in map.js) and is
   // reached only by the story. What the story wants to answer for itself there, it says here:
   //   door(cat)            her front door, walked into or asked with Do
   //   bump(cat, object)    a piece of furniture (object.type: 'clueCoat', 'clueMap', 'clueSacks'...)
@@ -756,7 +756,7 @@ export function createGame(input, host = {}) {
   };
   const quests = createQuests(questApi);
   zonesReady = true;
-  // Act 2 (indoors) is home.js, and this is what the game lends it. Humans are numbered: 0 Hưng, 1 Trang.
+  // Act 2 (indoors) is home.js, and this is what the game lends it. Humans are numbered: 0 Stripes, 1 Polka.
   const wpOf = (id) => WAYPOINTS.find((w) => w.id === id);
   const setHuman = (h, x, y, more) => Object.assign(h, {
     tx: x, ty: y, fx: x, fy: y, px: x * T, py: y * T, moving: false, mt: 0, path: [], wait: 0, pet: 0,
@@ -967,7 +967,7 @@ export function createGame(input, host = {}) {
     clearNpcs,
     setBarrier, setBoatDogs, setBoatGone, setCages,
     autosave: () => autosave(),
-    // one of the story's people or animals, by its id (the garden story's own among them: 'bbc', 'flower', 's', 'l', 'hung', 'trang')
+    // one of the story's people or animals, by its id (the garden story's own among them: 'bbc', 'flower', 's', 'l', 'stripes', 'polka')
     extra: (id) => extras.find((e) => e.id === id) || null,
     // the friend who is tagging along (one of the garden's cats), or null; asking one along; sending one back
     guest: () => guest,
@@ -5398,7 +5398,7 @@ export function createGame(input, host = {}) {
         g.save();
         g.translate(VW - off, 0);
         if (pic.kind === 'garnet') drawGarnet(g, frame, pic.state, { bbc: quests.debug.bbc.sp, flower: quests.debug.flower.sp, shark: cats[0].sp, orca: cats[1].sp });
-        else drawVet(g, frame, pic, { cats: cats.map((c) => c.sp), hung: quests.debug.hung.sp, trang: quests.debug.trang.sp, vet: quests.debug.vet.sp, owner: (extras.find((e) => e.id === 'fowner') || {}).sp });
+        else drawVet(g, frame, pic, { cats: cats.map((c) => c.sp), stripes: quests.debug.stripes.sp, polka: quests.debug.polka.sp, vet: quests.debug.vet.sp, owner: (extras.find((e) => e.id === 'fowner') || {}).sp });
         g.restore();
       }
       // a scene: black bars top and bottom, and its own fades

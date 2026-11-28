@@ -225,7 +225,7 @@ export const FLAT = {
 
 // ------------------------------------------------------------ the epilogue
 // Some time later (see act3-after.js). The pair have lived here long enough for Sandbox's lines to be
-// true of them, so those are used again; but Hưng and Trang have pet names for them now, and a hand on
+// true of them, so those are used again; but Stripes and Polka have pet names for them now, and a hand on
 // a cat is no longer a new thing to anybody. {k} is one of the cat's pet names, a different one each
 // time (the game fills it in: see fmt in game.js).
 export const NICKS = {

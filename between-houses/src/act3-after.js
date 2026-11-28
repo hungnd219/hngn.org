@@ -2,13 +2,13 @@
 //
 // The jetty's last scene fades to black and tells what came of it all; then,
 // in the same scene, come this part's own steps (homecoming): "Some time
-// later...", and the flat in the evening with nobody in it. Hưng and Trang
+// later...", and the flat in the evening with nobody in it. Stripes and Polka
 // come home from a honeymoon that had waited a year (and a little longer, for
 // two cats). Shark and Orca run to the door. There are two toy demons from
 // Japan, and an orchid from Flower's human, which is not to be eaten.
 //
 // After that the game is open, on both floors, for good. What is new:
-//   upstairs    the two demon toys and the orchid; and Hưng and Trang have
+//   upstairs    the two demon toys and the orchid; and Stripes and Polka have
 //               pet names for the pair (see EPILOGUE and NICKS in flat-lines.js)
 //   downstairs  the first time each of the garden's cats is met there is news
 //               (W.news); Thanos is cut short by the vet, who has been after
@@ -36,7 +36,7 @@ import { canvas, R } from './palette.js';
 import { makeHuman } from './sprites.js';
 
 // indoors: where everybody stands in the foyer (tiles of the flat)
-const IN = [[30, 18], [32, 18]]; // Hưng and Trang, once they are in
+const IN = [[30, 18], [32, 18]]; // Stripes and Polka, once they are in
 const CASES = [[29, 19], [33, 19]]; // their suitcases
 const RUN = [[30, 16], [32, 16]]; // Shark and Orca, come to meet them
 const TOYS = { oniRed: [31, 17], oniBlue: [33, 17] }; // where the two demons are put down
@@ -92,9 +92,9 @@ export function create(ctx) {
       } else if (!on && !e.hidden && !ctx.visible(e.px, e.py)) e.hidden = true;
     });
   }
-  // lines of the text file as scene steps: indoors Hưng and Trang are the flat's own two; in the garden
+  // lines of the text file as scene steps: indoors Stripes and Polka are the flat's own two; in the garden
   // 'owner' is Flower's human
-  const linesIn = (list) => ctx.lines(list.map(([who, t]) => [who === 'hung' ? 0 : who === 'trang' ? 1 : who, t]));
+  const linesIn = (list) => ctx.lines(list.map(([who, t]) => [who === 'stripes' ? 0 : who === 'polka' ? 1 : who, t]));
   const linesOut = (list) => ctx.lines(list.map(([who, t]) => [who === 'owner' ? 'fowner' : who, t]));
   // (their two suitcases are the colors of their two cats: a gray-brown tabby and an orange one)
   const cases = [H.addExtra('case0', '', suitcase('#8d8272', '#4e463f'), { indoor: true, low: true }), H.addExtra('case1', '', suitcase('#dc8f41', '#b0652b'), { indoor: true, low: true })];

@@ -3,12 +3,12 @@
 // script that plays them is src/home.js.
 //
 // A scene is a list of lines, each [who, words]: '' is the narrator, and the
-// others are 'shark', 'orca', 'hung', 'trang', 'bbc' and 'flower'. A caption
+// others are 'shark', 'orca', 'stripes', 'polka', 'bbc' and 'flower'. A caption
 // is a line at the bottom of the screen with no name on it ({c} is whoever
 // leads, {o} the other cat). A tip goes in a green TIP box: it names keys the
 // way the game does, so that they are picked out by themselves.
 //
-// Hưng and Trang never use each other's names: each calls the other "dummy".
+// Stripes and Polka never use each other's names: each calls the other "dummy".
 export const HOME = {
   // the goal box, at each stage of the act (wake is the goal of Act 0, on purpose)
   goals: {
@@ -35,12 +35,12 @@ export const HOME = {
   // the first night: the inner laundry room, the bags opened, and the two humans leaving them to it
   arrive: [
     ['', 'Night. A small room that smells like soap. The bags are put down on the floor, gently, and unzipped.'],
-    ['trang', "There. Out you come, when you're ready. Nobody is going to pull you."],
-    ['hung', 'Water is in the bowl. The litter box is through that door.'],
-    ['hung', 'Breakfast first thing in the morning. The vet said to let your stomachs settle tonight.'],
-    ['trang', 'This is your home now, Shark. Orca. All of it. Feel at home.'],
-    ['hung', "Come on, dummy. Let them be. They'll come out when they want to."],
-    ['trang', 'Good night, you two.'],
+    ['polka', "There. Out you come, when you're ready. Nobody is going to pull you."],
+    ['stripes', 'Water is in the bowl. The litter box is through that door.'],
+    ['stripes', 'Breakfast first thing in the morning. The vet said to let your stomachs settle tonight.'],
+    ['polka', 'This is your home now, Shark. Orca. All of it. Feel at home.'],
+    ['stripes', "Come on, dummy. Let them be. They'll come out when they want to."],
+    ['polka', 'Good night, you two.'],
     ['', 'A light goes off. Footsteps go away through the apartment, and a door closes softly, a long way off.'],
   ],
   // the two of them alone in the laundry; it ends with Orca making for the door
@@ -98,13 +98,13 @@ export const HOME = {
     ['', 'Two humans come in from the hallway, slowly. They stop a long way off.'],
     ['', 'Then they sit down on the floor, both of them, and do nothing at all.'],
     ['orca', "They're here. Shark. They're HERE. Don't move."],
-    ['trang', "Good morning, you two. We're only going to sit. That's all."],
-    ['hung', "Finish your breakfast. It's yours. And there's something better than kibble coming this evening."],
+    ['polka', "Good morning, you two. We're only going to sit. That's all."],
+    ['stripes', "Finish your breakfast. It's yours. And there's something better than kibble coming this evening."],
     ['', "The tall human smells like coffee. Shark's nose goes up before he can stop it."],
     ['', 'Then he remembers a phone hanging up, and he stays where he is, beside Orca.'],
     ['shark', "He smells like mine did. ...He's not mine."],
-    ['hung', "No hurry, Shark. We're not going anywhere."],
-    ['trang', 'Orca. Nobody is going to make you do anything. Eat.'],
+    ['stripes', "No hurry, Shark. We're not going anywhere."],
+    ['polka', 'Orca. Nobody is going to make you do anything. Eat.'],
     ['', "Orca goes on eating, with two humans watching. He's never done that before."],
     ['shark', "They sat down. People who mean harm don't sit down."],
     ['orca', "You don't know that. I'm not going near them."],
@@ -214,14 +214,14 @@ export const HOME = {
   // The first group finished on the first day: the two humans stop what they are doing and come over.
   // (They pet the cats: Orca for the first time.)
   visit1: [
-    ['', "Hưng and Trang stop what they're doing and come over. Slowly."],
-    ['trang', "Look at you two. One day, and you've already worked out where everything is. Smart kitties!"],
-    ['hung', "They may be smarter than you, dummy. We moved in six months ago and you still don't know which switch turns on the kitchen light."],
+    ['', "Stripes and Polka stop what they're doing and come over. Slowly."],
+    ['polka', "Look at you two. One day, and you've already worked out where everything is. Smart kitties!"],
+    ['stripes', "They may be smarter than you, dummy. We moved in six months ago and you still don't know which switch turns on the kitchen light."],
     ['', 'A hand comes down, slowly, where Orca can see it the whole way.'],
     ['orca', "It's touching me. Shark. It's touching my HEAD."],
     ['shark', "That's what they do. You push back against it. Try."],
     ['', "Orca doesn't run. He stands very stiff, and allows it."],
-    ['trang', "There. That wasn't so bad, was it, Orca?"],
+    ['polka', "There. That wasn't so bad, was it, Orca?"],
     ['orca', "One. I allowed one. ...It wasn't the worst thing."],
   ],
   // the end of the first day (all five done, or 10 PM): to the guest room
@@ -241,10 +241,10 @@ export const HOME = {
   // later that night: the two humans in the doorway of the guest room. They do not come in.
   doorway1: [
     ['', 'Later. Two humans stop in the doorway of the guest room, and come no further.'],
-    ['trang', 'Shh. Look. They picked the guest bed.'],
-    ['hung', "Last night they wouldn't leave the laundry room."],
-    ['trang', 'Look how peaceful they are. As if they had always been here.'],
-    ['hung', 'Come away, dummy. Let them sleep.'],
+    ['polka', 'Shh. Look. They picked the guest bed.'],
+    ['stripes', "Last night they wouldn't leave the laundry room."],
+    ['polka', 'Look how peaceful they are. As if they had always been here.'],
+    ['stripes', 'Come away, dummy. Let them sleep.'],
     ['', "One of Orca's ears turns toward the door, and turns back. He doesn't get up."],
   ],
   // the second morning, on the guest bed
@@ -274,18 +274,18 @@ export const HOME = {
   // The first group finished on the second day: the two humans come over again. A loving scolding,
   // and Shark on his back.
   visit2: [
-    ['', "Hưng and Trang come over. They've seen all of it."],
-    ['trang', "Right. Whose idea was it to climb the curtains? Don't both look at the other one."],
-    ['hung', "Leave it. Let them explore! Those curtains were cheap anyway."],
-    ['trang', 'We have a cat tree, you know.'],
-    ['hung', '...Bad kitties. Veeeery bad kitties.'],
+    ['', "Stripes and Polka come over. They've seen all of it."],
+    ['polka', "Right. Whose idea was it to climb the curtains? Don't both look at the other one."],
+    ['stripes', "Leave it. Let them explore! Those curtains were cheap anyway."],
+    ['polka', 'We have a cat tree, you know.'],
+    ['stripes', '...Bad kitties. Veeeery bad kitties.'],
     ['', 'He says it the way people say good morning, and puts a hand down.'],
     ['', 'Shark flops over onto his back, and shows him the little tuft of cream-colored fur on his belly.'],
     ['shark', "...That's the spot. ...That's enough of the spot."],
     ['', "Orca doesn't back away. He stays where he is, and the other hand finds his chin."],
     ['orca', "Two. That's two now."],
-    ['trang', "They wouldn't be this naughty if they were still afraid of us. Do you think they're starting to feel at home?"],
-    ['hung', "I think they already think it's their apartment. We just live in it."],
+    ['polka', "They wouldn't be this naughty if they were still afraid of us. Do you think they're starting to feel at home?"],
+    ['stripes', "I think they already think it's their apartment. We just live in it."],
   ],
   // the end of the second day (all five done, or 10 PM, whichever comes first: it may be any time of day)
   day2End: [
@@ -301,9 +301,9 @@ export const HOME = {
   // late that evening: the doorway again
   doorway2: [
     ['', 'Late in the evening. Two humans stop in the doorway of the guest room again.'],
-    ['trang', 'In here again. I thought they might come in with us tonight.'],
-    ['hung', "Give them time. ...Why don't we leave our bedroom door open, dummy. In case."],
-    ['trang', 'Good night, Shark. Good night, Orca.'],
+    ['polka', 'In here again. I thought they might come in with us tonight.'],
+    ['stripes', "Give them time. ...Why don't we leave our bedroom door open, dummy. In case."],
+    ['polka', 'Good night, Shark. Good night, Orca.'],
     ['', 'The footsteps go away along the hallway. A door is left open.'],
   ],
   // the list on the cats' sheet (items: 15 characters at most)
@@ -360,7 +360,7 @@ export const HOME = {
     ['shark', "That's snoring. Scar says I do it."],
     ['', 'Orca steps onto the silk blanket. One of the shapes moves over, without waking, and leaves a warm space.'],
     ['orca', "She made room. She's asleep, and she made room for me."],
-    ['', "He turns around twice, and lies down against a human back. Shark is already asleep on Hưng's feet."],
+    ['', "He turns around twice, and lies down against a human back. Shark is already asleep on Stripes's feet."],
     ['orca', '...I could get used to this.'],
   ],
   // some time later: a yowl from outside wakes them both
@@ -405,14 +405,14 @@ export const HOME = {
   // a meow by the bed: this time somebody answers
   woken: [
     ['', 'Shark meows, once, by the side of the bed.'],
-    ['hung', "Shark? ...What is it? What's the matter?"],
+    ['stripes', "Shark? ...What is it? What's the matter?"],
     ['', "He didn't have to call twice."],
-    ['trang', 'Mmh. What time is it? Why is he crying, dummy?'],
-    ['', 'Through the open balcony door, the barking comes up from below. Trang pulls the blanket up a little.'],
-    ['trang', "Oh. Someone in the group chat mentioned loose dogs in the garden last night. Management has no idea where they're coming from."],
-    ['hung', "It's okay, Shark and Orca. Is that what frightened you? It's all right. They're down there, and you're up here. They can't hurt you."],
-    ['trang', "...Those poor strays downstairs though. Let's put extra plates out tomorrow. Now go back to sleep."],
-    ['hung', 'Come here. Both of you. Up.'],
+    ['polka', 'Mmh. What time is it? Why is he crying, dummy?'],
+    ['', 'Through the open balcony door, the barking comes up from below. Polka pulls the blanket up a little.'],
+    ['polka', "Oh. Someone in the group chat mentioned loose dogs in the garden last night. Management has no idea where they're coming from."],
+    ['stripes', "It's okay, Shark and Orca. Is that what frightened you? It's all right. They're down there, and you're up here. They can't hurt you."],
+    ['polka', "...Those poor strays downstairs though. Let's put extra plates out tomorrow. Now go back to sleep."],
+    ['stripes', 'Come here. Both of you. Up.'],
     ['', "They're gathered up onto the bed, one under each arm. Even Orca. He doesn't fight it."],
   ],
   // the two cats, low, with the humans asleep again
@@ -504,12 +504,12 @@ export const HOME = {
   // just before each lesson: the human whose show it is has something to say about it
   showTalk: {
     sing: [
-      ['trang', 'The first season of this show was so much better. Nobody in this one can hold a note.'],
-      ['hung', 'You say that every week, dummy.'],
+      ['polka', 'The first season of this show was so much better. Nobody in this one can hold a note.'],
+      ['stripes', 'You say that every week, dummy.'],
     ],
     stretch: [
-      ['hung', "Manchester United is playing like garbage. What's our defense doing? That's another penalty conceded!"],
-      ['trang', 'You say that every week, dummy.'],
+      ['stripes', "Manchester United is playing like garbage. What's our defense doing? That's another penalty conceded!"],
+      ['polka', 'You say that every week, dummy.'],
     ],
   },
   // it has got late, and the TV goes off before both moves are learned
@@ -527,12 +527,12 @@ export const HOME = {
   cue: {
     singGood: [
       'Shark sings along. Not bad at all. One.',
-      'Shark holds the note. Hưng: "Is he singing along?" Two.',
-      'Shark sings the whole line. Trang: "He has better pitch than you, dummy." Three!',
+      'Shark holds the note. Stripes: "Is he singing along?" Two.',
+      'Shark sings the whole line. Polka: "He has better pitch than you, dummy." Three!',
     ],
     stretchGood: [
       'Orca stretches when they stretch: front legs out, back end up. One.',
-      "Orca stretches again, longer. Hưng: \"Look. He's warming up with them.\" Two.",
+      "Orca stretches again, longer. Stripes: \"Look. He's warming up with them.\" Two.",
       'Orca stretches until every joint clicks. He feels twice his size. Three!',
     ],
     early: 'Too soon. Wait for the TV. Start again.',
@@ -573,8 +573,8 @@ export const HOME = {
   ],
   // the two humans, swapping what is on
   remote: {
-    music: 'Trang takes the remote. Her music show is on.',
-    football: 'Hưng takes the remote back. Soccer.',
+    music: 'Polka takes the remote. Her music show is on.',
+    football: 'Stripes takes the remote back. Soccer.',
   },
   // the rematch (in the battle's own text panel)
   fight2: {

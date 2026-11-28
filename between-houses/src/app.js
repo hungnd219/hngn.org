@@ -15,7 +15,7 @@ import { MISSIONS } from './quests.js';
 import { readProgress, noteProgress, CHAPTER_IDS } from './progress.js';
 import { WORDS } from './game-text.js';
 import { setNamed } from './names.js';
-import { createTitle } from './title-screen.js';
+import { createTitle, PROMPT_Y } from './title-screen.js';
 
 const VW = CONFIG.viewW;
 const VH = CONFIG.viewH;
@@ -361,8 +361,9 @@ export function createApp(input, opts = {}) {
     // which version this is, small and gray in the top right corner
     const ver = WORDS.title.version.replace('{v}', CONFIG.version);
     drawText(g, ver, VW - textWidth(ver) - 5, 5, DIM);
-    // and along the bottom, which buttons choose and go back
-    centred(g, WORDS.title.keys, VH - 11, C.grayL);
+    // and along the bottom, which buttons choose and go back: on the line "press X" was on (PROMPT_Y in
+    // title-screen.js), so that the words do not jump when the menu comes up
+    centred(g, WORDS.title.keys, PROMPT_Y, C.grayL);
   }
 
   function drawPause(g) {

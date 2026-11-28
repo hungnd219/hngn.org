@@ -3,10 +3,10 @@
 // about in it; the dialog box does the rest.
 //
 // state: 'room' (everybody waiting), 'scan' (the scanner is out, over the big
-// one's shoulders), 'phone' (Hưng has his phone to his ear), or 'dogs' (the
+// one's shoulders), 'phone' (Stripes has his phone to his ear), or 'dogs' (the
 // end of Act 3: the dogs off the boat are being looked at, one on the table
 // and two waiting on the floor; no cats; Flower's human is there too).
-// who: the sprites to stand in it: { cats: [tabby, orange], hung, trang, vet, owner (Flower's human, for 'dogs') }
+// who: the sprites to stand in it: { cats: [tabby, orange], stripes, polka, vet, owner (Flower's human, for 'dogs') }
 import { C, R } from './palette.js';
 import { CONFIG } from './config.js';
 import { makeDog, DOG_PALS } from './sprites.js';
@@ -93,16 +93,16 @@ export function drawVet(g, frame, state, who) {
   for (let x = 270; x < 285; x += 4) R(g, x, FEET - 17, 2, 12, '#8a7a5e');
   R(g, 276, FEET - 28, 16, 4, C.k);
 
-  // Hưng and Trang, to the left of the table
+  // Stripes and Polka, to the left of the table
   if (state === 'dogs') {
-    // (with the dogs: Trang keeps well back, half behind Hưng, and Flower's human, who drove them all
+    // (with the dogs: Polka keeps well back, half behind Stripes, and Flower's human, who drove them all
     // here, stands nearest the dogs with one of them on a lead)
-    big(g, who.trang.stand.right, 8, FEET);
-    big(g, who.hung.stand.right, 36, FEET);
+    big(g, who.polka.stand.right, 8, FEET);
+    big(g, who.stripes.stand.right, 36, FEET);
     if (who.owner) big(g, who.owner.stand.right, 78, FEET);
   } else {
-    big(g, who.trang.stand.right, 40, FEET);
-    big(g, who.hung.stand.right, 76, FEET);
+    big(g, who.polka.stand.right, 40, FEET);
+    big(g, who.stripes.stand.right, 76, FEET);
   }
   if (state === 'phone') {
     // his phone, at his ear

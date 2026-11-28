@@ -1,7 +1,7 @@
 // Act 2, "House cats": the story indoors, from the first night in the flat to
 // the robot vacuum on its back at the front door.
 //
-//   arrive   Late at night, the inner laundry room. Hưng and Trang let the pair
+//   arrive   Late at night, the inner laundry room. Stripes and Polka let the pair
 //            out of the bags and leave them to it.
 //   escape   The player is Orca, who has never been indoors and means to leave.
 //            Nothing in the flat answers him (see mute). At the foyer the robot
@@ -29,9 +29,9 @@
 //            leaves his breakfast.
 //   robot1   The first fight with the robot vacuum, which cannot be won. Then it
 //            is four in the afternoon.
-//   learn    Evenings on the sofa: in front of the TV (TV_ZONE), Trang's music
+//   learn    Evenings on the sofa: in front of the TV (TV_ZONE), Polka's music
 //            show teaches Shark to Sing,
-//            Hưng's football teaches Orca the Big Stretch (Meow, on cue, three
+//            Stripes's football teaches Orca the Big Stretch (Meow, on cue, three
 //            times running).
 //   rematch  The robot beaten, and out of the door. End of Act 2.
 //
@@ -458,7 +458,7 @@ export function createHome(api) {
   }
   // The guest room: where the cats come in, where they hop up, where they lie; the doorway, and
   // where the two humans wait out of sight along the hallway.
-  // (Hưng goes in first and stands just inside; Trang stops in the doorway itself. He starts a step
+  // (Stripes goes in first and stands just inside; Polka stops in the doorway itself. He starts a step
   // ahead of her along the hallway, so that she is not in his way.)
   const GUEST = { cats: [[27, 11], [26, 11]], bedside: [[30, 10], [29, 10]], bed: [[30, 9], [29, 9]], door: [[26, 12], [26, 13]], hall: [[20, 14], [19, 14]], cam: [31, 11] };
   const still = () => !api.cats().some((c) => c.moving);

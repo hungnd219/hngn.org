@@ -4,14 +4,14 @@
 // script that plays them is src/act3-jetty.js.
 //
 // A scene is a list of lines, each [who, words]: '' is the narrator; 'shark'
-// and 'orca'; 'hung' and 'trang' (in the flat and in the garden alike); the
+// and 'orca'; 'stripes' and 'polka' (in the flat and in the garden alike); the
 // garden's cats by their ids ('cheetos', 'socks', 'mama', 'scar', 'thanos',
 // 'baby'), 'bbc' and 'flower'; 'club' (Golf Club), 'green' (Green Shirt), 'l'
 // (Purple Scarf); 'nb0' and 'nb1' (two of the neighbours). A caption is a line
 // at the bottom of the screen with no name on it ({c} is whoever leads, {o}
 // the other cat).
 //
-// Hưng and Trang never use each other's names: each calls the other "dummy".
+// Stripes and Polka never use each other's names: each calls the other "dummy".
 export const A3 = {
   names: { club: 'Golf Club', green: 'Green Shirt', nb: ['Man from Amber', 'Woman from Garnet', 'Neighbor', 'Neighbor', 'Neighbor'], owner: "Flower's Human", son: 'Lookalike' },
   goals: {
@@ -25,19 +25,19 @@ export const A3 = {
   // ---- regroup (straight after the flat, the goal is Garnet's: go home and tell them)
   // in the pair's own flat: they try. It comes out as meows.
   tell: {
-    in: ['', 'Hưng and Trang are on their feet before the front door has swung shut.'],
+    in: ['', 'Stripes and Polka are on their feet before the front door has swung shut.'],
     try: [
       ['shark', "The man with the golf club! He knows the purple scarf woman! And the green shirt man! They're behind the dogs!"],
       ['orca', "He brings them! She feeds them! Then he sends them after us! The first dogs weren't good enough. So they're bringing worse ones tonight!"],
-      ['', 'What Hưng and Trang hear is this: meow. Mrrow. Meow, meow. Me-eow. MEOW.'],
+      ['', 'What Stripes and Polka hear is this: meow. Mrrow. Meow, meow. Me-eow. MEOW.'],
     ],
     // (the second time they are understood wrongly: on the balcony night it was taken for fear)
     heard: [
-      ['trang', "Is something wrong? Listen to them, dummy."],
-      ['hung', "Is it the dogs downstairs again? Show me. But... I don't hear any barking."],
-      ['hung', "Maybe you're hungry? Tell you what, I'll give you some extra kibble, yeah? Just this one time."],
+      ['polka', "Is something wrong? Listen to them, dummy."],
+      ['stripes', "Is it the dogs downstairs again? Show me. But... I don't hear any barking."],
+      ['stripes', "Maybe you're hungry? Tell you what, I'll give you some extra kibble, yeah? Just this one time."],
     ],
-    machine: ['', 'The kibble machine rattles, twice. Hưng looks pleased with himself.'],
+    machine: ['', 'The kibble machine rattles, twice. Stripes looks pleased with himself.'],
     alone: [
       ['orca', "They don't understand. ...It's not the dogs. It's the humans behind them."],
       ['shark', "We're on our own."],
@@ -314,26 +314,26 @@ export const A3 = {
       ['nb1', "...Hold on. Isn't that the scarf lady? Why is she chasing cats in the middle of the night?"],
       ['', 'Green Shirt and Purple Scarf look at all those faces and stop. Then they back away, fast.'],
     ],
-    // Orca sees Hưng and Trang among them
+    // Orca sees Stripes and Polka among them
     spots: [
       ['', "Nobody on the boardwalk knows what they're looking at. But Orca has seen two faces he knows."],
       ['', "He's never asked a human for anything. Not once in his life. But..."],
     ],
-    // Orca calls Hưng and Trang over, and this time they understand
+    // Orca calls Stripes and Polka over, and this time they understand
     // before Orca calls: the last time they were told, and heard "hungry"; this time he asks
     ask: [
       ['shark', "What are you doing, Orca? They won't understand what you're saying."],
       ['orca', "They will. This time I'm really asking."],
     ],
-    call: ['', 'Orca stares at Hưng and Trang and makes a decision. He meows. Once. Then he walks back toward the dock, looking back over his shoulder at his humans every few seconds.'],
+    call: ['', 'Orca stares at Stripes and Polka and makes a decision. He meows. Once. Then he walks back toward the dock, looking back over his shoulder at his humans every few seconds.'],
     follow: [
-      ['hung', "Does Orca want us to follow? He's never asked us for anything."],
-      ['trang', 'Then we follow him. Come on, dummy.'],
+      ['stripes', "Does Orca want us to follow? He's never asked us for anything."],
+      ['polka', 'Then we follow him. Come on, dummy.'],
     ],
-    lead: ['', 'The cats go first. Hưng and Trang go after the cats, and everybody else after them onto the dock.'],
+    lead: ['', 'The cats go first. Stripes and Polka go after the cats, and everybody else after them onto the dock.'],
     found: [
-      ['trang', 'Look at the boat.'],
-      ['hung', "Dogs. All over the boat. I think there are some in cages over here too."],
+      ['polka', 'Look at the boat.'],
+      ['stripes', "Dogs. All over the boat. I think there are some in cages over here too."],
       ['nb1', "Are those the same dogs that have been roaming the garden?"],
       ['nb0', "Huh. So THAT is how they got in! No security guards on the dock."],
     ],
@@ -363,23 +363,23 @@ export const A3 = {
       ['', 'As for the dogs...'],
     ],
     // (the vet's, as a picture, with a dog on the table: they were never bad dogs. Flower's human has
-    // driven them over, with Hưng and Trang: the three are friends since the jetty. Nobody here is going
-    // to keep a dog, and Trang is scared of them; what they hope is that each finds a home, as the cats did.)
+    // driven them over, with Stripes and Polka: the three are friends since the jetty. Nobody here is going
+    // to keep a dog, and Polka is scared of them; what they hope is that each finds a home, as the cats did.)
     vet: [
-      ['', "The vet's, the next morning. Flower's human has a car, and she drives: Hưng and Trang beside her, and two dogs in the back. Sixteen dogs is eight trips."],
+      ['', "The vet's, the next morning. Flower's human has a car, and she drives: Stripes and Polka beside her, and two dogs in the back. Sixteen dogs is eight trips."],
       ['vet', "Look at these ribs. I can count every one."],
       ['owner', "But I heard there were sacks and sacks of dog food in that woman's apartment."],
       ['vet', "Then somebody decided to keep it from them. Starve a dog, hold it in a cage, shout at it all day. It'll go after anything that moves."],
-      ['trang', "That sounds terrifying. You know what, I'm staying right over here. I've been scared of dogs all my life."],
+      ['polka', "That sounds terrifying. You know what, I'm staying right over here. I've been scared of dogs all my life."],
       ['vet', "They're more scared of you than you are of them. These aren't bad dogs. Look..."],
       ['', "The dog on the table licks the vet's hand. Then, for some time, the whole arm."],
       ['vet', "This one has been trying to get my watch off for ten minutes. Just a few weeks of food and quiet, and you'll have sixteen very nice dogs."],
       ['vet', "I know a shelter that can take these dogs in. They could be great pets too, you know."],
       ['owner', "Don't look at me. Flower would never speak to me again."],
-      ['hung', "Well... We're cat people. Aren't we?"],
-      ['trang', "We are. ...But I hope these dogs all find somebody. People who choose them for them, not for what they can do."],
-      ['trang', 'Like how we chose our two.'],
-      ['hung', 'I think our two chose us.'],
+      ['stripes', "Well... We're cat people. Aren't we?"],
+      ['polka', "We are. ...But I hope these dogs all find somebody. People who choose them for them, not for what they can do."],
+      ['polka', 'Like how we chose our two.'],
+      ['stripes', 'I think our two chose us.'],
     ],
   },
 

@@ -494,7 +494,7 @@ export function makeHuman(pal, longHair, opts = {}) {
   };
 }
 
-// So Hưng and Trang stand out from the crowd downstairs (who all wear plain
+// So Stripes and Polka stand out from the crowd downstairs (who all wear plain
 // tops): he wears stripes, she wears polka dots.
 const onTop = (ch, y) => (ch === 'c' || ch === 'v') && y >= 11 && y <= 16;
 export const HUMAN_COATS = {
@@ -580,7 +580,7 @@ export const HUMAN_COATS = {
 };
 
 export const HUMAN_PALS = {
-  // Hưng: green stripes, dark khakis. Trang: burgundy with white dots, mid-blue jeans.
+  // Stripes: green stripes, dark khakis. Polka: burgundy with white dots, mid-blue jeans.
   him: { k: C.k, s: '#e8b98f', h: '#3b3038', c: C.olive, v: C.oliveD, p: '#6a5f43', o: C.grayL },
   // bright green shirt, white shorts, a centre parting
   haterS: { k: C.k, s: '#e2ad84', h: '#2a2320', part: '#57483f', c: '#3fd24a', v: '#2aa637', p: '#f4f1ea', o: '#d9d4cc' },

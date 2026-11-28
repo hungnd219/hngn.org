@@ -10,7 +10,7 @@
 //            (The stage is `shed` from the end of that scene: if the fight is lost, Thanos holds
 //            the dogs off there until the pair come back.)
 //   tobox    Back over the road to Mamacat's box, where everybody is. Sleep.
-//   morning  Hưng and Trang find them there. Then the Garnet part takes over.
+//   morning  Stripes and Polka find them there. Then the Garnet part takes over.
 //
 // This part also answers, for the whole act up to `regroup`, where the garden's named cats are
 // (`present`, and `keep` which puts them there): at Mamacat's box from the moment each gets there,
@@ -78,10 +78,10 @@ export function create(ctx) {
   const white = ctx.addExtra('a3nwhite', W.whiteName, makeCat(whitePal.pal, { coat: whitePal.coat }), { low: true });
   const sdogs = ['tan', 'black', 'patched'].map((coat, i) => ctx.dogs.actor('a3dog' + i, coat));
   const eye = ctx.addExtra('a3eye', '', makeKittens()[0], { low: true, fast: 6 }); // (never shown)
-  const hung = () => ctx.extra('hung');
-  const trang = () => ctx.extra('trang');
+  const stripes = () => ctx.extra('stripes');
+  const polka = () => ctx.extra('polka');
   const green = () => ctx.extra('green'); // (Green Shirt: the jetty part's, borrowed for the first scene)
-  // the act begins at night, after Hưng and Trang have gone to bed (and the clock stands still until
+  // the act begins at night, after Stripes and Polka have gone to bed (and the clock stands still until
   // the pair are asleep by the box: see `night` in WORLD)
   const isNight = () => ctx.hour() >= 22 || ctx.hour() < 3;
   let treeDog = null; // the dog under Cheetos's tree: one of the roaming kind, put there by hand
@@ -584,7 +584,7 @@ export function create(ctx) {
       keep(true);
     };
     const tidy = () => {
-      hung().hidden = trang().hidden = true;
+      stripes().hidden = polka().hidden = true;
       if (kib) people.eat(kib);
       kib = null;
       keep(true);
@@ -595,22 +595,22 @@ export function create(ctx) {
       { fade: 'in' },
       { wait: 50 },
       { sfx: 'door' },
-      // (Hưng is the one nearer the cats: he sees them first, and it is he who puts the plate down)
-      { call: () => { ctx.placeExtra(hung(), 17, PAVE_S + 2, 'down'); ctx.placeExtra(trang(), 18, PAVE_S + 2, 'down'); } },
+      // (Stripes is the one nearer the cats: he sees them first, and it is he who puts the plate down)
+      { call: () => { ctx.placeExtra(stripes(), 17, PAVE_S + 2, 'down'); ctx.placeExtra(polka(), 18, PAVE_S + 2, 'down'); } },
       { say: W.morning.doors },
       // (along the kerb side of the pavement, round Cheetos and Socks)
-      { walks: [['hung', ...P([28, PAVE_S])], ['trang', ...P([27, PAVE_S])]] },
-      { walks: [['hung', ...P([28, PAVE_S + 1])], ['trang', ...P([27, PAVE_S + 1])]] },
-      { face: ['hung', 'right'] },
-      { face: ['trang', 'right'] },
-      { bubble: ['hung', '!', 50] },
+      { walks: [['stripes', ...P([28, PAVE_S])], ['polka', ...P([27, PAVE_S])]] },
+      { walks: [['stripes', ...P([28, PAVE_S + 1])], ['polka', ...P([27, PAVE_S + 1])]] },
+      { face: ['stripes', 'right'] },
+      { face: ['polka', 'right'] },
+      { bubble: ['stripes', '!', 50] },
       ...ctx.lines(W.morning.found.slice(0, 2)),
       { call: () => ctx.getUp() },
       { face: ['shark', 'left'] },
       { face: ['orca', 'left'] },
       ...ctx.lines(W.morning.found.slice(2)),
       ...ctx.lines(W.morning.plate.slice(0, 1)),
-      { face: ['hung', 'down'] },
+      { face: ['stripes', 'down'] },
       { call: () => { kib = { x: plate[0], y: plate[1], born: ctx.clock(), keep: true }; people.kibble.push(kib); sfx.land(); } },
       ...ctx.lines(W.morning.plate.slice(1)),
       // Cheetos first
@@ -638,13 +638,13 @@ export function create(ctx) {
       { wait: 140 },
       { call: () => { if (kib) people.eat(kib); kib = null; ctx.mend(1); sfx.purr(); } },
       { say: W.morning.eaten },
-      { face: ['hung', 'right'] },
+      { face: ['stripes', 'right'] },
       ...ctx.lines(W.morning.bye),
-      { walks: [['hung', ...P([28, PAVE_S])], ['trang', ...P([27, PAVE_S])]] },
-      { walks: [['hung', ...P([19, PAVE_S])], ['trang', ...P([20, PAVE_S])]] },
-      { walks: [['hung', ...P([17, PAVE_S + 2])], ['trang', ...P([18, PAVE_S + 2])]] },
+      { walks: [['stripes', ...P([28, PAVE_S])], ['polka', ...P([27, PAVE_S])]] },
+      { walks: [['stripes', ...P([19, PAVE_S])], ['polka', ...P([20, PAVE_S])]] },
+      { walks: [['stripes', ...P([17, PAVE_S + 2])], ['polka', ...P([18, PAVE_S + 2])]] },
       { sfx: 'door' },
-      { call: () => { hung().hidden = trang().hidden = true; } },
+      { call: () => { stripes().hidden = polka().hidden = true; } },
       { say: W.morning.gone },
       ctx.tip(W.tip4),
     ], () => {
@@ -671,7 +671,7 @@ export function create(ctx) {
     return stage === 'east' || stage === 'shed' ? [{ box: SHED_ZONE, allow: NAMED }] : [];
   }
   // The pair have gone up to the flat in the night (to eat, say, after a dog has emptied the meter): nobody
-  // is home. Hưng and Trang are out looking for them ("We looked all night"), and have left the kibble
+  // is home. Stripes and Polka are out looking for them ("We looked all night"), and have left the kibble
   // machine full. They are back in the flat once the morning scene is over.
   let humansOut = false;
   let flatSaid = false;
@@ -717,7 +717,7 @@ export function create(ctx) {
     if (stage === 'open' || stage === 'cheetos') treeDogHere();
     else noTreeDog();
     hideActors();
-    if (mine(stage)) hung().hidden = trang().hidden = true;
+    if (mine(stage)) stripes().hidden = polka().hidden = true;
     keep(true);
     if (stage === 'east') cheetosAlong(true);
     if (stage === 'shed') standoff();

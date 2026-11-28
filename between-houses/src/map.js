@@ -23,7 +23,7 @@ export const FLATS = { home: [0, 0, 52, 21], scarf: [100, 9, 135, 30] };
 export const flatAt = (x) => (x >= FLATS.scarf[0] ? 'scarf' : 'home');
 const SX = FLATS.scarf[0];
 
-// Purple Scarf's flat, in Garnet: the same kind of flat as Hưng and Trang's
+// Purple Scarf's flat, in Garnet: the same kind of flat as Stripes and Polka's
 // with nothing done to it, and about two thirds the size: two bedrooms, two
 // bathrooms. Its balcony is on the west, facing Amber, and is the one under
 // Flower's (garnet.js has the picture of that side of the building): the
